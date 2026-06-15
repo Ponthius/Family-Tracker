@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Family Tracker</title>
+    <link rel="stylesheet" href="register.css">
+</head>
+<body>
+    <div class="card">
+        <h1 class="title">Family Tracker</h1>
+        
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="user@gmail.com">
+        
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Your username">
+        
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password">
+        
+        <label for="confirm">Confirm Password</label>
+        <input type="password" id="confirm" placeholder="Confirm password">
+        
+        <label for="role">Role</label>
+        <select id="role">
+            <option value="">Select role</option>
+            <option value="father">Father</option>
+            <option value="mother">Mother</option>
+            <option value="child">Child</option>
+        </select>
+        
+        <button class="btn" id="registerBtn">Register</button>
+        
+        <p class="login-link">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+
+    <script>
+        document.getElementById('registerBtn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const confirm = document.getElementById('confirm').value.trim();
+            const role = document.getElementById('role').value;
+
+            // Frontend validation
+            if (!email || !username || !password || !confirm || !role) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (!email.includes('@') || !email.includes('.')) {
+                alert('Please enter a valid email address');
+                return;
+            }
+            
+            if (username.length < 3) {
+                alert('Username must be at least 3 characters');
+                return;
+            }
+            
+            if (password.length < 4) {
+                alert('Password must be at least 4 characters');
+                return;
+            }
+            
+            if (password !== confirm) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, username, password, role })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    alert('Registration successful! Please login.');
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                alert('Error connecting to server. Make sure server is running.');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>

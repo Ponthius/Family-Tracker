@@ -1,0 +1,89 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #e8e2d9;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.card {
+  background: #f5f1ec;
+  border-radius: 12px;
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2c2420;
+  text-align: center;
+  margin-bottom: 12px;
+  font-family: Georgia, serif;
+}
+
+label {
+  font-size: 0.82rem;
+  color: #5a4e46;
+  margin-top: 10px;
+}
+
+input, select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #c8bfb5;
+  border-radius: 6px;
+  background: #faf8f5;
+  font-size: 0.9rem;
+  color: #2c2420;
+  outline: none;
+}
+
+input:focus, select:focus {
+  border-color: #8b7355;
+}
+
+.btn {
+  margin-top: 20px;
+  padding: 11px;
+  background: #3d3530;
+  color: #f5f1ec;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+}
+
+.btn:hover {
+  background: #2c2420;
+}
+
+.login-link {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #7a6e66;
+  margin-top: 6px;
+}
+
+.login-link a {
+  color: #5a4038;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
