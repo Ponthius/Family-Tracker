@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Family Tracker · Dashboard</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+<div class="app-wrapper">
+  <!-- DESKTOP SIDEBAR (hidden on mobile) -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="fas fa-users"></i>
+        <span>Family Tracker</span>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-item-side active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div>
+      <div class="nav-item-side"><i class="fas fa-calendar-alt"></i><span>Events</span></div>
+      <div class="nav-item-side"><i class="fas fa-user-friends"></i><span>Members</span></div>
+      <div class="nav-item-side"><i class="fas fa-clock"></i><span>Schedules</span></div>
+      <div class="nav-item-side"><i class="fas fa-map-marker-alt"></i><span>Locations</span></div>
+      <div class="nav-item-side"><i class="fas fa-cog"></i><span>Settings</span></div>
+    </div>
+    <div class="sidebar-footer">
+      <i class="fas fa-user-circle"></i> Family Account<br>
+      <span style="font-size: 0.7rem;">v2.0 · tracker</span>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="top-bar">
+      <div class="greeting">
+        <h1>Good Morning <span>Hassan </span></h1>
+        <p style="font-size: 0.85rem; color: #7b6b5f; margin-top: 4px;"><i class="fas fa-leaf"></i> Stay connected with family</p>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <div class="user-badge">
+          <i class="fas fa-bell"></i>
+          <i class="fas fa-user-circle" style="font-size: 1.3rem;"></i>
+          <span>Emma P.</span>
+        </div>
+        <!-- Hamburger button (visible on tablets/mobile) -->
+        <button class="hamburger-btn" id="hamburgerBtn">
+          <i class="fas fa-bars"></i> <span>Menu</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-info"><h3><i class="fas fa-calendar-week"></i> TOTAL EVENTS</h3><div class="kpi-number">24</div><div style="font-size: 0.7rem;">+3 this month</div></div><div class="kpi-icon"><i class="fas fa-calendar-check"></i></div></div>
+      <div class="kpi-card"><div class="kpi-info"><h3><i class="fas fa-users"></i> FAMILY MEMBERS</h3><div class="kpi-number">6</div><div style="font-size: 0.7rem;">2 parents · 4 kids</div></div><div class="kpi-icon"><i class="fas fa-user-friends"></i></div></div>
+      <div class="kpi-card"><div class="kpi-info"><h3><i class="fas fa-hourglass-half"></i> ACTIVE SCHEDULES</h3><div class="kpi-number">12</div><div style="font-size: 0.7rem;">this week: 8</div></div><div class="kpi-icon"><i class="fas fa-tasks"></i></div></div>
+      <div class="kpi-card"><div class="kpi-info"><h3><i class="fas fa-star"></i> UPCOMING</h3><div class="kpi-number">7</div><div style="font-size: 0.7rem;">next 7 days</div></div><div class="kpi-icon"><i class="fas fa-rocket"></i></div></div>
+    </div>
+
+    <!-- TABLES: Recent & Upcoming Events -->
+    <div class="tables-section">
+      <div class="table-wrapper">
+        <div class="section-title"><i class="fas fa-history"></i><span>Recent Events</span></div>
+        <table class="event-table"><thead><tr><th>Event name</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Family Brunch</td><td>Yesterday, 11:30 AM</td><td><span class="badge"><i class="fas fa-check-circle"></i> Completed</span></td></tr>
+            <tr><td>Groceries pickup</td><td>Mon, Jun 14 · 4:15 PM</td><td><span class="badge">Done</span></td></tr>
+            <tr><td>Movie night</td><td>Sun, Jun 13 · 8:00 PM</td><td><span class="badge"><i class="fas fa-film"></i> Attended</span></td></tr>
+            <tr><td>Doctor appointment</td><td>Fri, Jun 11 · 9:30 AM</td><td><span class="badge">Completed</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-wrapper">
+        <div class="section-title"><i class="fas fa-calendar-plus"></i><span>Upcoming Events</span></div>
+        <table class="event-table"><thead><tr><th>Event name</th><th>Date & Time</th><th>Category</th></tr></thead>
+          <tbody>
+            <tr><td>Dad's birthday <i class="fas fa-birthday-cake"></i></td><td>20 Jun · 7:00 PM</td><td><span class="badge"><i class="fas fa-glass-cheers"></i> Party</span></td></tr>
+            <tr><td>Beach day trip</td><td>25 Jun · 09:00 AM</td><td><span class="badge"><i class="fas fa-umbrella-beach"></i> Outing</span></td></tr>
+            <tr><td>School meeting</td><td>30 Jun · 2:30 PM</td><td><span class="badge"><i class="fas fa-school"></i> Reminder</span></td></tr>
+            <tr><td>Family game night</td><td>02 Jul · 6:00 PM</td><td><span class="badge"><i class="fas fa-dice-d6"></i> Fun</span></td></tr>
+            <tr><td>Weekly planning</td><td>05 Jul · 10:00 AM</td><td><span class="badge"><i class="fas fa-clipboard-list"></i> Schedule</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top: 16px; display: flex; justify-content: flex-end;"><div style="background: #fefaf5; border-radius: 30px; padding: 8px 20px; font-size: 0.75rem;"><i class="fas fa-chart-line"></i> Family activity score: 89%</div></div>
+  </main>
+</div>
+
+<!-- MOBILE BOTTOM NAVIGATION (always visible on small screens) -->
+<div class="mobile-bottom-nav">
+  <div class="nav-mob-item active"><i class="fas fa-home"></i><span>Home</span></div>
+  <div class="nav-mob-item"><i class="fas fa-calendar-alt"></i><span>Events</span></div>
+  <div class="nav-mob-item"><i class="fas fa-users"></i><span>Members</span></div>
+  <div class="nav-mob-item"><i class="fas fa-clock"></i><span>Schedules</span></div>
+</div>
+
+<!-- MOBILE SIDEBAR (Hamburger overlay menu) -->
+<div class="mobile-sidebar-overlay" id="mobileSidebarOverlay"></div>
+<div class="mobile-sidebar" id="mobileSidebar">
+  <button class="close-sidebar" id="closeSidebarBtn"><i class="fas fa-times"></i></button>
+  <div class="mobile-sidebar-header">
+    <div class="logo"><i class="fas fa-users"></i><span>Family Tracker</span></div>
+  </div>
+  <div class="mobile-sidebar-nav">
+    <div class="mobile-nav-item active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div>
+    <div class="mobile-nav-item"><i class="fas fa-calendar-alt"></i><span>Events</span></div>
+    <div class="mobile-nav-item"><i class="fas fa-user-friends"></i><span>Members</span></div>
+    <div class="mobile-nav-item"><i class="fas fa-clock"></i><span>Schedules</span></div>
+    <div class="mobile-nav-item"><i class="fas fa-map-marker-alt"></i><span>Locations</span></div>
+    <div class="mobile-nav-item"><i class="fas fa-cog"></i><span>Settings</span></div>
+  </div>
+  <div class="sidebar-footer" style="margin-top: auto;"><i class="fas fa-user-circle"></i> Family Account</div>
+</div>
+
+<script>
+  // Hamburger & mobile sidebar logic
+  const hamburger = document.getElementById('hamburgerBtn');
+  const overlay = document.getElementById('mobileSidebarOverlay');
+  const sidebar = document.getElementById('mobileSidebar');
+  const closeBtn = document.getElementById('closeSidebarBtn');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  hamburger.addEventListener('click', openSidebar);
+  closeBtn.addEventListener('click', closeSidebar);
+  overlay.addEventListener('click', closeSidebar);
+
+  // optional: bottom nav items highlight simulation (just visual)
+  const bottomItems = document.querySelectorAll('.nav-mob-item');
+  bottomItems.forEach(item => {
+    item.addEventListener('click', function() {
+      bottomItems.forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+  // for mobile sidebar nav
+  const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+  mobileNavItems.forEach(item => {
+    item.addEventListener('click', function() {
+      mobileNavItems.forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+      closeSidebar();   // auto close after selection
+    });
+  });
+  // desktop sidebar active simulation (no actual routing)
+  const desktopItems = document.querySelectorAll('.nav-item-side');
+  desktopItems.forEach(item => {
+    item.addEventListener('click', function() {
+      desktopItems.forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
