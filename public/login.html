@@ -42,9 +42,8 @@
                 
                 if (response.ok && data.success) {
                     alert(`Login successful! Welcome ${data.user.username} (${data.user.role})`);
-                    // Store user info for dashboard
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    // Redirect to dashboard when ready
+                    // This will redirect to dashboard when Hassan finishes it
                     // window.location.href = 'dashboard.html';
                 } else {
                     alert(data.error || 'Login failed');
@@ -55,7 +54,6 @@
             }
         });
         
-        // Allow Enter key to submit
         document.getElementById('password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 document.getElementById('loginBtn').click();

@@ -43,7 +43,7 @@
             const confirm = document.getElementById('confirm').value.trim();
             const role = document.getElementById('role').value;
 
-            // Frontend validation
+            
             if (!email || !username || !password || !confirm || !role) {
                 alert('Please fill in all fields');
                 return;
@@ -85,7 +85,7 @@
                     alert(data.error || 'Registration failed');
                 }
             } catch (error) {
-                alert('Error connecting to server. Make sure server is running.');
+                alert('Error connecting to server.');
                 console.error(error);
             }
         });
