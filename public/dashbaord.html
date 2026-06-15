@@ -10,156 +10,266 @@
 </head>
 <body>
 <div class="app-wrapper">
-  <!-- DESKTOP SIDEBAR (hidden on mobile) -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <div class="logo">
+      <a href="dashboard.html" class="logo" style="text-decoration: none;">
         <i class="fas fa-users"></i>
         <span>Family Tracker</span>
-      </div>
+      </a>
     </div>
     <div class="sidebar-nav">
-      <div class="nav-item-side active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div>
-      <div class="nav-item-side"><i class="fas fa-calendar-alt"></i><span>Events</span></div>
-      <div class="nav-item-side"><i class="fas fa-user-friends"></i><span>Members</span></div>
-      <div class="nav-item-side"><i class="fas fa-clock"></i><span>Schedules</span></div>
-      <div class="nav-item-side"><i class="fas fa-map-marker-alt"></i><span>Locations</span></div>
-      <div class="nav-item-side"><i class="fas fa-cog"></i><span>Settings</span></div>
+      <a href="dashboard.html" class="nav-item-side active" data-page="dashboard">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="events.html" class="nav-item-side" data-page="events">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Events</span>
+      </a>
+      <a href="members.html" class="nav-item-side" data-page="members">
+        <i class="fas fa-user-friends"></i>
+        <span>Members</span>
+      </a>
+      <a href="schedules.html" class="nav-item-side" data-page="schedules">
+        <i class="fas fa-clock"></i>
+        <span>Schedules</span>
+      </a>
+      <a href="profile.html" class="nav-item-side" data-page="profile">
+        <i class="fas fa-user-circle"></i>
+        <span>Profile</span>
+      </a>
     </div>
     <div class="sidebar-footer">
-      <i class="fas fa-user-circle"></i> Family Account<br>
-      <span style="font-size: 0.7rem;">v2.0 · tracker</span>
+      <i class="fas fa-user-circle"></i> Family Account v1.0<br>
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
   <main class="main-content">
     <div class="top-bar">
       <div class="greeting">
-        <h1>Good Morning <span>Hassan </span></h1>
-        <p style="font-size: 0.85rem; color: #7b6b5f; margin-top: 4px;"><i class="fas fa-leaf"></i> Stay connected with family</p>
+        <h1>Good Morning <span id="usernameDisplay"></span></h1>
+        <p style="font-size: 0.85rem; color: #7b6b5f; margin-top: 4px;">
+           Stay connected with family
+        </p>
       </div>
       <div style="display: flex; gap: 12px; align-items: center;">
-        <div class="user-badge">
+        <a href="profile.html" class="user-badge" id="profileBtn">
           <i class="fas fa-bell"></i>
           <i class="fas fa-user-circle" style="font-size: 1.3rem;"></i>
-          <span>Emma P.</span>
-        </div>
-        <!-- Hamburger button (visible on tablets/mobile) -->
+          <span id="userNameDisplay"></span>
+        </a>
         <button class="hamburger-btn" id="hamburgerBtn">
           <i class="fas fa-bars"></i> <span>Menu</span>
         </button>
       </div>
     </div>
 
-    <!-- KPI CARDS -->
     <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-info"><h3><i class="fas fa-calendar-week"></i> TOTAL EVENTS</h3><div class="kpi-number">24</div><div style="font-size: 0.7rem;">+3 this month</div></div><div class="kpi-icon"><i class="fas fa-calendar-check"></i></div></div>
-      <div class="kpi-card"><div class="kpi-info"><h3><i class="fas fa-users"></i> FAMILY MEMBERS</h3><div class="kpi-number">6</div><div style="font-size: 0.7rem;">2 parents · 4 kids</div></div><div class="kpi-icon"><i class="fas fa-user-friends"></i></div></div>
-      <div class="kpi-card"><div class="kpi-info"><h3><i class="fas fa-hourglass-half"></i> ACTIVE SCHEDULES</h3><div class="kpi-number">12</div><div style="font-size: 0.7rem;">this week: 8</div></div><div class="kpi-icon"><i class="fas fa-tasks"></i></div></div>
-      <div class="kpi-card"><div class="kpi-info"><h3><i class="fas fa-star"></i> UPCOMING</h3><div class="kpi-number">7</div><div style="font-size: 0.7rem;">next 7 days</div></div><div class="kpi-icon"><i class="fas fa-rocket"></i></div></div>
+      <a href="events.html" class="kpi-card">
+        <div class="kpi-info">
+          <h3><i class="fas fa-calendar-week"></i> TOTAL EVENTS</h3>
+          <div class="kpi-number">00</div>
+          <div id="eventsTrend" style="font-size: 0.7rem;"></div>
+        </div>
+        <div class="kpi-icon"><i class="fas fa-calendar-check"></i></div>
+      </a>
+      <a href="members.html" class="kpi-card">
+        <div class="kpi-info">
+          <h3><i class="fas fa-users"></i> FAMILY MEMBERS</h3>
+          <div class="kpi-number">00</div>
+          <div id="membersDetail" style="font-size: 0.7rem;"></div>
+        </div>
+        <div class="kpi-icon"><i class="fas fa-user-friends"></i></div>
+      </a>
+      <a href="schedules.html" class="kpi-card">
+        <div class="kpi-info">
+          <h3><i class="fas fa-hourglass-half"></i> ACTIVE SCHEDULES</h3>
+          <div class="kpi-number">00</div>
+          <div id="schedulesTrend" style="font-size: 0.7rem;"></div>
+        </div>
+        <div class="kpi-icon"><i class="fas fa-tasks"></i></div>
+      </a>
+      <a href="events.html?filter=upcoming" class="kpi-card">
+        <div class="kpi-info">
+          <h3><i class="fas fa-star"></i> UPCOMING</h3>
+          <div class="kpi-number">00</div>
+          <div id="upcomingDetail" style="font-size: 0.7rem;"></div>
+        </div>
+        <div class="kpi-icon"><i class="fas fa-rocket"></i></div>
+      </a>
     </div>
 
-    <!-- TABLES: Recent & Upcoming Events -->
+    <!-- TABLES: Recent & Upcoming Events - backend will populate==poel/ashrafhafiiiz -->
     <div class="tables-section">
       <div class="table-wrapper">
-        <div class="section-title"><i class="fas fa-history"></i><span>Recent Events</span></div>
-        <table class="event-table"><thead><tr><th>Event name</th><th>Date</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>Family Brunch</td><td>Yesterday, 11:30 AM</td><td><span class="badge"><i class="fas fa-check-circle"></i> Completed</span></td></tr>
-            <tr><td>Groceries pickup</td><td>Mon, Jun 14 · 4:15 PM</td><td><span class="badge">Done</span></td></tr>
-            <tr><td>Movie night</td><td>Sun, Jun 13 · 8:00 PM</td><td><span class="badge"><i class="fas fa-film"></i> Attended</span></td></tr>
-            <tr><td>Doctor appointment</td><td>Fri, Jun 11 · 9:30 AM</td><td><span class="badge">Completed</span></td></tr>
+        <div class="section-title">
+          <i class="fas fa-history"></i>
+          <span>Recent Events</span>
+        </div>
+        <table class="event-table">
+          <thead>
+            <tr><th>Event name</th><th>Date</th><th>Status</th></tr>
+          </thead>
+          <tbody id="recentEventsBody">
+            <tr class="data-placeholder">
+              <td colspan="3"><!-- poel/ashrafhafiiiz --></td>
+            </tr>
           </tbody>
         </table>
       </div>
       <div class="table-wrapper">
-        <div class="section-title"><i class="fas fa-calendar-plus"></i><span>Upcoming Events</span></div>
-        <table class="event-table"><thead><tr><th>Event name</th><th>Date & Time</th><th>Category</th></tr></thead>
-          <tbody>
-            <tr><td>Dad's birthday <i class="fas fa-birthday-cake"></i></td><td>20 Jun · 7:00 PM</td><td><span class="badge"><i class="fas fa-glass-cheers"></i> Party</span></td></tr>
-            <tr><td>Beach day trip</td><td>25 Jun · 09:00 AM</td><td><span class="badge"><i class="fas fa-umbrella-beach"></i> Outing</span></td></tr>
-            <tr><td>School meeting</td><td>30 Jun · 2:30 PM</td><td><span class="badge"><i class="fas fa-school"></i> Reminder</span></td></tr>
-            <tr><td>Family game night</td><td>02 Jul · 6:00 PM</td><td><span class="badge"><i class="fas fa-dice-d6"></i> Fun</span></td></tr>
-            <tr><td>Weekly planning</td><td>05 Jul · 10:00 AM</td><td><span class="badge"><i class="fas fa-clipboard-list"></i> Schedule</span></td></tr>
+        <div class="section-title">
+          <i class="fas fa-calendar-plus"></i>
+          <span>Upcoming Events</span>
+        </div>
+        <table class="event-table">
+          <thead>
+            <tr><th>Event name</th><th>Date & Time</th><th>Category</th></tr>
+          </thead>
+          <tbody id="upcomingEventsBody">
+            <tr class="data-placeholder">
+              <td colspan="3"><!-- poel/ashrafhafiiiz --></td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <div style="margin-top: 16px; display: flex; justify-content: flex-end;"><div style="background: #fefaf5; border-radius: 30px; padding: 8px 20px; font-size: 0.75rem;"><i class="fas fa-chart-line"></i> Family activity score: 89%</div></div>
+    <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+      <div style="background: #fefaf5; border-radius: 30px; padding: 8px 20px; font-size: 0.75rem;">
+        <i class="fas fa-chart-line"></i> <span id="activityScore"></span>
+      </div>
+    </div>
   </main>
 </div>
 
-<!-- MOBILE BOTTOM NAVIGATION (always visible on small screens) -->
 <div class="mobile-bottom-nav">
-  <div class="nav-mob-item active"><i class="fas fa-home"></i><span>Home</span></div>
-  <div class="nav-mob-item"><i class="fas fa-calendar-alt"></i><span>Events</span></div>
-  <div class="nav-mob-item"><i class="fas fa-users"></i><span>Members</span></div>
-  <div class="nav-mob-item"><i class="fas fa-clock"></i><span>Schedules</span></div>
+  <a href="dashboard.html" class="nav-mob-item active" data-page="dashboard">
+    <i class="fas fa-home"></i>
+    <span>Home</span>
+  </a>
+  <a href="events.html" class="nav-mob-item" data-page="events">
+    <i class="fas fa-calendar-alt"></i>
+    <span>Events</span>
+  </a>
+  <a href="members.html" class="nav-mob-item" data-page="members">
+    <i class="fas fa-users"></i>
+    <span>Members</span>
+  </a>
+  <a href="schedules.html" class="nav-mob-item" data-page="schedules">
+    <i class="fas fa-clock"></i>
+    <span>Schedules</span>
+  </a>
 </div>
 
-<!-- MOBILE SIDEBAR (Hamburger overlay menu) -->
 <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay"></div>
 <div class="mobile-sidebar" id="mobileSidebar">
-  <button class="close-sidebar" id="closeSidebarBtn"><i class="fas fa-times"></i></button>
+  <button class="close-sidebar" id="closeSidebarBtn">
+    <i class="fas fa-times"></i>
+  </button>
   <div class="mobile-sidebar-header">
-    <div class="logo"><i class="fas fa-users"></i><span>Family Tracker</span></div>
+    <a href="dashboard.html" class="logo" style="text-decoration: none;">
+      <i class="fas fa-users"></i>
+      <span>Family Tracker</span>
+    </a>
   </div>
   <div class="mobile-sidebar-nav">
-    <div class="mobile-nav-item active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></div>
-    <div class="mobile-nav-item"><i class="fas fa-calendar-alt"></i><span>Events</span></div>
-    <div class="mobile-nav-item"><i class="fas fa-user-friends"></i><span>Members</span></div>
-    <div class="mobile-nav-item"><i class="fas fa-clock"></i><span>Schedules</span></div>
-    <div class="mobile-nav-item"><i class="fas fa-map-marker-alt"></i><span>Locations</span></div>
-    <div class="mobile-nav-item"><i class="fas fa-cog"></i><span>Settings</span></div>
+    <a href="dashboard.html" class="mobile-nav-item active" data-page="dashboard">
+      <i class="fas fa-tachometer-alt"></i>
+      <span>Dashboard</span>
+    </a>
+    <a href="events.html" class="mobile-nav-item" data-page="events">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Events</span>
+    </a>
+    <a href="members.html" class="mobile-nav-item" data-page="members">
+      <i class="fas fa-user-friends"></i>
+      <span>Members</span>
+    </a>
+    <a href="schedules.html" class="mobile-nav-item" data-page="schedules">
+      <i class="fas fa-clock"></i>
+      <span>Schedules</span>
+    </a>
+    <a href="profile.html" class="mobile-nav-item" data-page="profile">
+      <i class="fas fa-user-circle"></i>
+      <span>Profile</span>
+    </a>
   </div>
-  <div class="sidebar-footer" style="margin-top: auto;"><i class="fas fa-user-circle"></i> Family Account</div>
+  <div class="sidebar-footer" style="margin-top: auto;">
+    <i class="fas fa-user-circle"></i> Family Account
+  </div>
 </div>
 
 <script>
-  // Hamburger & mobile sidebar logic
+
+  function setActiveNavItem(currentPage) {
+    // Desktop sidebar
+    document.querySelectorAll('.nav-item-side').forEach(nav => {
+      const page = nav.getAttribute('data-page');
+      if (page === currentPage) {
+        nav.classList.add('active');
+      } else {
+        nav.classList.remove('active');
+      }
+    });
+    
+    // Mobile bottom nav
+    document.querySelectorAll('.nav-mob-item').forEach(nav => {
+      const page = nav.getAttribute('data-page');
+      if (page === currentPage) {
+        nav.classList.add('active');
+      } else {
+        nav.classList.remove('active');
+      }
+    });
+    
+    // Mobile sidebar nav.
+    document.querySelectorAll('.mobile-nav-item').forEach(nav => {
+      const page = nav.getAttribute('data-page');
+      if (page === currentPage) {
+        nav.classList.add('active');
+      } else {
+        nav.classList.remove('active');
+      }
+    });
+  }
+  
+  // Get current page from URL path
+  function getCurrentPage() {
+    const path = window.location.pathname;
+    const page = path.split('/').pop().replace('.html', '');
+    if (page === '' || page === 'dashboard') return 'dashboard';
+    return page;
+  }
+  
+  // Set active state based on current page
+  const currentPage = getCurrentPage();
+  setActiveNavItem(currentPage);
+  
+  // Hamburger menu logic
   const hamburger = document.getElementById('hamburgerBtn');
   const overlay = document.getElementById('mobileSidebarOverlay');
-  const sidebar = document.getElementById('mobileSidebar');
+  const mobileSidebar = document.getElementById('mobileSidebar');
   const closeBtn = document.getElementById('closeSidebarBtn');
-
+  
   function openSidebar() {
-    sidebar.classList.add('open');
-    overlay.classList.add('active');
+    if (mobileSidebar) mobileSidebar.classList.add('open');
+    if (overlay) overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
+  
   function closeSidebar() {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('active');
+    if (mobileSidebar) mobileSidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('active');
     document.body.style.overflow = '';
   }
-  hamburger.addEventListener('click', openSidebar);
-  closeBtn.addEventListener('click', closeSidebar);
-  overlay.addEventListener('click', closeSidebar);
-
-  // optional: bottom nav items highlight simulation (just visual)
-  const bottomItems = document.querySelectorAll('.nav-mob-item');
-  bottomItems.forEach(item => {
-    item.addEventListener('click', function() {
-      bottomItems.forEach(i => i.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
-  // for mobile sidebar nav
-  const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
-  mobileNavItems.forEach(item => {
-    item.addEventListener('click', function() {
-      mobileNavItems.forEach(i => i.classList.remove('active'));
-      this.classList.add('active');
-      closeSidebar();   // auto close after selection
-    });
-  });
-  // desktop sidebar active simulation (no actual routing)
-  const desktopItems = document.querySelectorAll('.nav-item-side');
-  desktopItems.forEach(item => {
-    item.addEventListener('click', function() {
-      desktopItems.forEach(i => i.classList.remove('active'));
-      this.classList.add('active');
+  
+  if (hamburger) hamburger.addEventListener('click', openSidebar);
+  if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+  
+  document.querySelectorAll('.mobile-nav-item').forEach(link => {
+    link.addEventListener('click', () => {
+      closeSidebar();
     });
   });
 </script>
