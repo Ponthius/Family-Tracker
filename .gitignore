@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Local Environment Variables and Secrets
+.env*
+
+# Logs
+logs/
+*.log
+
+# Build/Coverage/Cache
+dist/
+build/
+coverage/
+.cache/
+.nyc_output
+
+# System/IDE
+.DS_Store
+.vscode/
+.idea/
