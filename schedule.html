@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Family Tracker - View Schedules</title>
+    <style>
+        /* Basic table styling for readability (Requirement #9) */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .status-occupied { color: red; font-weight: bold; }
+        .status-unoccupied { color: green; }
+    </style>
+</head>
+<body>
+
+    <h2>Upcoming Family Schedule</h2>
+    
+    <!-- Table setup per Requirement #2 and #3 -->
+    <table id="scheduleTable">
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Username</th>
+                <th>Event</th>
+                <th>Time</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="scheduleBody">
+            <!-- Data will be injected here by script.js -->
+        </tbody>
+    </table>
+
+    <!-- Handling empty state per Requirement #11 -->
+    <div id="noEventsMessage" style="display:none; margin-top: 20px; color: gray;">
+        No scheduled events available.
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
