@@ -41,3 +41,23 @@ function loadSchedule() {
 
 // Run the function when the page loads
 window.onload = loadSchedule;
+function addSchedule() {
+    // 1. Get values from form
+    const newEntry = {
+        role: document.getElementById('roleInput').value,
+        username: document.getElementById('usernameInput').value,
+        event: document.getElementById('eventInput').value,
+        date: document.getElementById('dateInput').value,
+        time: document.getElementById('timeInput').value,
+        status: 'Unoccupied' // Default status
+    };
+
+    // 2. Add to your existing array
+    events.push(newEntry);
+
+    // 3. Re-sort and re-render the table
+    loadSchedule(); 
+    
+    // 4. Optional: Clear the form
+    document.getElementById('scheduleForm').reset();
+}
