@@ -15,9 +15,11 @@
 <body>
 
     <h2>Upcoming Family Schedule</h2>
+    <button id="createScheduleBtn">CREATE SCHEDULE</button>
+    
     
     <!-- Table setup per Requirement #2 and #3 -->
-<div id="formSection" style="margin-bottom: 30px; border: 1px solid #ccc; padding: 15px;">
+<div id="formSection" style="margin-bottom: 30px; border: 1px solid #ccc; padding: 15px; display: none;">
     <h3>Create New Schedule</h3>
     <form id="scheduleForm">
         <label>Role: </label>
@@ -32,8 +34,11 @@
         <input type="text" id="eventInput" placeholder="Task/Event" required>
         <input type="date" id="dateInput" required>
         <input type="time" id="timeInput" required>
+        <label>Status</label>
+        <input type="text" id="statusInput" placeholder="Occupied/Unoccupied" required>
         <br><br>
         <button type="button" onclick="addSchedule()">Add to Schedule</button>
+        <button id="closeBtn">CLOSE</button>
     </form>
 </div>
 

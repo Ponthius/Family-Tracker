@@ -1,4 +1,5 @@
 // Sample data - eventually this could come from an API
+let status;
 const events = [
     { role: "Father", username: "John", event: "Work Meeting", time: "09:00", date: "2026-06-17", status: "Occupied" },
     { role: "Mother", username: "Sarah", event: "Grocery Shopping", time: "11:00", date: "2026-06-17", status: "Unoccupied" },
@@ -49,7 +50,7 @@ function addSchedule() {
         event: document.getElementById('eventInput').value,
         date: document.getElementById('dateInput').value,
         time: document.getElementById('timeInput').value,
-        status: 'Unoccupied' // Default status
+        status: document.getElementById('statusInput').value,
     };
 
     // 2. Add to your existing array
@@ -61,3 +62,15 @@ function addSchedule() {
     // 4. Optional: Clear the form
     document.getElementById('scheduleForm').reset();
 }
+
+let createScheduleBtn = document.getElementById("createScheduleBtn");
+let formSection = document.getElementById("formSection");
+let closeBtn = document.getElementById("closeBtn");
+
+createScheduleBtn.addEventListener("click", () => {
+    formSection.style.display = "block"
+});
+
+closeBtn.addEventListener("click", () => {
+    formSection.style.display = "none"
+})
