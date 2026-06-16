@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Members Page</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+        background-color: #f4f6f9;
+        padding: 40px;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    .page-title {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    .members-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background-color: #2563eb;
+        color: white;
+    }
+
+    th,
+    td {
+        padding: 14px 16px;
+        text-align: left;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .role {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+
+    .father {
+        background-color: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .mother {
+        background-color: #fce7f3;
+        color: #be185d;
+    }
+
+    .child {
+        background-color: #dcfce7;
+        color: #15803d;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1 class="page-title">Members Page</h1>
+
+    <div class="members-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td><span class="role father">Father</span></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+                <tr>
+                    <td><span class="role mother">Mother</span></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+                <tr>
+                    <td><span class="role child">Child</span></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
