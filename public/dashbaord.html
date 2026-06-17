@@ -51,7 +51,7 @@
   <main class="main-content">
     <div class="top-bar">
       <div class="greeting">
-        <h1>Good Morning <span id="usernameDisplay"></span></h1>
+        <h1><span id="greetingText">Good Morning</span> <span id="usernameDisplay"></span></h1>
         <p style="font-size: 0.85rem; color: #7b6b5f; margin-top: 4px;">
            Stay connected with family
         </p>
@@ -275,6 +275,34 @@
       }
     });
   }
+
+  function getStoredUser() {
+    try {
+      return JSON.parse(localStorage.getItem('user')) || {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function getTimeGreeting() {
+    const hour = new Date().getHours();
+
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  }
+
+  function updateUserGreeting() {
+    const user = getStoredUser();
+    const username = user.username || 'Family';
+    const greetingText = document.getElementById('greetingText');
+    const usernameDisplay = document.getElementById('usernameDisplay');
+    const userNameDisplay = document.getElementById('userNameDisplay');
+
+    if (greetingText) greetingText.textContent = getTimeGreeting();
+    if (usernameDisplay) usernameDisplay.textContent = username;
+    if (userNameDisplay) userNameDisplay.textContent = username;
+  }
   
   // Get current page from URL path
   function getCurrentPage() {
@@ -287,6 +315,7 @@
   // Set active state based on current page
   const currentPage = getCurrentPage();
   setActiveNavItem(currentPage);
+  updateUserGreeting();
   
   // Hamburger menu logic
   const hamburger = document.getElementById('hamburgerBtn');
