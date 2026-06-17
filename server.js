@@ -128,6 +128,56 @@ app.get('/members', async (req, res) => {
     }
 });
 
+app.get('/tasks', async (req, res) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .query(`
+                SELECT TaskID, Role, Username, TaskName, Description,
+                       TaskDate, TaskTime
+                FROM dbo.Tasks
+                ORDER BY TaskDate DESC, TaskTime DESC
+            `);
+
+        res.json({
+            success: true,
+            tasks: result.recordset
+        });
+    } catch (err) {
+        console.error('Tasks fetch error:', err.message);
+        res.status(500).json({ error: 'Server error while loading tasks' });
+    }
+});
+
+app.post('/tasks', async (req, res) => {
+    const { role, username, taskName, description, date, time } = req.body;
+
+    if (!role || !username || !taskName || !date || !time) {
+        return res.status(400).json({ error: 'Role, username, task name, date, and time are required' });
+    }
+
+    try {
+        const pool = await getPool();
+
+        await pool.request()
+            .input('role', sql.NVarChar, role)
+            .input('username', sql.NVarChar, username)
+            .input('taskName', sql.NVarChar, taskName)
+            .input('description', sql.NVarChar, description || '')
+            .input('taskDate', sql.Date, date)
+            .input('taskTime', sql.Time, time)
+            .query(`
+                INSERT INTO dbo.Tasks (Role, Username, TaskName, Description, TaskDate, TaskTime)
+                VALUES (@role, @username, @taskName, @description, @taskDate, @taskTime)
+            `);
+
+        res.json({ success: true, message: 'Task created successfully' });
+    } catch (err) {
+        console.error('Task create error:', err.message);
+        res.status(500).json({ error: 'Server error while creating task' });
+    }
+});
+
 app.post('/sync', (req, res) => {
     const { actions } = req.body;
 

@@ -48,3 +48,15 @@ CREATE TABLE dbo.RecentEvents (
     LoggedAt DATETIME DEFAULT GETDATE()
 );
 
+IF OBJECT_ID('dbo.Tasks', 'U') IS NULL
+CREATE TABLE dbo.Tasks (
+    TaskID INT IDENTITY(1,1) PRIMARY KEY,
+    Role NVARCHAR(20) NOT NULL,
+    Username NVARCHAR(50) NOT NULL,
+    TaskName NVARCHAR(200) NOT NULL,
+    [Description] NVARCHAR(500),
+    TaskDate DATE NOT NULL,
+    TaskTime TIME NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+

@@ -19,3 +19,5 @@ coverage/
 .DS_Store
 .vscode/
 .idea/
+# Bwat per-workspace permission allowlist
+.bwat/
