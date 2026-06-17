@@ -7,6 +7,8 @@
   <!-- Font Awesome 6 (free) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="dashboard.css">
+  <script src="javascript/offline-queue.js"></script>
+  <script src="javascript/sync-service.js"></script>
 </head>
 <body>
 <div class="app-wrapper">
@@ -200,6 +202,45 @@
 </div>
 
 <script>
+  function getPendingActions() {
+    try {
+      return JSON.parse(localStorage.getItem('pendingActions')) || [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function addPendingAction(action) {
+    const actions = getPendingActions();
+    actions.push(action);
+    localStorage.setItem('pendingActions', JSON.stringify(actions));
+    return actions;
+  }
+
+  async function syncPendingActions() {
+    const actions = getPendingActions();
+
+    if (actions.length === 0) {
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actions })
+      });
+
+      if (response.ok) {
+        localStorage.removeItem('pendingActions');
+        console.log('Pending actions synced successfully');
+      }
+    } catch (error) {
+      console.error('Error syncing pending actions:', error);
+    }
+  }
+
+  window.addEventListener('online', syncPendingActions);
 
   function setActiveNavItem(currentPage) {
     // Desktop sidebar

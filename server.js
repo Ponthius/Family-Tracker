@@ -104,6 +104,21 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.post('/sync', (req, res) => {
+    const { actions } = req.body;
+
+    if (!Array.isArray(actions)) {
+        return res.status(400).json({ error: 'Actions must be an array' });
+    }
+
+    console.log(`Synced ${actions.length} pending action(s)`);
+    res.json({
+        success: true,
+        message: 'Pending actions synced successfully',
+        synced: actions.length
+    });
+});
+
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
