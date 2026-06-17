@@ -54,3 +54,25 @@ function offlineLogin(username, password) {
         message: 'Invalid credentials.'
     };
 }
+
+function saveRegisteredUser(user) {
+    const stored = localStorage.getItem('registeredUsers');
+    let users = [];
+
+    try {
+        users = stored ? JSON.parse(stored) : [];
+    } catch (error) {
+        users = [];
+    }
+
+    const existingIndex = users.findIndex((item) => item.username === user.username || item.email === user.email);
+
+    if (existingIndex >= 0) {
+        users[existingIndex] = user;
+    } else {
+        users.unshift(user);
+    }
+
+    localStorage.setItem('registeredUsers', JSON.stringify(users));
+    return users;
+}

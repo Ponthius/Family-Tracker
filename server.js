@@ -18,6 +18,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
+app.get('/health', (req, res) => {
+    res.json({ success: true, status: 'online' });
+});
+
 function getPool() {
     if (!poolPromise) {
         poolPromise = sql.connect(dbConfig);
@@ -101,6 +105,26 @@ app.post('/login', async (req, res) => {
     } catch (err) {
         console.error('Login error:', err.message);
         res.status(500).json({ error: 'Server error while logging in' });
+    }
+});
+
+app.get('/members', async (req, res) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .query(`
+                SELECT id, role, username, email
+                FROM dbo.users
+                ORDER BY created_at DESC
+            `);
+
+        res.json({
+            success: true,
+            members: result.recordset
+        });
+    } catch (err) {
+        console.error('Members error:', err.message);
+        res.status(500).json({ error: 'Server error while loading members' });
     }
 });
 

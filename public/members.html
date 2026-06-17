@@ -94,6 +94,16 @@
         color: #5a4e46;
     }
 
+    .member {
+        background: #d7dde2;
+        color: #24313a;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: #6d625b;
+    }
+
     @media (max-width: 768px) {
         body {
             padding: 20px;
@@ -127,28 +137,15 @@
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody id="membersTableBody">
                 <tr>
-                    <td><span class="role father">Father</span></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
-                <tr>
-                    <td><span class="role mother">Mother</span></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
-                <tr>
-                    <td><span class="role child">Child</span></td>
-                    <td></td>
-                    <td></td>
+                    <td colspan="3" class="empty-state">Loading members...</td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
 
+<script src="javascript/members-handler.js"></script>
 </body>
 </html>

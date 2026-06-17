@@ -1,3 +1,17 @@
+        async function fetchWithTimeout(url, options = {}, timeout = 5000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeout);
+
+            try {
+                return await fetch(url, {
+                    ...options,
+                    signal: controller.signal
+                });
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
        document.getElementById('loginBtn').addEventListener('click', async () => {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
@@ -6,20 +20,9 @@
                 alert('Please enter both username and password');
                 return;
             }
-            
-            if (!navigator.online) {
-                const results = offlineLogin(username, password);
-                if (results.success) {
-                    alert('Offline login successful');
-                    window.location.href = 'dashbaord.html';
-                } else {
-                    alert(results.message);
-                }
-                return;
-            }
 
             try {
-                const response = await fetch('http://localhost:3000/login', {
+                const response = await fetchWithTimeout('http://localhost:3000/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
@@ -36,7 +39,15 @@
                     alert(data.error || 'Login failed');
                 }
             } catch (error) {
-                alert('Error connecting to server. Make sure server is running.');
+                const results = offlineLogin(username, password);
+
+                if (results.success) {
+                    alert('Offline login successful');
+                    window.location.href = 'dashbaord.html';
+                    return;
+                }
+
+                alert('Online login is unavailable because the backend cannot be reached. Start the server, then try again.');
                 console.error(error);
             }
         });
