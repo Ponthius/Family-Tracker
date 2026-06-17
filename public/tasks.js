@@ -149,3 +149,11 @@ saveTaskBtn.addEventListener("click", () => {
 
 // Initial render
 renderTable(tasks);
+
+createTaskBtn.addEventListener("click", () => {
+  modalOverlay.style.display = "flex";
+});
+
+cancelBtn.addEventListener("click", () => {
+  modalOverlay.style.display = "none";
+});
