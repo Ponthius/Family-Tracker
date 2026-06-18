@@ -116,7 +116,7 @@ modalOverlay.addEventListener("click", (e) => {
 
 async function loadUsers() {
   try {
-    const res = await fetch('http://localhost:3000/members');
+    const res = await fetch('http://localhost:4001/members');
     const data = await res.json();
 
     if (!res.ok || !data.success) throw new Error(data.error || 'Failed');
@@ -139,7 +139,7 @@ async function loadUsers() {
 
 async function loadTasks() {
   try {
-    const res = await fetch('http://localhost:3000/tasks');
+    const res = await fetch('http://localhost:4001/tasks');
     const data = await res.json();
 
     if (!res.ok || !data.success) throw new Error(data.error || 'Failed');
@@ -195,7 +195,7 @@ saveTaskBtn.addEventListener("click", async () => {
   const [role, username] = assignRole.value.split("|");
 
   try {
-    const res = await fetch('http://localhost:3000/tasks', {
+    const res = await fetch('http://localhost:4001/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

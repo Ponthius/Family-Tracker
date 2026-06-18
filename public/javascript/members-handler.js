@@ -57,7 +57,7 @@ function getSavedMembers() {
 
 async function loadMembers() {
     try {
-        const response = await fetch('http://localhost:3000/members');
+        const response = await fetch('http://localhost:4001/members');
         const data = await response.json();
 
         if (!response.ok || !data.success) {

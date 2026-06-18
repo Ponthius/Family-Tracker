@@ -227,7 +227,7 @@
     }
 
     try {
-      const response = await fetch('http://localhost:3000/sync', {
+      const response = await fetch('http://localhost:4001/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ actions })

@@ -45,7 +45,7 @@ document.getElementById('registerBtn').addEventListener('click', async () => {
             }
 
             try {
-                const response = await fetchWithTimeout('http://localhost:3000/register', {
+                const response = await fetchWithTimeout('http://localhost:4001/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, username, password, role })

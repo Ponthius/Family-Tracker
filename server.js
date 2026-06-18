@@ -3,7 +3,7 @@ const sql = require('mssql/msnodesqlv8');
 const cors = require('cors');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4001;
 const dbServer = process.env.DB_SERVER || `${process.env.COMPUTERNAME || 'localhost'}\\SQLEXPRESS`;
 const dbName = process.env.DB_NAME || 'familytrackerdb';
 const dbDriver = process.env.DB_DRIVER || 'ODBC Driver 17 for SQL Server';
