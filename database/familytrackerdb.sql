@@ -13,6 +13,13 @@ CREATE TABLE dbo.users (
     role NVARCHAR(20) NOT NULL,
     created_at DATETIME DEFAULT GETDATE()
 );
+
+-- Add profile columns if they don't exist (safe for existing databases)
+IF COL_LENGTH('dbo.users', 'fullname') IS NULL
+    ALTER TABLE dbo.users ADD fullname NVARCHAR(100);
+
+IF COL_LENGTH('dbo.users', 'profile_photo') IS NULL
+    ALTER TABLE dbo.users ADD profile_photo NVARCHAR(MAX);
 GO
 
 
@@ -57,6 +64,9 @@ CREATE TABLE dbo.Tasks (
     [Description] NVARCHAR(500),
     TaskDate DATE NOT NULL,
     TaskTime TIME NOT NULL,
+    status NVARCHAR(20) NOT NULL DEFAULT 'pending',
+    AssignedBy INT,
+    AssignedByName NVARCHAR(50),
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 

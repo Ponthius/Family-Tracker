@@ -3,43 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link rel="stylesheet" href="profile.css">
-
-  <title>Profile Settings Page</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-   rel="stylesheet">
+  <title>Profile Settings - Family Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <div class="card">
 
-    
     <div class="top-bar">
       <button class="back-btn" onclick="history.back()">
-        Back<!-- SVG icon for back button -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </button>
       <span class="page-title">Profile Settings</span>
     </div>
 
-    <!-- Profile photo section -->
-    <div class="photo-section">
-      <div class="photo-wrapper">
-        <div class="profile-photo" id="photo-display">
-          <!-- person SVG icon (shown before photo is chosen) -->
-        </div>
-
-        <button class="change-photo-btn" onclick="document.getElementById('photo-input').click()">
-          Change Photo<!-- camera SVG icon -->
-        </button>
-
-        <input type="file" id="photo-input" accept="image/*" onchange="previewPhoto(event)" />
-      </div>
-    </div>
-
     <!-- EDIT PROFILE SECTION -->
     <div class="section-heading">
-      <!-- pencil SVG icon -->
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Edit Profile
     </div>
 
@@ -62,7 +43,7 @@
 
     <!-- EDIT PASSWORD SECTION -->
     <div class="section-heading">
-      <!-- lock SVG icon -->
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       Edit Password
     </div>
 
@@ -82,61 +63,157 @@
     </div>
 
     <button class="save-btn-bottom" onclick="saveProfileSettings()">
-      Save Changes<!-- SVG icon for save button -->
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save Changes
     </button>
 
-    <!-- Success message (hidden until save succeeds) -->
     <div class="success-msg" id="success-msg">
       Profile settings saved successfully!
     </div>
 
-    
-    <div class="error-msg" id="error-msg">
-      New passwords do not match. Please try again.
-    </div>
+    <div class="error-msg" id="error-msg"></div>
 
-  </div><!-- End of card -->
+  </div>
 
   <script>
+    const API = 'http://localhost:4001';
 
-    // --PHOTO PREVIEW--
-    // Runs automatically when user selects a photo, shows preview in profile photo area
-    function previewPhoto(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const photoDisplay = document.getElementById('photo-display');
-          photoDisplay.innerHTML = "<img src='" + e.target.result + "' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>";
-        };
-        reader.readAsDataURL(file);
+    function getStoredUser() {
+      try {
+        return JSON.parse(localStorage.getItem('user')) || {};
+      } catch (e) {
+        return {};
       }
     }
 
+    function showSuccess(msg) {
+      const el = document.getElementById('success-msg');
+      el.textContent = msg || 'Profile settings saved successfully!';
+      el.style.display = 'block';
+      document.getElementById('error-msg').style.display = 'none';
+      setTimeout(function () { el.style.display = 'none'; }, 3000);
+    }
 
-    // --SAVE PROFILE--
-    function saveProfileSettings() {
-      const newPassword = document.getElementById('new-password').value;
-      const confirmPassword = document.getElementById('confirm-password').value;
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      document.getElementById('success-msg').style.display = 'none';
+      setTimeout(function () { el.style.display = 'none'; }, 5000);
+    }
 
-      if (newPassword && newPassword !== confirmPassword) {
-        document.getElementById('error-msg').style.display = 'block';
-        document.getElementById('success-msg').style.display = 'none';
-        
-        setTimeout(function () {
-          document.getElementById('error-msg').style.display = 'none';
-        }, 3000);
-
+    // --LOAD PROFILE FROM API--
+    async function loadProfile() {
+      const user = getStoredUser();
+      if (!user.id) {
+        // Not logged in — redirect to login
+        window.location.href = '/login.html';
         return;
       }
 
-      document.getElementById('success-msg').style.display = 'block';
-      document.getElementById('error-msg').style.display = 'none';
+      try {
+        const res = await fetch(API + '/profile/' + user.id);
+        const data = await res.json();
 
-      setTimeout(function () {
-        document.getElementById('success-msg').style.display = 'none';
-      }, 3000);
+        if (!res.ok || !data.success) throw new Error(data.error);
+
+        const u = data.user;
+
+        document.getElementById('username').value = u.username || '';
+        document.getElementById('fullname').value = u.fullname || '';
+        document.getElementById('email').value = u.email || '';
+
+        // Sync any newly-saved fullname back to localStorage
+        if (u.fullname) {
+          user.fullname = u.fullname;
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+      } catch (err) {
+        console.error('Could not load profile:', err);
+        // Fill from localStorage as fallback
+        document.getElementById('username').value = user.username || '';
+        document.getElementById('email').value = user.email || '';
+      }
     }
+
+    // --SAVE PROFILE--
+    async function saveProfileSettings() {
+      const user = getStoredUser();
+      if (!user.id) {
+        showError('You must be logged in to update your profile.');
+        return;
+      }
+
+      const username = document.getElementById('username').value.trim();
+      const fullname = document.getElementById('fullname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const currentPassword = document.getElementById('current-password').value;
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      // Validate password section
+      if (newPassword || confirmPassword) {
+        if (!currentPassword) {
+          showError('Please enter your current password to set a new one.');
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          showError('New passwords do not match. Please try again.');
+          return;
+        }
+        if (newPassword.length < 4) {
+          showError('New password must be at least 4 characters.');
+          return;
+        }
+      }
+
+      try {
+        // Update profile fields
+        const profileRes = await fetch(API + '/profile/' + user.id, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, fullname, email })
+        });
+
+        const profileData = await profileRes.json();
+        if (!profileRes.ok || !profileData.success) {
+          throw new Error(profileData.error || 'Failed to update profile');
+        }
+
+        // Update password if provided
+        if (newPassword && currentPassword) {
+          const passRes = await fetch(API + '/profile/' + user.id + '/password', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword, newPassword })
+          });
+
+          const passData = await passRes.json();
+          if (!passRes.ok || !passData.success) {
+            throw new Error(passData.error || 'Failed to update password');
+          }
+        }
+
+        // Update localStorage with new data
+        user.username = username;
+        user.email = email;
+        if (fullname) user.fullname = fullname;
+        localStorage.setItem('user', JSON.stringify(user));
+
+        // Clear password fields
+        document.getElementById('current-password').value = '';
+        document.getElementById('new-password').value = '';
+        document.getElementById('confirm-password').value = '';
+
+        showSuccess('Profile settings saved successfully!');
+      } catch (err) {
+        showError(err.message);
+        console.error(err);
+      }
+    }
+
+    // --INIT--
+    loadProfile();
   </script>
 
 </body>

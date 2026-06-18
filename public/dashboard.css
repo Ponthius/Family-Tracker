@@ -455,3 +455,36 @@
         justify-content: center;
       }
     }
+
+    /* Notification badge */
+    .notif-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #a13d3d;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      line-height: 1;
+    }
+    .notif-dropdown {
+      position: absolute;
+      right: 80px;
+      top: 70px;
+      background: #f5f1ec;
+      border: 1px solid #e0d6ce;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+      width: 320px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      padding: 12px 0;
+    }

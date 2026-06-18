@@ -1,68 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Family Tracker - View Schedules</title>
-    <style>
-        /* Basic table styling for readability (Requirement #9) */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .status-occupied { color: red; font-weight: bold; }
-        .status-unoccupied { color: green; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedules - Family Tracker</title>
+  <link rel="stylesheet" href="tasks.css">
 </head>
 <body>
-
-    <h2>Upcoming Family Schedule</h2>
-    <button id="createScheduleBtn">CREATE SCHEDULE</button>
-    
-    
-    <!-- Table setup per Requirement #2 and #3 -->
-<div id="formSection" style="margin-bottom: 30px; border: 1px solid #ccc; padding: 15px; display: none;">
-    <h3>Create New Schedule</h3>
-    <form id="scheduleForm">
-        <label>Role: </label>
-        <select id="roleInput">
-            <option value="Father">Father</option>
-            <option value="Mother">Mother</option>
-            <option value="Son">Son</option>
-            <option value="Daughter">Daughter</option>
-        </select>
-        <br><br>
-        <input type="text" id="usernameInput" placeholder="Username" required>
-        <input type="text" id="eventInput" placeholder="Task/Event" required>
-        <input type="date" id="dateInput" required>
-        <input type="time" id="timeInput" required>
-        <label>Status</label>
-        <input type="text" id="statusInput" placeholder="Occupied/Unoccupied" required>
-        <br><br>
-        <button type="button" onclick="addSchedule()">Add to Schedule</button>
-        <button id="closeBtn">CLOSE</button>
-    </form>
-</div>
-
-    <table id="scheduleTable">
-        <thead>
-            <tr>
-                <th>Role</th>
-                <th>Username</th>
-                <th>Event</th>
-                <th>Time</th>
-                <th>Date</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody id="scheduleBody">
-            <!-- Data will be injected here by script.js -->
-        </tbody>
-    </table>
-
-    <!-- Handling empty state per Requirement #11 -->
-    <div id="noEventsMessage" style="display:none; margin-top: 20px; color: gray;">
-        No scheduled events available.
+  <div class="page">
+    <div class="topbar">
+      <h1 class="title">Family Tracker</h1>
+      <p class="subtitle">Schedules — see who's busy and when</p>
     </div>
 
-    <script src="script.js"></script>
+    <div class="panel">
+      <div class="toolbar">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by event, member...">
+        <button class="btn" id="createScheduleBtn">+ Create Schedule</button>
+      </div>
+
+      <div id="confirmation" class="confirmation hidden">Schedule created successfully.</div>
+
+      <div class="table-wrap">
+        <table id="scheduleTable">
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Username</th>
+              <th>Event</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleBody">
+            <tr><td colspan="6" class="no-results">Loading schedules...</td></tr>
+          </tbody>
+        </table>
+        <p id="noResults" class="no-results hidden">No schedules found.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Schedule Modal -->
+  <div class="modal-overlay" id="modalOverlay" style="display: none;">
+    <div class="modal">
+      <h2 class="modal-title">Create Schedule</h2>
+
+      <label for="assignMember">Member</label>
+      <select id="assignMember">
+        <option value="">Select member</option>
+      </select>
+      <p class="error-msg hidden" id="errMember">Please select a member.</p>
+
+      <label for="eventName">Event / Task</label>
+      <input type="text" id="eventName" placeholder="e.g., Work meeting, Grocery shopping">
+      <p class="error-msg hidden" id="errEvent">Event name is required.</p>
+
+      <label for="eventDesc">Description (optional)</label>
+      <textarea id="eventDesc" rows="2" placeholder="Optional details..."></textarea>
+
+      <div class="row-fields">
+        <div class="field-half">
+          <label for="eventDate">Date</label>
+          <input type="date" id="eventDate">
+          <p class="error-msg hidden" id="errDate">Date is required.</p>
+        </div>
+        <div class="field-half">
+          <label for="eventTime">Time</label>
+          <input type="time" id="eventTime">
+          <p class="error-msg hidden" id="errTime">Time is required.</p>
+        </div>
+      </div>
+
+      <label for="eventStatus">Status</label>
+      <select id="eventStatus">
+        <option value="Occupied">Occupied (Busy)</option>
+        <option value="Unoccupied">Unoccupied (Free)</option>
+      </select>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" id="cancelBtn">Cancel</button>
+        <button class="btn" id="saveBtn">Save Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:4001';
+    let events = [];
+
+    const tableBody = document.getElementById('scheduleBody');
+    const noResults = document.getElementById('noResults');
+    const searchInput = document.getElementById('searchInput');
+    const confirmation = document.getElementById('confirmation');
+
+    const modalOverlay = document.getElementById('modalOverlay');
+    const createBtn = document.getElementById('createScheduleBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const saveBtn = document.getElementById('saveBtn');
+
+    const assignMember = document.getElementById('assignMember');
+    const eventName = document.getElementById('eventName');
+    const eventDesc = document.getElementById('eventDesc');
+    const eventDate = document.getElementById('eventDate');
+    const eventTime = document.getElementById('eventTime');
+    const eventStatus = document.getElementById('eventStatus');
+
+    const errMember = document.getElementById('errMember');
+    const errEvent = document.getElementById('errEvent');
+    const errDate = document.getElementById('errDate');
+    const errTime = document.getElementById('errTime');
+
+    // ----- Helpers -----
+
+    function formatDate(d) {
+      if (!d) return '';
+      const date = new Date(d);
+      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function formatTime(d) {
+      if (!d) return '';
+      const date = new Date(d);
+      return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    }
+
+    function renderTable(list) {
+      tableBody.innerHTML = '';
+      if (list.length === 0) {
+        noResults.classList.remove('hidden');
+        return;
+      }
+      noResults.classList.add('hidden');
+
+      list.forEach(ev => {
+        const tr = document.createElement('tr');
+        const statusColor = ev.Status === 'Occupied'
+          ? '<span style="background:#f0d8d0;color:#a13d3d;padding:3px 10px;border-radius:999px;font-size:0.7rem;font-weight:600;">Occupied</span>'
+          : '<span style="background:#d4e6c6;color:#3c5a3c;padding:3px 10px;border-radius:999px;font-size:0.7rem;font-weight:600;">Unoccupied</span>';
+
+        tr.innerHTML =
+          '<td><span class="role-tag">' + (ev.Role || '—') + '</span></td>' +
+          '<td>' + (ev.MemberName || ev.username || '') + '</td>' +
+          '<td>' + ev.EventName + '</td>' +
+          '<td>' + formatDate(ev.EventDate) + '</td>' +
+          '<td>' + formatTime(ev.EventDate) + '</td>' +
+          '<td>' + statusColor + '</td>';
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function applySearch() {
+      const term = searchInput.value.trim().toLowerCase();
+      if (!term) { renderTable(events); return; }
+      const filtered = events.filter(ev =>
+        (ev.EventName || '').toLowerCase().includes(term) ||
+        (ev.MemberName || '').toLowerCase().includes(term) ||
+        (ev.Role || '').toLowerCase().includes(term)
+      );
+      renderTable(filtered);
+    }
+
+    searchInput.addEventListener('input', applySearch);
+
+    // ----- Modal -----
+
+    function openModal() { modalOverlay.style.display = 'flex'; }
+    function closeModal() {
+      modalOverlay.style.display = 'none';
+      assignMember.value = '';
+      eventName.value = '';
+      eventDesc.value = '';
+      eventDate.value = '';
+      eventTime.value = '';
+      eventStatus.value = 'Occupied';
+      [errMember, errEvent, errDate, errTime].forEach(e => { e.classList.add('hidden'); e.textContent = ''; });
+    }
+
+    createBtn.addEventListener('click', openModal);
+    cancelBtn.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+
+    // ----- Load members into dropdown -----
+
+    async function loadMembers() {
+      try {
+        const res = await fetch(API + '/members');
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.error);
+        const users = data.members || [];
+        assignMember.innerHTML = '<option value="">Select member</option>';
+        users.forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u.role + '|' + u.username;
+          opt.textContent = u.role.charAt(0).toUpperCase() + u.role.slice(1) + ' — ' + u.username;
+          assignMember.appendChild(opt);
+        });
+      } catch (err) {
+        console.error('Could not load members:', err);
+      }
+    }
+
+    // ----- Fetch events -----
+
+    async function loadEvents() {
+      try {
+        const res = await fetch(API + '/events');
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.error);
+        events = data.events || [];
+        // Attach Role to each event from member data (stored in dropdown)
+        const memberMap = {};
+        document.querySelectorAll('#assignMember option').forEach(opt => {
+          if (opt.value) {
+            const [role, uname] = opt.value.split('|');
+            memberMap[uname ? uname.toLowerCase() : ''] = role;
+          }
+        });
+        events.forEach(ev => {
+          if (!ev.Role && ev.MemberName) {
+            ev.Role = memberMap[ev.MemberName.toLowerCase()] || ev.Role || '—';
+          }
+        });
+      } catch (err) {
+        console.error('Could not load events:', err);
+        events = [];
+      }
+      renderTable(events);
+    }
+
+    // ----- Save event -----
+
+    saveBtn.addEventListener('click', async () => {
+      let valid = true;
+      [errMember, errEvent, errDate, errTime].forEach(e => { e.classList.add('hidden'); e.textContent = ''; });
+
+      if (!assignMember.value) { errMember.classList.remove('hidden'); valid = false; }
+      if (!eventName.value.trim()) { errEvent.classList.remove('hidden'); valid = false; }
+      if (!eventDate.value) { errDate.classList.remove('hidden'); valid = false; }
+      if (!eventTime.value) { errTime.classList.remove('hidden'); valid = false; }
+      if (!valid) return;
+
+      const [role, username] = assignMember.value.split('|');
+      const dateTimeStr = eventDate.value + 'T' + eventTime.value;
+
+      try {
+        const res = await fetch(API + '/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            eventName: eventName.value.trim(),
+            description: eventDesc.value.trim(),
+            eventDate: dateTimeStr,
+            memberName: username
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.error || 'Failed');
+
+        closeModal();
+        searchInput.value = '';
+        await loadEvents();
+
+        confirmation.classList.remove('hidden');
+        setTimeout(() => confirmation.classList.add('hidden'), 3000);
+      } catch (err) {
+        alert('Could not create schedule: ' + err.message);
+        console.error(err);
+      }
+    });
+
+    // ----- Init -----
+    loadMembers();
+    loadEvents();
+  </script>
 </body>
 </html>

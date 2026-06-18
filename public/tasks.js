@@ -1,4 +1,5 @@
 // Tasks — backed by the database via API
+const API = 'http://localhost:4001';
 let tasks = [];
 
 const tableBody = document.getElementById("taskTableBody");
@@ -22,26 +23,40 @@ const errName = document.getElementById("errName");
 const errDate = document.getElementById("errDate");
 const errTime = document.getElementById("errTime");
 
+// Conflict message element (shown below the form)
+const conflictMsg = document.createElement('p');
+conflictMsg.className = 'error-msg hidden';
+conflictMsg.id = 'errConflict';
+conflictMsg.style.marginTop = '10px';
+document.querySelector('.modal-actions').before(conflictMsg);
+
+function getStoredUser() {
+  try { return JSON.parse(localStorage.getItem('user')) || {}; }
+  catch (e) { return {}; }
+}
+
+const currentUser = getStoredUser();
+const isFather = currentUser.role === 'father';
+
+// Hide Create Task button if not father
+if (!isFather && createTaskBtn) {
+  createTaskBtn.style.display = 'none';
+}
+
 // ----- Helpers -----
 
 function formatDateTime(dateStr, timeStr) {
   if (!dateStr) return "";
-
   let d;
-
-  // SQL DATE serializes as a full ISO string like "2026-06-20T00:00:00.000Z"
   if (dateStr.includes('T')) {
     d = new Date(dateStr);
   } else if (timeStr) {
-    // Plain YYYY-MM-DD + time — strip subseconds if present
     const cleanTime = timeStr.includes('.') ? timeStr.split('.')[0] : timeStr;
     d = new Date(`${dateStr}T${cleanTime}`);
   } else {
     d = new Date(dateStr);
   }
-
   if (isNaN(d.getTime())) return "";
-
   return d.toLocaleString(undefined, {
     month: "short", day: "numeric", year: "numeric",
     hour: "numeric", minute: "2-digit"
@@ -50,7 +65,6 @@ function formatDateTime(dateStr, timeStr) {
 
 function renderTable(list) {
   tableBody.innerHTML = "";
-
   if (list.length === 0) {
     noResults.classList.remove("hidden");
     return;
@@ -59,23 +73,39 @@ function renderTable(list) {
 
   list.forEach(task => {
     const tr = document.createElement("tr");
+    const status = task.status || 'pending';
+    const statusBadge = status === 'done'
+      ? '<span style="background:#d4e6c6;color:#3c5a3c;padding:3px 10px;border-radius:999px;font-size:0.7rem;font-weight:600;">Done</span>'
+      : '<span style="background:#ece1d2;color:#5a4038;padding:3px 10px;border-radius:999px;font-size:0.7rem;font-weight:600;">Pending</span>';
+
+    let doneBtn = '';
+    if (isFather && status === 'pending') {
+      doneBtn = '<button class="btn-done" data-taskid="' + task.TaskID + '" style="padding:4px 10px;font-size:0.75rem;background:#3d3530;color:#f5f1ec;border:none;border-radius:6px;cursor:pointer;">Done</button>';
+    }
+
     tr.innerHTML = `
       <td><span class="role-tag">${task.Role || task.role}</span></td>
       <td>${task.Username || task.username}</td>
       <td>${task.TaskName || task.name}</td>
       <td>${(task.Description || task.desc) ? (task.Description || task.desc) : "—"}</td>
       <td>${formatDateTime(task.TaskDate || task.date, task.TaskTime || task.time)}</td>
+      <td>${statusBadge} ${doneBtn}</td>
     `;
     tableBody.appendChild(tr);
+  });
+
+  // Bind done buttons
+  document.querySelectorAll('.btn-done').forEach(btn => {
+    btn.addEventListener('click', async function () {
+      const taskId = this.getAttribute('data-taskid');
+      await markTaskDone(taskId);
+    });
   });
 }
 
 function applySearch() {
   const term = searchInput.value.trim().toLowerCase();
-  if (!term) {
-    renderTable(tasks);
-    return;
-  }
+  if (!term) { renderTable(tasks); return; }
   const filtered = tasks.filter(t => {
     const name = (t.TaskName || t.name || "").toLowerCase();
     const user = (t.Username || t.username || "").toLowerCase();
@@ -89,10 +119,7 @@ searchInput.addEventListener("input", applySearch);
 
 // ----- Modal -----
 
-function openModal() {
-  modalOverlay.style.display = "flex";
-}
-
+function openModal() { modalOverlay.style.display = "flex"; }
 function closeModal() {
   modalOverlay.style.display = "none";
   assignRole.value = "";
@@ -100,9 +127,9 @@ function closeModal() {
   taskDesc.value = "";
   taskDate.value = "";
   taskTime.value = "";
-  [errAssign, errName, errDate, errTime].forEach(e => {
+  [errAssign, errName, errDate, errTime, conflictMsg].forEach(e => {
     e.classList.add("hidden");
-    e.textContent = ""; // reset any custom message
+    e.textContent = "";
   });
 }
 
@@ -116,11 +143,9 @@ modalOverlay.addEventListener("click", (e) => {
 
 async function loadUsers() {
   try {
-    const res = await fetch('http://localhost:4001/members');
+    const res = await fetch(API + '/members');
     const data = await res.json();
-
     if (!res.ok || !data.success) throw new Error(data.error || 'Failed');
-
     const users = data.members || [];
     assignRole.innerHTML = '<option value="">Select user</option>';
     users.forEach(u => {
@@ -131,7 +156,6 @@ async function loadUsers() {
     });
   } catch (err) {
     console.error('Could not load users:', err);
-    // Leave the select with just the default option
   }
 }
 
@@ -139,17 +163,32 @@ async function loadUsers() {
 
 async function loadTasks() {
   try {
-    const res = await fetch('http://localhost:4001/tasks');
+    const res = await fetch(API + '/tasks');
     const data = await res.json();
-
     if (!res.ok || !data.success) throw new Error(data.error || 'Failed');
-
     tasks = data.tasks || [];
   } catch (err) {
     console.error('Could not load tasks:', err);
     tasks = [];
   }
   renderTable(tasks);
+}
+
+// ----- Mark task done -----
+
+async function markTaskDone(taskId) {
+  try {
+    const res = await fetch(API + '/tasks/' + taskId + '/done', { method: 'PUT' });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || 'Failed');
+    await loadTasks();
+    confirmation.textContent = 'Task marked as done!';
+    confirmation.classList.remove("hidden");
+    setTimeout(() => confirmation.classList.add("hidden"), 3000);
+  } catch (err) {
+    alert('Could not mark task done: ' + err.message);
+    console.error(err);
+  }
 }
 
 // ----- Save task to server -----
@@ -161,28 +200,15 @@ function isPast(dateStr, timeStr) {
 
 saveTaskBtn.addEventListener("click", async () => {
   let valid = true;
-
-  [errAssign, errName, errDate, errTime].forEach(e => {
+  [errAssign, errName, errDate, errTime, conflictMsg].forEach(e => {
     e.classList.add("hidden");
     e.textContent = "";
   });
 
-  if (!assignRole.value) {
-    errAssign.classList.remove("hidden");
-    valid = false;
-  }
-  if (!taskName.value.trim()) {
-    errName.classList.remove("hidden");
-    valid = false;
-  }
-  if (!taskDate.value) {
-    errDate.classList.remove("hidden");
-    valid = false;
-  }
-  if (!taskTime.value) {
-    errTime.classList.remove("hidden");
-    valid = false;
-  }
+  if (!assignRole.value) { errAssign.classList.remove("hidden"); valid = false; }
+  if (!taskName.value.trim()) { errName.classList.remove("hidden"); valid = false; }
+  if (!taskDate.value) { errDate.classList.remove("hidden"); valid = false; }
+  if (!taskTime.value) { errTime.classList.remove("hidden"); valid = false; }
 
   if (valid && taskDate.value && taskTime.value && isPast(taskDate.value, taskTime.value)) {
     errDate.textContent = "Date/time cannot be in the past.";
@@ -194,8 +220,22 @@ saveTaskBtn.addEventListener("click", async () => {
 
   const [role, username] = assignRole.value.split("|");
 
+  // Check schedule conflict
   try {
-    const res = await fetch('http://localhost:4001/tasks', {
+    const conflictRes = await fetch(API + '/events/conflict?username=' + encodeURIComponent(username) + '&date=' + encodeURIComponent(taskDate.value));
+    const conflictData = await conflictRes.json();
+
+    if (conflictData.success && conflictData.conflict) {
+      conflictMsg.textContent = username + ' is busy at this time according to their schedule (' + (conflictData.event ? conflictData.event.EventName : 'event') + '). Please reschedule.';
+      conflictMsg.classList.remove("hidden");
+      return;
+    }
+  } catch (err) {
+    console.error('Conflict check error:', err);
+  }
+
+  try {
+    const res = await fetch(API + '/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -204,29 +244,28 @@ saveTaskBtn.addEventListener("click", async () => {
         taskName: taskName.value.trim(),
         description: taskDesc.value.trim(),
         date: taskDate.value,
-        time: taskTime.value
+        time: taskTime.value,
+        assignedById: currentUser.id,
+        assignedByName: currentUser.username
       })
     });
 
     const data = await res.json();
-
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || 'Failed to create task');
-    }
+    if (!res.ok || !data.success) throw new Error(data.error || 'Failed to create task');
 
     closeModal();
     searchInput.value = "";
     await loadTasks();
 
+    confirmation.textContent = 'Task created successfully!';
     confirmation.classList.remove("hidden");
     setTimeout(() => confirmation.classList.add("hidden"), 3000);
   } catch (err) {
-    alert('Could not create task. Make sure the server is running.');
+    alert('Could not create task: ' + err.message);
     console.error(err);
   }
 });
 
 // ----- Init -----
-
 loadUsers();
 loadTasks();
