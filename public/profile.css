@@ -1,0 +1,285 @@
+/* ===========================
+   RESET & BASE STYLES
+   =========================== */
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body{
+  font-family: "Inter", sans-serif;
+  background-color: #7b8cde;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px 16px;
+  min-height: 100vh;
+}
+
+/* ===========================
+   WHITE CARD IN THE CENTER
+   =========================== */
+
+.card{
+  background-color: white;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 420px;
+  padding: 24px 24px;
+}
+
+/* ===========================
+   TOP BAR (back arrow + title)
+   CHANGED: dropped justify-content: space-between since the
+   right-side Save button is gone now
+   =========================== */
+
+.top-bar{
+  display: flex;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: #333;
+  font-size: 22px;
+  line-height: 1;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* CHANGED: flex: 1 + text-align: center keeps the title centered
+   in the remaining space now that it's the only other item in the bar */
+.page-title {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+/* REMOVED: .save-btn and .save-btn:hover — the top Save button
+   no longer exists in the HTML, so these styles aren't needed */
+
+/* ===========================
+   PROFILE PICTURE SECTION 
+   =========================== */
+
+.photo-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.photo-wrapper {
+  position: relative;
+  width: 90px;
+  height: 90px;
+}
+
+.profile-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #b2dfdb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.profile-photo svg {
+  width: 55px;
+  height: 55px;
+  color: white;
+}
+
+.change-photo-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: #5c6bc0;
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: white;
+  font-size: 0px;
+  overflow: hidden;
+}
+
+.change-photo-btn svg {
+  color: white;
+  width: 13px;
+  height: 13px;
+}
+
+#photo-input {
+  display: none;
+}
+
+/* ============================
+   SECTION HEADINGS
+   ============================ */
+
+.section-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3949ab;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-heading svg {
+  width: 18px;
+  height: 18px;
+}
+
+.divider {
+  height: 1px;
+  background-color: #f0f0f0;
+  margin: 28px 0;
+}
+
+/* ============================
+   FORM FIELDS
+   ============================ */
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #e8e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  background: #f8f8fc;
+  color: #1a1a2e;
+}
+
+.field input:focus {
+  border-color: #5c6bc0;
+  background: white;
+}
+
+/* ============================
+   BIG SAVE BUTTON AT THE BOTTOM
+   ============================ */
+
+.save-btn-bottom {
+  width: 100%;
+  padding: 15px;
+  background: #5c6bc0;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 0.3px;
+  font-family: 'Inter', sans-serif;
+  margin-top: 28px;
+}
+
+.save-btn-bottom:active {
+  transform: scale(0.98);
+}
+
+/* =============================
+   SUCCESS MESSAGE
+   ============================= */
+
+.success-msg {
+  background: #e8f5e9;
+  color: #388e3c;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 14px;
+  font-size: 14px;
+  display: none;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* =============================
+   ERROR MESSAGE
+    ============================= */
+
+.error-msg {
+  background: #ffebee;
+  color: #c62828;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 14px;
+  font-size: 14px;
+  display: none;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* =============================
+   RESPONSIVE DESIGN FOR MOBILE
+   ============================= */
+
+@media (max-width: 480px) {
+  body {
+    padding: 16px 12px;
+  }
+
+  .card {
+    padding: 20px 18px 28px;
+  }
+
+  .page-title {
+    font-size: 15px;
+  }
+
+  .section-heading {
+    font-size: 14px;
+  }
+
+  .field input {
+    font-size: 14px;
+  }
+
+  .save-btn-bottom {
+    font-size: 15px;
+  }
+}
