@@ -34,7 +34,7 @@
                     saveOfflineUser(username, password);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     alert(`Login successful! Welcome ${data.user.username} (${data.user.role})`);
-                    window.location.href = 'dashbaord.html';
+                    window.location.href = 'dashboard.html';
                 } else {
                     alert(data.error || 'Login failed');
                 }
@@ -43,7 +43,7 @@
 
                 if (results.success) {
                     alert('Offline login successful');
-                    window.location.href = 'dashbaord.html';
+                    window.location.href = 'dashboard.html';
                     return;
                 }
 
