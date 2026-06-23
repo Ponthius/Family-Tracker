@@ -267,7 +267,7 @@
         confirmation.classList.remove('hidden');
         setTimeout(() => confirmation.classList.add('hidden'), 3000);
       } catch (err) {
-        alert('Could not create schedule: ' + err.message);
+        showNotification('Could not create schedule: ' + err.message, 'error');
         console.error(err);
       }
     });
