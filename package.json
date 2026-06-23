@@ -2,15 +2,23 @@
   "name": "family-tracker",
   "version": "1.0.0",
   "description": "",
+<<<<<<< HEAD
   "keywords": [],
   "homepage": "https://github.com/Ponthius/Family-Tracker#readme",
   "bugs": {
     "url": "https://github.com/Ponthius/Family-Tracker/issues"
+=======
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+>>>>>>> 0c1c95fc8f57e7810839f3d769ac55c7f792e97c
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Ponthius/Family-Tracker.git"
   },
+<<<<<<< HEAD
   "license": "ISC",
   "author": "",
   "type": "commonjs",
@@ -98,5 +106,20 @@
   },
   "devDependencies": {
     "serve": "^14.2.6"
+=======
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ponthius/Family-Tracker/issues"
+  },
+  "homepage": "https://github.com/Ponthius/Family-Tracker#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "msnodesqlv8": "^5.2.0",
+    "mssql": "^12.5.5"
+>>>>>>> 0c1c95fc8f57e7810839f3d769ac55c7f792e97c
   }
 }
