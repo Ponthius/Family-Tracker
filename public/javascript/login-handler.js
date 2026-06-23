@@ -17,7 +17,7 @@
             const password = document.getElementById('password').value.trim();
 
             if (!username || !password) {
-                alert('Please enter both username and password');
+                showNotification('Please enter both username and password', 'warning');
                 return;
             }
 
@@ -33,21 +33,21 @@
                 if (response.ok && data.success) {
                     saveOfflineUser(username, password);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    alert(`Login successful! Welcome ${data.user.username} (${data.user.role})`);
+                    showNotification(`Login successful! Welcome ${data.user.username} (${data.user.role})`, 'successs');
                     window.location.href = 'dashboard.html';
                 } else {
-                    alert(data.error || 'Login failed');
+                    showNotification(data.error || 'Login failed', 'error');
                 }
             } catch (error) {
                 const results = offlineLogin(username, password);
 
                 if (results.success) {
-                    alert('Offline login successful');
+                    showNotification('Offline login successful', 'success');
                     window.location.href = 'dashboard.html';
                     return;
                 }
 
-                alert('Online login is unavailable because the backend cannot be reached. Start the server, then try again.');
+                showNotification('Online login is unavailable...', 'warning');
                 console.error(error);
             }
         });

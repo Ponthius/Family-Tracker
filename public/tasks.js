@@ -186,7 +186,7 @@ async function markTaskDone(taskId) {
     confirmation.classList.remove("hidden");
     setTimeout(() => confirmation.classList.add("hidden"), 3000);
   } catch (err) {
-    alert('Could not mark task done: ' + err.message);
+    showNotification('Could not mark task done: ' + err.message, 'error');
     console.error(err);
   }
 }
@@ -261,7 +261,7 @@ saveTaskBtn.addEventListener("click", async () => {
     confirmation.classList.remove("hidden");
     setTimeout(() => confirmation.classList.add("hidden"), 3000);
   } catch (err) {
-    alert('Could not create task: ' + err.message);
+    showNotification('Could not create task: ' + err.message, 'error');
     console.error(err);
   }
 });
