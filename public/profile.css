@@ -1,0 +1,212 @@
+/* ===========================
+   RESET & BASE STYLES
+   =========================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #e8e2d9;
+  color: #2c2420;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px 16px;
+  min-height: 100vh;
+}
+
+/* ===========================
+   CARD IN THE CENTER
+   =========================== */
+
+.card {
+  background: #f5f1ec;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 420px;
+  padding: 24px 24px;
+}
+
+/* ===========================
+   TOP BAR
+   =========================== */
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: #5a4e46;
+  font-size: 22px;
+  line-height: 1;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: #e8e0d8;
+}
+
+.page-title {
+  flex: 1;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+  color: #2c2420;
+  font-family: Georgia, serif;
+}
+
+/* ============================
+   SECTION HEADINGS
+   ============================ */
+
+.section-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3d3530;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: Georgia, serif;
+}
+
+.section-heading svg {
+  width: 18px;
+  height: 18px;
+  color: #8b7355;
+}
+
+.divider {
+  height: 1px;
+  background: #e2d8d0;
+  margin: 28px 0;
+}
+
+/* ============================
+   FORM FIELDS
+   ============================ */
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #5a4e46;
+  margin-bottom: 6px;
+  letter-spacing: 0.6px;
+}
+
+.field input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #c8bfb5;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+  background: #faf8f5;
+  color: #2c2420;
+  font-family: Arial, sans-serif;
+}
+
+.field input:focus {
+  border-color: #8b7355;
+  background: #f5f1ec;
+}
+
+/* ============================
+   SAVE BUTTON
+   ============================ */
+
+.save-btn-bottom {
+  width: 100%;
+  padding: 11px;
+  background: #3d3530;
+  color: #f5f1ec;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 0.03em;
+  margin-top: 28px;
+  font-family: Arial, sans-serif;
+}
+
+.save-btn-bottom:hover {
+  background: #2c2420;
+}
+
+.save-btn-bottom:active {
+  transform: scale(0.98);
+}
+
+/* =============================
+   SUCCESS / ERROR MESSAGES
+   ============================= */
+
+.success-msg {
+  background: #e7efe2;
+  color: #3c5a3c;
+  border: 1px solid #b9cdb0;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 14px;
+  font-size: 0.85rem;
+  display: none;
+  text-align: center;
+  font-weight: 500;
+}
+
+.error-msg {
+  background: #fbe9e9;
+  color: #a13d3d;
+  border: 1px solid #eac0c0;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 14px;
+  font-size: 0.85rem;
+  display: none;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* =============================
+   RESPONSIVE
+   ============================= */
+
+@media (max-width: 480px) {
+  body {
+    padding: 16px 12px;
+  }
+  .card {
+    padding: 20px 18px 28px;
+  }
+  .page-title {
+    font-size: 15px;
+  }
+  .section-heading {
+    font-size: 14px;
+  }
+  .field input {
+    font-size: 14px;
+  }
+  .save-btn-bottom {
+    font-size: 15px;
+  }
+}
