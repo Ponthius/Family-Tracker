@@ -36,10 +36,11 @@ function getStoredUser() {
 }
 
 const currentUser = getStoredUser();
-const isFather = currentUser.role === 'father';
+const familyId = currentUser.familyId;
+const isAdmin = currentUser.role === 'admin' || currentUser.role === 'father';
 
-// Hide Create Task button if not father
-if (!isFather && createTaskBtn) {
+// Hide Create Task button if not admin
+if (!isAdmin && createTaskBtn) {
   createTaskBtn.style.display = 'none';
 }
 
@@ -79,7 +80,7 @@ function renderTable(list) {
       : '<span style="background:#ece1d2;color:#5a4038;padding:3px 10px;border-radius:999px;font-size:0.7rem;font-weight:600;">Pending</span>';
 
     let doneBtn = '';
-    if (isFather && status === 'pending') {
+    if (isAdmin && status === 'pending') {
       doneBtn = '<button class="btn-done" data-taskid="' + task.TaskID + '" style="padding:4px 10px;font-size:0.75rem;background:#3d3530;color:#f5f1ec;border:none;border-radius:6px;cursor:pointer;">Done</button>';
     }
 
@@ -143,7 +144,8 @@ modalOverlay.addEventListener("click", (e) => {
 
 async function loadUsers() {
   try {
-    const res = await fetch(API + '/members');
+    const url = familyId ? `${API}/members?familyId=${encodeURIComponent(familyId)}` : `${API}/members`;
+    const res = await fetch(url);
     const data = await res.json();
     if (!res.ok || !data.success) throw new Error(data.error || 'Failed');
     const users = data.members || [];

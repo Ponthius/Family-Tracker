@@ -23,6 +23,13 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+const appBaseUrl = process.env.APP_BASE_URL || 'http://localhost:8080';
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isValidEmail(email) {
+    return emailRegex.test(String(email || '').trim());
+}
+
 async function sendVerificationEmail(email, token) {
     const verificationLink = `https://family-tracker-sooty-one.vercel.app/api/verify-email?token=${token}`;
     await transporter.sendMail({
@@ -38,6 +45,22 @@ async function sendVerificationEmail(email, token) {
     });
 }
 
+async function sendInviteEmail(email, familyName, token) {
+    const inviteLink = `${appBaseUrl}/register.html?invite=${token}`;
+    await transporter.sendMail({
+        from: process.env.EMAIL_USER || 'hafizashiraf180@gmail.com',
+        to: email,
+        subject: `You're invited to join the ${familyName} family`,
+        html: `
+            <h2>Family Tracker Invitation</h2>
+            <p>You have been invited to join the <strong>${familyName}</strong> family group.</p>
+            <p>Click the button below to register and join your family:</p>
+            <a href="${inviteLink}" style="display:inline-block;padding:12px 24px;background:#3d3530;color:#fff;text-decoration:none;border-radius:6px;">Join Family</a>
+            <p>If you did not expect this invitation, you can ignore this email.</p>
+        `
+    });
+}
+
 app.use(cors());
 app.use(express.json());
 
@@ -48,32 +71,78 @@ app.get('/health', (req, res) => {
 // ----- Register -----
 
 app.post('/register', async (req, res) => {
-    const { email, username, password, role } = req.body;
+    const { email, username, password, familyName, inviteToken } = req.body;
 
-    if (!email || !username || !password || !role) {
+    if (!email || !username || !password || (!inviteToken && !familyName)) {
         return res.status(400).json({ error: 'All fields required' });
     }
 
+    if (!isValidEmail(email)) {
+        return res.status(400).json({ error: 'Please enter a valid email address' });
+    }
+
     try {
-        const roleCheck = await pool.query(
-            `SELECT COUNT(*) AS cnt FROM users WHERE role = $1`,
-            [role]
+        const existing = await pool.query(
+            `SELECT email, username FROM users WHERE email = $1 OR username = $2 LIMIT 1`,
+            [email, username]
         );
 
-        if (role === 'father' && parseInt(roleCheck.rows[0].cnt) > 0) {
-            return res.status(409).json({ error: 'Father role is already registered. Only one father allowed.' });
-        }
-        if (role === 'mother' && parseInt(roleCheck.rows[0].cnt) > 0) {
-            return res.status(409).json({ error: 'Mother role is already registered. Only one mother allowed.' });
+        if (existing.rows.length) {
+            const conflict = existing.rows[0];
+            if (conflict.email === email) {
+                return res.status(409).json({ error: 'Email already exists' });
+            }
+            if (conflict.username === username) {
+                return res.status(409).json({ error: 'Username already exists' });
+            }
         }
 
-        // Insert user and get ID
+        let familyId;
+        let role = 'member';
+
+        if (inviteToken) {
+            const inviteResult = await pool.query(
+                `SELECT InvitationID, FamilyID
+                 FROM FamilyInvitations
+                 WHERE InvitationToken = $1
+                   AND isActive = TRUE
+                   AND (ExpiresAt IS NULL OR ExpiresAt > NOW())`,
+                [inviteToken]
+            );
+
+            if (inviteResult.rows.length === 0) {
+                return res.status(400).json({ error: 'Invitation is invalid or expired.' });
+            }
+
+            familyId = inviteResult.rows[0].familyid;
+        } else {
+            const familyResult = await pool.query(
+                `INSERT INTO Families (FamilyName)
+                 VALUES ($1)
+                 RETURNING FamilyID`,
+                [String(familyName).trim()]
+            );
+            familyId = familyResult.rows[0].familyid;
+            role = 'admin';
+        }
+
         const userResult = await pool.query(
-            `INSERT INTO users (email, username, password, role, emailverified)
-             VALUES ($1, $2, $3, $4, TRUE)
+            `INSERT INTO users (email, username, password, role, emailverified, familyid)
+             VALUES ($1, $2, $3, $4, TRUE, $5)
              RETURNING id`,
-            [email, username, password, role]
+            [email, username, password, role, familyId]
         );
+
+        if (inviteToken) {
+            await pool.query(
+                `UPDATE FamilyInvitations
+                 SET isActive = FALSE,
+                     AcceptedAt = NOW(),
+                     AcceptedByUserID = $1
+                 WHERE InvitationToken = $2`,
+                [userResult.rows[0].id, inviteToken]
+            );
+        }
 
         res.json({ success: true, message: 'Registration successful.' });
     } catch (err) {
@@ -84,6 +153,110 @@ app.post('/register', async (req, res) => {
         }
 
         res.status(500).json({ error: 'Server error while registering user' });
+    }
+});
+
+app.get('/invites/:token', async (req, res) => {
+    const { token } = req.params;
+
+    if (!token) {
+        return res.status(400).json({ error: 'Invitation token required' });
+    }
+
+    try {
+        const inviteResult = await pool.query(
+            `SELECT i.InvitationID, i.FamilyID, f.FamilyName
+             FROM FamilyInvitations i
+             JOIN Families f ON f.FamilyID = i.FamilyID
+             WHERE i.InvitationToken = $1
+               AND i.isActive = TRUE
+               AND (i.ExpiresAt IS NULL OR i.ExpiresAt > NOW())`,
+            [token]
+        );
+
+        if (inviteResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Invitation not found or expired' });
+        }
+
+        const invite = inviteResult.rows[0];
+        res.json({
+            success: true,
+            invitation: {
+                familyId: invite.familyid,
+                familyName: invite.familyname
+            }
+        });
+    } catch (err) {
+        console.error('Invite lookup error:', err.message);
+        res.status(500).json({ error: 'Server error while fetching invitation' });
+    }
+});
+
+app.post('/invite', async (req, res) => {
+    const { recipientEmail, familyId, invitedById } = req.body;
+
+    if (!recipientEmail || !familyId || !invitedById) {
+        return res.status(400).json({ error: 'Recipient email, family, and inviter are required' });
+    }
+
+    if (!isValidEmail(recipientEmail)) {
+        return res.status(400).json({ error: 'Please enter a valid recipient email address' });
+    }
+
+    try {
+        const inviterResult = await pool.query(
+            `SELECT id, role, familyid FROM users WHERE id = $1`,
+            [invitedById]
+        );
+
+        if (inviterResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Inviter not found' });
+        }
+
+        const inviter = inviterResult.rows[0];
+        const isAdmin = inviter.role === 'admin' || inviter.role === 'father';
+        if (!isAdmin) {
+            return res.status(403).json({ error: 'Only admins can send invitations' });
+        }
+
+        if (parseInt(inviter.familyid) !== parseInt(familyId)) {
+            return res.status(403).json({ error: 'Inviter does not belong to this family' });
+        }
+
+        const existingUser = await pool.query(
+            `SELECT id FROM users WHERE email = $1`,
+            [recipientEmail]
+        );
+        if (existingUser.rows.length > 0) {
+            return res.status(409).json({ error: 'Email already exists' });
+        }
+
+        const familyResult = await pool.query(
+            `SELECT FamilyName FROM Families WHERE FamilyID = $1`,
+            [familyId]
+        );
+        if (familyResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Family not found' });
+        }
+
+        const familyName = familyResult.rows[0].familyname;
+        const token = crypto.randomBytes(24).toString('hex');
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+        await pool.query(
+            `INSERT INTO FamilyInvitations (FamilyID, RecipientEmail, InvitationToken, InvitedByUserID, ExpiresAt)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [familyId, recipientEmail, token, invitedById, expiresAt]
+        );
+
+        sendInviteEmail(recipientEmail, familyName, token).catch(err => {
+            console.error('Failed to send invite email:', err.message);
+        });
+
+        res.json({ success: true, message: 'Invitation sent successfully' });
+    } catch (err) {
+        console.error('Invite error:', err.message);
+        res.status(500).json({ error: 'Server error while sending invitation' });
     }
 });
 
@@ -190,7 +363,11 @@ app.post('/login', async (req, res) => {
 
     try {
         const result = await pool.query(
-            `SELECT id, email, username, role, emailverified FROM users WHERE username = $1 AND password = $2`,
+            `SELECT u.id, u.email, u.username, u.role, u.emailverified, u.familyid,
+                    f.familyname
+             FROM users u
+             LEFT JOIN Families f ON f.FamilyID = u.familyid
+             WHERE u.username = $1 AND u.password = $2`,
             [username, password]
         );
 
@@ -207,7 +384,9 @@ app.post('/login', async (req, res) => {
                 id: user.id,
                 email: user.email,
                 username: user.username,
-                role: user.role
+                role: user.role,
+                familyId: user.familyid || null,
+                familyName: user.familyname || ''
             }
         });
     } catch (err) {
@@ -219,10 +398,14 @@ app.post('/login', async (req, res) => {
 // ----- Members -----
 
 app.get('/members', async (req, res) => {
+    const { familyId } = req.query;
+
     try {
-        const result = await pool.query(
-            `SELECT id, role, username, email FROM users ORDER BY created_at DESC`
-        );
+        const query = familyId
+            ? `SELECT id, role, username, email FROM users WHERE familyid = $1 ORDER BY created_at DESC`
+            : `SELECT id, role, username, email FROM users ORDER BY created_at DESC`;
+        const params = familyId ? [familyId] : [];
+        const result = await pool.query(query, params);
 
         res.json({ success: true, members: result.rows });
     } catch (err) {

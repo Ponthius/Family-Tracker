@@ -9,6 +9,8 @@
 <body>
     <div class="card">
         <h1 class="title">Family Tracker</h1>
+
+        <p class="subtitle">Create your family group and start inviting members.</p>
         
         <label for="email">Email</label>
         <input type="email" id="email" placeholder="user@gmail.com">
@@ -21,18 +23,17 @@
         
         <label for="confirm">Confirm Password</label>
         <input type="password" id="confirm" placeholder="Confirm password">
-        
-        <label for="role">Role</label>
-        <select id="role">
-            <option value="">Select role</option>
-            <option value="father">Father</option>
-            <option value="mother">Mother</option>
-            <option value="child">Child</option>
-        </select>
+
+        <label for="familyName">Family Name</label>
+        <input type="text" id="familyName" placeholder="e.g., The Johnsons">
+        <p class="invite-note" id="inviteNote"></p>
         
         <button class="btn" id="registerBtn">Register</button>
         
         <p class="login-link">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+    <div id="notification-container">
+        <span id="notification-message"></span>
     </div>
     <script src="javascript/offline-auth.js" defer></script>
     <script src="javascript/register-handler.js" defer></script>

@@ -125,6 +125,12 @@
       color: #8b7355;
     }
 
+    .family-name {
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: #5a4038;
+    }
+
     .user-badge {
       background: #fefaf5;
       padding: 8px 18px;

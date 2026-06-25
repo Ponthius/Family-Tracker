@@ -35,6 +35,13 @@ body {
   font-family: Georgia, serif;
 }
 
+.subtitle {
+  font-size: 0.85rem;
+  color: #7a6e66;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
 label {
   font-size: 0.82rem;
   color: #5a4e46;
@@ -71,6 +78,37 @@ input:focus, select:focus {
 .btn:hover {
   background: #2c2420;
 }
+
+.invite-note {
+  font-size: 0.75rem;
+  color: #7a6e66;
+  margin-top: 4px;
+}
+
+.invite-note.error {
+  color: #a13d3d;
+}
+
+#notification-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 22px;
+  border-radius: 30px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 9999;
+  font-weight: 600;
+  font-size: 0.85rem;
+  pointer-events: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+
+.notif-success { background: #e7efe2; color: #3c5a3c; border: 1px solid #b9cdb0; }
+.notif-error { background: #f3dada; color: #a13d3d; border: 1px solid #e1b5b5; }
+.notif-warning { background: #f5efe4; color: #5a4038; border: 1px solid #e0d6ce; }
+.notif-info { background: #e5ecef; color: #4c5b63; border: 1px solid #c8d3d8; }
 
 .login-link {
   text-align: center;

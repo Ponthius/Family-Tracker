@@ -31,6 +31,95 @@
         font-size: 2rem;
     }
 
+    .family-label {
+        text-align: center;
+        color: #5a4038;
+        font-size: 0.9rem;
+        margin-top: -12px;
+        margin-bottom: 24px;
+    }
+
+    .invite-card {
+        background: #f5f1ec;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 20px;
+    }
+
+    .invite-card.hidden {
+        display: none;
+    }
+
+    .invite-title {
+        font-family: Georgia, serif;
+        font-size: 1.3rem;
+        color: #2c2420;
+        margin-bottom: 6px;
+    }
+
+    .invite-subtitle {
+        color: #7a6e66;
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+    }
+
+    .invite-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .invite-field label {
+        font-size: 0.82rem;
+        color: #5a4e46;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .invite-field input {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1px solid #c8bfb5;
+        border-radius: 6px;
+        background: #faf8f5;
+        font-size: 0.9rem;
+        color: #2c2420;
+        outline: none;
+    }
+
+    .invite-field input:focus {
+        border-color: #8b7355;
+    }
+
+    .invite-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        background: #3d3530;
+        color: #f5f1ec;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+    }
+
+    .btn:hover {
+        background: #2c2420;
+    }
+
+    .invite-hint {
+        font-size: 0.78rem;
+        color: #7a6e66;
+    }
+
     .members-card {
         background: #f5f1ec;
         border-radius: 12px;
@@ -99,10 +188,36 @@
         color: #24313a;
     }
 
+    .admin {
+        background: #e8e0d8;
+        color: #3d3530;
+    }
+
     .empty-state {
         text-align: center;
         color: #6d625b;
     }
+
+    #notification-container {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 22px;
+        border-radius: 30px;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: 9999;
+        font-weight: 600;
+        font-size: 0.85rem;
+        pointer-events: none;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+
+    .notif-success { background: #e7efe2; color: #3c5a3c; border: 1px solid #b9cdb0; }
+    .notif-error { background: #f3dada; color: #a13d3d; border: 1px solid #e1b5b5; }
+    .notif-warning { background: #f5efe4; color: #5a4038; border: 1px solid #e0d6ce; }
+    .notif-info { background: #e5ecef; color: #4c5b63; border: 1px solid #c8d3d8; }
 
     @media (max-width: 768px) {
         body {
@@ -118,6 +233,10 @@
         .page-title {
             font-size: 1.6rem;
         }
+
+        .invite-card {
+            padding: 16px;
+        }
     }
 </style>
 </head>
@@ -126,6 +245,26 @@
 
 <div class="container">
     <h1 class="page-title">Members Page</h1>
+    <p class="family-label" id="familyLabel"></p>
+
+    <div class="invite-card" id="inviteCard">
+        <div class="invite-title">Invite a Family Member</div>
+        <div class="invite-subtitle">Send a join link so they can register under your family.</div>
+        <div class="invite-grid">
+            <div class="invite-field">
+                <label for="familyName">Family Name</label>
+                <input type="text" id="familyName" readonly>
+            </div>
+            <div class="invite-field">
+                <label for="inviteEmail">Recipient Email</label>
+                <input type="email" id="inviteEmail" placeholder="name@example.com">
+            </div>
+        </div>
+        <div class="invite-actions">
+            <button class="btn" id="sendInviteBtn">Send Invitation</button>
+            <span class="invite-hint" id="inviteHint">Only admins can send invites.</span>
+        </div>
+    </div>
 
     <div class="members-card">
         <table>
@@ -144,6 +283,10 @@
             </tbody>
         </table>
     </div>
+</div>
+
+<div id="notification-container">
+    <span id="notification-message"></span>
 </div>
 
 <script src="javascript/members-handler.js"></script>

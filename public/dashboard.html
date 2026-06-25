@@ -74,6 +74,7 @@
     <div class="top-bar">
       <div class="greeting">
         <h1><span id="greetingText">Good Morning</span> <span id="usernameDisplay"></span></h1>
+        <p class="family-name" id="familyNameDisplay"></p>
       </div>
       <div style="display: flex; gap: 12px; align-items: center;">
         <div class="user-badge" id="notificationBell" style="position: relative; cursor: pointer;">
@@ -110,12 +111,15 @@
   function updateUserGreeting() {
     const user = getStoredUser();
     const username = user.username || 'Family';
+    const familyName = user.familyName || '';
     const gt = document.getElementById('greetingText');
     const ud = document.getElementById('usernameDisplay');
     const ud2 = document.getElementById('userNameDisplay');
+    const fd = document.getElementById('familyNameDisplay');
     if (gt) gt.textContent = getTimeGreeting();
     if (ud) ud.textContent = username;
     if (ud2) ud2.textContent = username;
+    if (fd) fd.textContent = familyName ? `Family: ${familyName}` : '';
   }
 
   function setActiveNavItem(page) {
@@ -239,7 +243,7 @@
     } else {
       dd.innerHTML = notifs.map(n =>
         '<div style="padding: 10px 20px; border-bottom: 1px solid #e2d8d0; font-size: 0.85rem;">' +
-        '<strong>' + n.TaskName + '</strong> assigned to you by ' + (n.AssignedByName || 'father') +
+        '<strong>' + n.TaskName + '</strong> assigned to you by ' + (n.AssignedByName || 'admin') +
         '</div>'
       ).join('');
     }
