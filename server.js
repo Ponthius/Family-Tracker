@@ -70,29 +70,12 @@ app.post('/register', async (req, res) => {
         // Insert user and get ID
         const userResult = await pool.query(
             `INSERT INTO users (email, username, password, role, emailverified)
-             VALUES ($1, $2, $3, $4, FALSE)
+             VALUES ($1, $2, $3, $4, TRUE)
              RETURNING id`,
             [email, username, password, role]
         );
 
-        const userId = userResult.rows[0].id;
-
-        // Create verification token
-        const token = crypto.randomBytes(32).toString('hex');
-        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-        await pool.query(
-            `INSERT INTO EmailVerifications (UserID, VerificationToken, ExpiresAt)
-             VALUES ($1, $2, $3)`,
-            [userId, token, expiresAt]
-        );
-
-        // Send verification email (fire and forget)
-        sendVerificationEmail(email, token).catch(err => {
-            console.error('Failed to send verification email:', err.message);
-        });
-
-        res.json({ success: true, message: 'Registration successful. Please verify your email.' });
+        res.json({ success: true, message: 'Registration successful.' });
     } catch (err) {
         console.error('Register error:', err.message);
 
@@ -216,10 +199,6 @@ app.post('/login', async (req, res) => {
         }
 
         const user = result.rows[0];
-
-        if (!user.emailverified) {
-            return res.status(403).json({ error: 'Please verify your email address before logging in.' });
-        }
 
         res.json({
             success: true,
