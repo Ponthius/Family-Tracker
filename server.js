@@ -24,7 +24,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendVerificationEmail(email, token) {
-    const verificationLink = `http://13.140.143.58:4001/verify-email?token=${token}`;
+    const verificationLink = `https://family-tracker-sooty-one.vercel.app/api/verify-email?token=${token}`;
     await transporter.sendMail({
         from: process.env.EMAIL_USER || 'yourgmail@gmail.com',
         to: email,

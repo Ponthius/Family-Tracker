@@ -22,7 +22,7 @@
             }
 
             try {
-                const response = await fetchWithTimeout('http://13.140.143.58:4001/login', {
+                const response = await fetchWithTimeout('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
