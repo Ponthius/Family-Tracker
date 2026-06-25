@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cron Jobs - Family Tracker</title>
+  <link rel="stylesheet" href="cronjobs.css">
+</head>
+<body>
+  <div class="page">
+
+    <div class="topbar">
+      <h1 class="title">Family Tracker</h1>
+      <p class="subtitle">Scheduled Jobs — Admin Panel</p>
+    </div>
+
+    <!-- Scheduled Jobs Overview -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Scheduled Jobs</h2>
+        <button class="btn" id="runAllBtn">▶ Run All Jobs Now</button>
+      </div>
+
+      <div class="jobs-grid" id="jobsGrid">
+        <!-- Job cards injected by JS -->
+      </div>
+    </section>
+
+    <!-- Suspended Accounts -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Suspended Accounts</h2>
+      </div>
+
+      <div class="table-wrap">
+        <table id="accountsTable">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Suspended On</th>
+              <th>Deletion Date</th>
+              <th>Days Left</th>
+              <th>Reminder Sent</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="accountsTableBody"></tbody>
+        </table>
+        <p id="noAccounts" class="no-results hidden">No suspended accounts.</p>
+      </div>
+    </section>
+
+    <!-- Audit Log -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Audit Log</h2>
+        <button class="btn-secondary" id="clearLogBtn">Clear Log</button>
+      </div>
+
+      <div class="table-wrap">
+        <table id="auditTable">
+          <thead>
+            <tr>
+              <th>Job Name</th>
+              <th>Execution Date</th>
+              <th>Execution Time</th>
+              <th>Status</th>
+              <th>Records Processed</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody"></tbody>
+        </table>
+        <p id="noAudit" class="no-results hidden">No audit records yet.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Job Detail Modal -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal">
+      <h2 class="modal-title" id="modalJobName"></h2>
+      <p class="modal-desc" id="modalJobDesc"></p>
+      <div class="modal-meta" id="modalJobMeta"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="modalCloseBtn">Close</button>
+        <button class="btn" id="modalRunBtn">▶ Run This Job</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="cronjobs.js"></script>
+</body>
+</html>

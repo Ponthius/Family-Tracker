@@ -1,0 +1,263 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #e8e2d9;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  color: #2c2420;
+  padding: 24px 16px 60px;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Topbar ── */
+.topbar {
+  text-align: center;
+}
+
+.title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2c2420;
+  font-family: Georgia, serif;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #7a6e66;
+  margin-top: 4px;
+}
+
+/* ── Panel ── */
+.panel {
+  background: #f5f1ec;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.panel-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #2c2420;
+  font-family: Georgia, serif;
+}
+
+/* ── Filters Grid ── */
+.filters-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.filters-grid .search-input,
+.filters-grid select,
+.filters-grid input[type="date"] {
+  padding: 9px 12px;
+  border: 1px solid #c8bfb5;
+  border-radius: 6px;
+  background: #faf8f5;
+  font-size: 0.88rem;
+  color: #2c2420;
+  outline: none;
+  font-family: Arial, sans-serif;
+}
+
+.filters-grid .search-input {
+  flex: 2;
+  min-width: 180px;
+}
+
+.filters-grid select {
+  flex: 1;
+  min-width: 130px;
+}
+
+.filters-grid .search-input:focus,
+.filters-grid select:focus,
+.filters-grid input[type="date"]:focus {
+  border-color: #8b7355;
+}
+
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.date-range input[type="date"] {
+  min-width: 130px;
+}
+
+.date-sep {
+  font-size: 0.82rem;
+  color: #7a6e66;
+}
+
+/* ── Buttons ── */
+.btn {
+  padding: 9px 16px;
+  background: #3d3530;
+  color: #f5f1ec;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: #2c2420;
+}
+
+.btn-secondary {
+  padding: 9px 16px;
+  background: transparent;
+  color: #5a4e46;
+  border: 1px solid #c8bfb5;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.btn-secondary:hover {
+  background: #ece6dd;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #5a4038;
+  font-size: 0.84rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.btn-link:hover {
+  color: #2c2420;
+}
+
+/* ── Table ── */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+thead th {
+  text-align: left;
+  padding: 10px 12px;
+  background: #ece6dd;
+  color: #5a4e46;
+  font-weight: 700;
+  border-bottom: 1px solid #c8bfb5;
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd4c8;
+  color: #2c2420;
+}
+
+tbody tr:hover {
+  background: #f0ebe3;
+}
+
+/* ── Badges ── */
+.role-tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: #ece1d2;
+  color: #5a4038;
+  text-transform: capitalize;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.success  { background: #dff0d8; color: #3c5a3c; }
+.badge.failed   { background: #f0dede; color: #7a2020; }
+.badge.active   { background: #dff0d8; color: #3c5a3c; }
+.badge.suspended{ background: #fef3cd; color: #7a5a10; }
+.badge.inactive { background: #e8e8e8; color: #666;    }
+
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.page-btn {
+  padding: 6px 12px;
+  border: 1px solid #c8bfb5;
+  border-radius: 6px;
+  background: #faf8f5;
+  color: #5a4e46;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.page-btn:hover {
+  background: #ece6dd;
+}
+
+.page-btn.active {
+  background: #3d3530;
+  color: #f5f1ec;
+  border-color: #3d3530;
+}
+
+/* ── Misc ── */
+.no-results {
+  text-align: center;
+  color: #7a6e66;
+  font-size: 0.9rem;
+  padding: 24px 0;
+}
+
+.hidden {
+  display: none;
+}

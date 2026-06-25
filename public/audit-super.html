@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Audit</title>
+  <link rel="stylesheet" href="audit.css">
+</head>
+
+<body>
+  <div class="page">
+
+    <div class="topbar">
+      <h1 class="title">Family Tracker</h1>
+      <p class="subtitle">System Audit — Super Admin</p>
+    </div>
+
+    <!-- Family Accounts Overview -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Family Accounts Overview</h2>
+        <input type="text" id="familySearch" class="search-input" placeholder="Search by family or admin name...">
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Family Name</th>
+              <th>Family Admin</th>
+              <th>Members</th>
+              <th>Status</th>
+              <th>Date Created</th>
+              <th>Last Activity</th>
+              <th>View Logs</th>
+            </tr>
+          </thead>
+          <tbody id="familyTableBody"></tbody>
+        </table>
+        <p id="noFamilies" class="no-results hidden">No family accounts found.</p>
+      </div>
+    </div>
+
+    <!-- Audit Log -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" id="auditPanelTitle">All Audit Logs</h2>
+        <button class="btn-secondary" id="clearFilterBtn">Clear Filter</button>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-grid">
+        <input type="text" id="filterSearch" class="search-input" placeholder="Search username or action...">
+        <select id="filterFamily">
+          <option value="">All Families</option>
+        </select>
+        <select id="filterRole">
+          <option value="">All Roles</option>
+          <option value="super_admin">Super Admin</option>
+          <option value="family_admin">Family Admin</option>
+          <option value="father">Father</option>
+          <option value="mother">Mother</option>
+          <option value="child">Child</option>
+        </select>
+        <select id="filterAction">
+          <option value="">All Actions</option>
+          <option value="Login">Login</option>
+          <option value="Logout">Logout</option>
+          <option value="Register">Register</option>
+          <option value="Task Created">Task Created</option>
+          <option value="Task Assigned">Task Assigned</option>
+          <option value="Task Deleted">Task Deleted</option>
+          <option value="Event Created">Event Created</option>
+          <option value="Event Rescheduled">Event Rescheduled</option>
+          <option value="Profile Updated">Profile Updated</option>
+          <option value="Password Changed">Password Changed</option>
+          <option value="Account Deleted">Account Deleted</option>
+          <option value="Account Recovery">Account Recovery</option>
+          <option value="Member Invited">Member Invited</option>
+          <option value="Language Changed">Language Changed</option>
+          <option value="Failed Login">Failed Login</option>
+        </select>
+        <select id="filterStatus">
+          <option value="">All Statuses</option>
+          <option value="Success">Success</option>
+          <option value="Failed">Failed</option>
+        </select>
+        <div class="date-range">
+          <input type="date" id="filterDateFrom" title="From date">
+          <span class="date-sep">to</span>
+          <input type="date" id="filterDateTo" title="To date">
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Family</th>
+              <th>Action</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody"></tbody>
+        </table>
+        <p id="noAudit" class="no-results hidden">No audit records found.</p>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+  </div>
+
+  <script src="audit-super.js"></script>
+</body>
+
+</html>
