@@ -13,76 +13,59 @@ async function fetchWithTimeout(url, options = {}, timeout = 5000) {
 }
 
 document.getElementById('registerBtn').addEventListener('click', async () => {
-            const email = document.getElementById('email').value.trim();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const confirm = document.getElementById('confirm').value.trim();
-            const role = document.getElementById('role').value;
+    const email = document.getElementById('email').value.trim();
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const confirm = document.getElementById('confirm').value.trim();
+    const role = document.getElementById('role').value;
 
-            if (!email || !username || !password || !confirm || !role) {
-                showNotification("Please fill in all fields", "warning");
+    if (!email || !username || !password || !confirm || !role) {
+        alert('Please fill in all fields');
+        return;
+    }
 
-                return;
-            }
-            
-            if (!email.includes('@') || !email.includes('.')) {
-                showNotification("Please enter a valid email address", "warning");
+    if (!email.includes('@') || !email.includes('.')) {
+        alert('Please enter a valid email address');
+        return;
+    }
 
-                return;
-            }
-            
-            if (username.length < 3) {
-                showNotification("Username must be at least 3 characters", "warning");
+    if (username.length < 3) {
+        alert('Username must be at least 3 characters');
+        return;
+    }
 
-                return;
-            }
-            
-            if (password.length < 4) {
-                showNotification('Password must be at least 4 characters');
-                return;
-            }
-            
-            if (password !== confirm) {
-                showNotification("Passwords do not match", "error");
+    if (password.length < 4) {
+        alert('Password must be at least 4 characters');
+        return;
+    }
 
-                return;
-            }
+    if (password !== confirm) {
+        alert('Passwords do not match');
+        return;
+    }
 
-            try {
-                const response = await fetchWithTimeout('/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, username, password, role })
-                });
-
-                const data = await response.json();
-                
-                if (response.ok && data.success) {
-
-                    saveRegisteredUser({
-                         email, 
-                         username,
-                         role 
-                      });
-
-                    showNotification(
-                        "Registration successful! Please check your email and verify your account before logging in.",
-                        "success"
-                    );
-                    
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 3000);
-                } else {
-                    showNotification(
-                        data.error || 'Registration failed', 
-                        'error'
-                    );
-
-                }
-            } catch (error) {
-                showNotification('Online registration is unavailable. Start the server, then try again', 'warning');
-
-                console.error('Error during registration request:', 'error');
-            }
+    try {
+        const response = await fetchWithTimeout('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, username, password, role })
         });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            saveRegisteredUser({ email, username, role });
+
+            alert('Registration successful! You can now log in.');
+
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
+        } else {
+            alert(data.error || 'Registration failed');
+        }
+    } catch (error) {
+        alert('Registration failed. Make sure the server is running.');
+        console.error('Error during registration request:', error);
+    }
+});
