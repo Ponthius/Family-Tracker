@@ -1,6 +1,9 @@
 const express = require('express');
 const sql = require('mssql/msnodesqlv8');
 const cors = require('cors');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const { error } = require('console');
 
 const app = express();
 const port = process.env.PORT || 4001;
@@ -13,6 +16,38 @@ const dbConfig = {
 };
 
 let poolPromise;
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'yourgmail@gmail.com',
+        pass: 'your-app-password'
+    }
+});
+
+async function sendVerificationEmail(email, token){
+    const verificationLink = `http://localhost:4001/verify-email?token=${token}`;
+    await transporter.sendMail({
+        from: 'yourgail@gmail.com',
+        to: email,
+        subject: 'Verify your Email',
+        html:  `
+            <h2>Family Tracker Email Verification</h2>
+
+            <p>
+                Click the button below to verify your email.
+            </p>
+
+            <a href="${verificationLink}">
+                Verify Email
+            </a>
+
+            <p>
+                This link expires in 24 hours.
+            </p>
+        `
+    });
+}
 
 app.use(cors());
 app.use(express.json());
@@ -65,17 +100,61 @@ app.post('/register', async (req, res) => {
             return res.status(409).json({ error: 'Mother role is already registered. Only one mother allowed.' });
         }
 
-        await pool.request()
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.new() + 24 * 60 * 60 * 10000);
+        const userResults = await pool.request()
             .input('email', sql.NVarChar, email)
             .input('username', sql.NVarChar, username)
             .input('password', sql.NVarChar, password)
             .input('role', sql.NVarChar, role)
             .query(`
-                INSERT INTO dbo.users (email, username, password, role)
-                VALUES (@email, @username, @password, @role)
+                INSERT INTO dbo.users (
+                Email,
+                Username,
+                Password,
+                UserRole,
+                Title,
+                EmailVerified
+                )
+                OUTPUT INSERTED.UserID
+                VALUES(
+                   @email,
+                   @username,
+                   @password,
+                   @role,
+                   'Member',
+                   0
+                ) 
             `);
 
-        res.json({ success: true, message: 'User registered successfully' });
+        const userId =
+userResult.recordset[0].UserID;
+
+await pool.request()
+    .input('userId', sql.Int, userId)
+    .input('token', sql.NVarChar, token)
+    .input('expiresAt', sql.DateTime, expiresAt)
+    .query(`
+        INSERT INTO dbo.EmailVerifications
+        (
+            UserID,
+            VerificationToken,
+            ExpiresAt
+        )
+        VALUES
+        (
+            @userId,
+            @token,
+            @expiresAt
+        )
+    `);
+
+await sendVerificationEmail(
+    email,
+    token
+);    
+
+        res.json({ success: true, message: 'Registration successfull. Please verify your email.' });
     } catch (err) {
         console.error('Register error:', err.message);
 
@@ -100,13 +179,30 @@ app.post('/login', async (req, res) => {
             .input('username', sql.NVarChar, username)
             .input('password', sql.NVarChar, password)
             .query(`
-                SELECT id, email, username, role
+                SELECT 
+                UserId,
+                Email,
+                username,
+                UserRole,
+                EmailVerified
                 FROM dbo.users
-                WHERE username = @username AND password = @password
+                WHERE username = @username 
+                AND password = @password
             `);
 
         if (result.recordset.length === 0) {
-            return res.status(401).json({ error: 'Invalid username or password' });
+            return res.status(401).json({
+                 error: 'Invalid username or password' 
+            });
+        }
+
+        const user = result.recordset[0];
+
+        if(!user.EmailVerified){
+            return res.status(403).json({
+                error:
+                'Please verify your email address before logging in.'
+            });
         }
 
         res.json({
@@ -539,6 +635,150 @@ app.get('/notifications', async (req, res) => {
     } catch (err) {
         console.error('Notifications error:', err.message);
         res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// --Email Router--
+
+app.get('/verify-email', async(req, res) => {
+    const { token } = req.query;
+
+    if(!token){
+        return res.status(400).send('Verification token is required');
+    }
+    try{
+    const pool = await getPool();
+    const verificationResults = await pool.request()
+        .input('token', sql.NVarChar, token)
+        .query(`
+            SELECT *
+            FROM dbo.EmailVerifications
+            WHERE VerificationToken = @token
+            AND IsActive = 1
+            AND ExpiresAt > GETDATE()
+            `);
+    if (verificationResults.recordset.length === 0) {
+        return res.status(400).send(
+            'Invalid or expired verification link.'
+        );
+    }       
+    const verification = verificationResults.recordset[0];
+    await pool.request()
+    .input('userId', sql.Int, verification.UserID)
+    .query(`
+        UPDATE dbo.Users
+        SET EmailVerified = 1
+        WHERE UserID = @userId
+        `);
+    await pool.request()
+    .input('verification', sql.Int, verification.verificationID)
+    .query(`
+        UPDATE dbo.EmailVerifications
+        SET
+           isActive = 0,
+           VerifiedAt = GETDATE()
+        WHERE VerificationID = @verificationId   
+        `);    
+    res.send(`
+        <h2>Email Verified Successfully</h2>
+        <p>You can now login to Family Tracker</p>
+        `);
+    } catch (err){
+        console.error('Verification error:', err.message);
+
+        res.status(500).send(
+            'Server error while verifying email'
+        );
+   }
+});
+
+app.post('/resend-verification', async (req, res) => {
+
+    const { email } = req.body;
+
+    try {
+
+        const pool = await getPool();
+
+        const userResult = await pool.request()
+            .input('email', sql.NVarChar, email)
+            .query(`
+                SELECT UserID, EmailVerified
+                FROM dbo.Users
+                WHERE Email = @email
+            `);
+
+        if (userResult.recordset.length === 0) {
+            return res.status(404).json({
+                error: 'User not found'
+            });
+        }
+
+        const user = userResult.recordset[0];
+
+        if (user.EmailVerified) {
+            return res.status(400).json({
+                error: 'Email already verified'
+            });
+        }
+
+        await pool.request()
+            .input('userId', sql.Int, user.UserID)
+            .query(`
+                UPDATE dbo.EmailVerifications
+                SET IsActive = 0
+                WHERE UserID = @userId
+            `);
+
+        const token =
+            crypto.randomBytes(32).toString('hex');
+
+        const expiresAt =
+            new Date(
+                Date.now() + 24 * 60 * 60 * 1000
+            );
+
+        await pool.request()
+            .input('userId', sql.Int, user.UserID)
+            .input('token', sql.NVarChar, token)
+            .input('expiresAt', sql.DateTime, expiresAt)
+            .query(`
+                INSERT INTO dbo.EmailVerifications
+                (
+                    UserID,
+                    VerificationToken,
+                    ExpiresAt
+                )
+                VALUES
+                (
+                    @userId,
+                    @token,
+                    @expiresAt
+                )
+            `);
+
+        await sendVerificationEmail(
+            email,
+            token
+        );
+
+        res.json({
+            success: true,
+            message:
+                'Verification email sent successfully'
+        });
+
+    } catch (err) {
+
+        console.error(
+            'Resend verification error:',
+            err.message
+        );
+
+        res.status(500).json({
+            error:
+                'Server error while resending email'
+        });
     }
 });
 

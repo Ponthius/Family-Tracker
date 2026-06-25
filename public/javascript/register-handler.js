@@ -58,13 +58,26 @@ document.getElementById('registerBtn').addEventListener('click', async () => {
                 const data = await response.json();
                 
                 if (response.ok && data.success) {
-                    saveOfflineUser(username, password);
-                    saveRegisteredUser({ email, username, role });
-                    showNotification("Registration successful! Please login.", "success");
 
-                    window.location.href = 'login.html';
+                    saveRegisteredUser({
+                         email, 
+                         username,
+                         role 
+                      });
+
+                    showNotification(
+                        "Registration successful! Please check your email and verify your account before logging in.",
+                        "success"
+                    );
+                    
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 3000);
                 } else {
-                    showNotification(data.error || 'Registration failed', 'error');
+                    showNotification(
+                        data.error || 'Registration failed', 
+                        'error'
+                    );
 
                 }
             } catch (error) {

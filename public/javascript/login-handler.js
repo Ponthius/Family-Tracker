@@ -33,7 +33,7 @@
                 if (response.ok && data.success) {
                     saveOfflineUser(username, password);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    showNotification(`Login successful! Welcome ${data.user.username} (${data.user.role})`, 'successs');
+                    showNotification(`Login successful! Welcome ${data.user.username} (${data.user.role})`, 'success');
                     window.location.href = 'dashboard.html';
                 } else {
                     showNotification(data.error || 'Login failed', 'error');

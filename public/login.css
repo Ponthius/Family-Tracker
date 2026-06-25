@@ -36,6 +36,7 @@ body {
 }
 
 label {
+  display: block;
   font-size: 0.82rem;
   color: #5a4e46;
   margin-top: 10px;
@@ -87,3 +88,5 @@ input:focus, select:focus {
 .login-link a:hover {
   text-decoration: underline;
 }
+
+
