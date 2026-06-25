@@ -1,6 +1,8 @@
 const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const port = process.env.PORT || 4001;
@@ -12,6 +14,29 @@ const pool = new Pool({
     user: process.env.PGUSER || 'familytracker_user',
     password: process.env.PGPASSWORD || 'familytracker_pass'
 });
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER || 'yourgmail@gmail.com',
+        pass: process.env.EMAIL_PASS || 'your-app-password'
+    }
+});
+
+async function sendVerificationEmail(email, token) {
+    const verificationLink = `http://13.140.143.58:4001/verify-email?token=${token}`;
+    await transporter.sendMail({
+        from: process.env.EMAIL_USER || 'yourgmail@gmail.com',
+        to: email,
+        subject: 'Verify your Email - Family Tracker',
+        html: `
+            <h2>Family Tracker Email Verification</h2>
+            <p>Click the button below to verify your email.</p>
+            <a href="${verificationLink}" style="display:inline-block;padding:12px 24px;background:#3d3530;color:#fff;text-decoration:none;border-radius:6px;">Verify Email</a>
+            <p>This link expires in 24 hours.</p>
+        `
+    });
+}
 
 app.use(cors());
 app.use(express.json());
@@ -30,7 +55,6 @@ app.post('/register', async (req, res) => {
     }
 
     try {
-        // Check for duplicate father/mother role
         const roleCheck = await pool.query(
             `SELECT COUNT(*) AS cnt FROM users WHERE role = $1`,
             [role]
@@ -43,12 +67,32 @@ app.post('/register', async (req, res) => {
             return res.status(409).json({ error: 'Mother role is already registered. Only one mother allowed.' });
         }
 
-        await pool.query(
-            `INSERT INTO users (email, username, password, role) VALUES ($1, $2, $3, $4)`,
+        // Insert user and get ID
+        const userResult = await pool.query(
+            `INSERT INTO users (email, username, password, role, emailverified)
+             VALUES ($1, $2, $3, $4, FALSE)
+             RETURNING id`,
             [email, username, password, role]
         );
 
-        res.json({ success: true, message: 'User registered successfully' });
+        const userId = userResult.rows[0].id;
+
+        // Create verification token
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+        await pool.query(
+            `INSERT INTO EmailVerifications (UserID, VerificationToken, ExpiresAt)
+             VALUES ($1, $2, $3)`,
+            [userId, token, expiresAt]
+        );
+
+        // Send verification email (fire and forget)
+        sendVerificationEmail(email, token).catch(err => {
+            console.error('Failed to send verification email:', err.message);
+        });
+
+        res.json({ success: true, message: 'Registration successful. Please verify your email.' });
     } catch (err) {
         console.error('Register error:', err.message);
 
@@ -57,6 +101,98 @@ app.post('/register', async (req, res) => {
         }
 
         res.status(500).json({ error: 'Server error while registering user' });
+    }
+});
+
+// ----- Email Verification -----
+
+app.get('/verify-email', async (req, res) => {
+    const { token } = req.query;
+
+    if (!token) {
+        return res.status(400).send('Verification token is required');
+    }
+
+    try {
+        const verificationResult = await pool.query(`
+            SELECT * FROM EmailVerifications
+            WHERE VerificationToken = $1
+            AND isActive = TRUE
+            AND ExpiresAt > NOW()
+        `, [token]);
+
+        if (verificationResult.rows.length === 0) {
+            return res.status(400).send('Invalid or expired verification link.');
+        }
+
+        const verification = verificationResult.rows[0];
+
+        // Mark user as verified
+        await pool.query(
+            `UPDATE users SET emailverified = TRUE WHERE id = $1`,
+            [verification.userid]
+        );
+
+        // Deactivate the token
+        await pool.query(
+            `UPDATE EmailVerifications SET isActive = FALSE, VerifiedAt = NOW()
+             WHERE VerificationID = $1`,
+            [verification.verificationid]
+        );
+
+        res.send(`
+            <h2>Email Verified Successfully</h2>
+            <p>You can now login to Family Tracker.</p>
+            <a href="/login.html" style="display:inline-block;padding:12px 24px;background:#3d3530;color:#fff;text-decoration:none;border-radius:6px;">Go to Login</a>
+        `);
+    } catch (err) {
+        console.error('Verification error:', err.message);
+        res.status(500).send('Server error while verifying email');
+    }
+});
+
+app.post('/resend-verification', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const userResult = await pool.query(
+            `SELECT id, emailverified FROM users WHERE email = $1`,
+            [email]
+        );
+
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const user = userResult.rows[0];
+
+        if (user.emailverified) {
+            return res.status(400).json({ error: 'Email already verified' });
+        }
+
+        // Deactivate old tokens
+        await pool.query(
+            `UPDATE EmailVerifications SET isActive = FALSE WHERE UserID = $1`,
+            [user.id]
+        );
+
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+        await pool.query(
+            `INSERT INTO EmailVerifications (UserID, VerificationToken, ExpiresAt)
+             VALUES ($1, $2, $3)`,
+            [user.id, token, expiresAt]
+        );
+
+        sendVerificationEmail(email, token).catch(err => {
+            console.error('Failed to resend verification email:', err.message);
+        });
+
+        res.json({ success: true, message: 'Verification email sent successfully' });
+    } catch (err) {
+        console.error('Resend verification error:', err.message);
+        res.status(500).json({ error: 'Server error while resending email' });
     }
 });
 
@@ -71,7 +207,7 @@ app.post('/login', async (req, res) => {
 
     try {
         const result = await pool.query(
-            `SELECT id, email, username, role FROM users WHERE username = $1 AND password = $2`,
+            `SELECT id, email, username, role, emailverified FROM users WHERE username = $1 AND password = $2`,
             [username, password]
         );
 
@@ -79,10 +215,21 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid username or password' });
         }
 
+        const user = result.rows[0];
+
+        if (!user.emailverified) {
+            return res.status(403).json({ error: 'Please verify your email address before logging in.' });
+        }
+
         res.json({
             success: true,
             message: 'Login successful',
-            user: result.rows[0]
+            user: {
+                id: user.id,
+                email: user.email,
+                username: user.username,
+                role: user.role
+            }
         });
     } catch (err) {
         console.error('Login error:', err.message);
@@ -252,8 +399,6 @@ app.post('/tasks', async (req, res) => {
         res.status(500).json({ error: 'Server error while creating task' });
     }
 });
-
-// ----- Mark task done -----
 
 app.put('/tasks/:id/done', async (req, res) => {
     const { id } = req.params;

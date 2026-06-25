@@ -6,41 +6,67 @@
   <title>Family Tracker · Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="dashboard.css">
-
   <script src="javascript/offline-queue.js"></script>
   <script src="javascript/sync-service.js"></script>
+  <style>
+    /* Added Styles for Back Button & Notifications */
+    .back-btn-ui {
+      background: transparent;
+      border: 1px solid #dcdcdc;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .back-btn-ui:hover { background: #f0f0f0; }
+
+    #notification-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 30px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 9999;
+      color: white;
+      font-weight: 500;
+      pointer-events: none;
+    }
+    .notif-success { background-color: #28a745; }
+    .notif-error { background-color: #dc3545; }
+    .notif-warning { background-color: #ffc107; color: #333; }
+    .notif-info { background-color: #17a2b8; }
+  </style>
 </head>
 <body>
  
 <div class="app-wrapper">
   <aside class="sidebar">
     <div class="sidebar-header">
+      <button id="myBackButton" class="back-btn-ui" aria-label="Go back">
+        <i class="fas fa-arrow-left"></i> <span>Back</span>
+      </button>
+      
       <a href="dashboard.html" class="logo" style="text-decoration: none;">
         <i class="fas fa-users"></i>
         <span>Family Tracker</span>
       </a>
     </div>
     <div class="sidebar-nav">
-      <a href="dashboard.html" class="nav-item-side active" data-page="dashboard">
-        <i class="fas fa-tachometer-alt"></i>
-        <span>Dashboard</span>
-      </a>
-      <a href="tasks.html" class="nav-item-side" data-page="tasks">
-        <i class="fas fa-calendar-alt"></i>
-        <span>Tasks</span>
-      </a>
-      <a href="members.html" class="nav-item-side" data-page="members">
-        <i class="fas fa-user-friends"></i>
-        <span>Members</span>
-      </a>
-      <a href="schedule.html" class="nav-item-side" data-page="schedules">
-        <i class="fas fa-clock"></i>
-        <span>Schedules</span>
-      </a>
-      <a href="profile.html" class="nav-item-side" data-page="profile">
-        <i class="fas fa-user-circle"></i>
-        <span>Profile</span>
-      </a>
+      <a href="dashboard.html" class="nav-item-side active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+      <a href="tasks.html" class="nav-item-side" data-page="tasks"><i class="fas fa-calendar-alt"></i><span>Tasks</span></a>
+      <a href="members.html" class="nav-item-side" data-page="members"><i class="fas fa-user-friends"></i><span>Members</span></a>
+      <a href="schedule.html" class="nav-item-side" data-page="schedules"><i class="fas fa-clock"></i><span>Schedules</span></a>
+      <a href="profile.html" class="nav-item-side" data-page="profile"><i class="fas fa-user-circle"></i><span>Profile</span></a>
     </div>
   </aside>
 
@@ -48,132 +74,22 @@
     <div class="top-bar">
       <div class="greeting">
         <h1><span id="greetingText">Good Morning</span> <span id="usernameDisplay"></span></h1>
-        <p style="font-size: 0.85rem; color: #7b6b5f; margin-top: 4px;">
-           Stay connected with family
-        </p>
       </div>
       <div style="display: flex; gap: 12px; align-items: center;">
         <div class="user-badge" id="notificationBell" style="position: relative; cursor: pointer;">
           <i class="fas fa-bell"></i>
           <span id="notifCount" class="notif-badge" style="display: none;">0</span>
         </div>
-        <a href="profile.html" class="user-badge" id="profileBtn">
-          <i class="fas fa-user-circle" style="font-size: 1.3rem;"></i>
-          <span id="userNameDisplay"></span>
-        </a>
-        <button class="hamburger-btn" id="hamburgerBtn">
-          <i class="fas fa-bars"></i> <span>Menu</span>
-        </button>
+        <a href="profile.html" class="user-badge" id="profileBtn"><i class="fas fa-user-circle"></i></a>
+        <button class="hamburger-btn" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
       </div>
     </div>
-
-    <!-- Notification dropdown -->
-    <div id="notifDropdown" class="notif-dropdown" style="display: none; position: absolute; right: 80px; top: 70px; background: #f5f1ec; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.18); width: 320px; max-height: 300px; overflow-y: auto; z-index: 1000; padding: 12px 0;"></div>
-
-    <div class="kpi-grid">
-      <a href="tasks.html" class="kpi-card">
-        <div class="kpi-info">
-          <h3><i class="fas fa-calendar-week"></i> TOTAL Tasks</h3>
-          <div class="kpi-number" id="kpiTasks">00</div>
-          <div id="tasksTrend" style="font-size: 0.7rem;"></div>
-        </div>
-        <div class="kpi-icon"><i class="fas fa-calendar-check"></i></div>
-      </a>
-      <a href="members.html" class="kpi-card">
-        <div class="kpi-info">
-          <h3><i class="fas fa-users"></i> FAMILY MEMBERS</h3>
-          <div class="kpi-number" id="kpiMembers">00</div>
-          <div id="membersDetail" style="font-size: 0.7rem;"></div>
-        </div>
-        <div class="kpi-icon"><i class="fas fa-user-friends"></i></div>
-      </a>
-      <a href="schedule.html" class="kpi-card">
-        <div class="kpi-info">
-          <h3><i class="fas fa-hourglass-half"></i> ACTIVE SCHEDULES</h3>
-          <div class="kpi-number" id="kpiSchedules">00</div>
-          <div id="schedulesTrend" style="font-size: 0.7rem;"></div>
-        </div>
-        <div class="kpi-icon"><i class="fas fa-tasks"></i></div>
-      </a>
-      <a href="tasks.html" class="kpi-card">
-        <div class="kpi-info">
-          <h3><i class="fas fa-star"></i> UPCOMING</h3>
-          <div class="kpi-number" id="kpiUpcoming">00</div>
-          <div id="upcomingDetail" style="font-size: 0.7rem;"></div>
-        </div>
-        <div class="kpi-icon"><i class="fas fa-rocket"></i></div>
-      </a>
-    </div>
-
-    <div class="tables-section">
-      <div class="table-wrapper">
-        <div class="section-title">
-          <i class="fas fa-history"></i>
-          <span>Recent Tasks</span>
-        </div>
-        <table class="event-table">
-          <thead>
-            <tr><th>Event name</th><th>Date</th><th>Status</th></tr>
-          </thead>
-          <tbody id="recentEventsBody">
-            <tr class="data-placeholder"><td colspan="3">Loading...</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="table-wrapper">
-        <div class="section-title">
-          <i class="fas fa-calendar-plus"></i>
-          <span>Upcoming Tasks</span>
-        </div>
-        <table class="event-table">
-          <thead>
-            <tr><th>Event name</th><th>Date & Time</th><th>Category</th></tr>
-          </thead>
-          <tbody id="upcomingEventsBody">
-            <tr class="data-placeholder"><td colspan="3">Loading...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
-      <div style="background: #fefaf5; border-radius: 30px; padding: 8px 20px; font-size: 0.75rem;">
-        <i class="fas fa-chart-line"></i> <span id="activityScore"></span>
-      </div>
-    </div>
-  </main>
+    
+    </main>
 </div>
 
-<div class="mobile-bottom-nav">
-  <a href="dashboard.html" class="nav-mob-item active" data-page="dashboard">
-    <i class="fas fa-home"></i><span>Home</span>
-  </a>
-  <a href="tasks.html" class="nav-mob-item" data-page="tasks">
-    <i class="fas fa-calendar-alt"></i><span>Tasks</span>
-  </a>
-  <a href="members.html" class="nav-mob-item" data-page="members">
-    <i class="fas fa-users"></i><span>Members</span>
-  </a>
-  <a href="schedule.html" class="nav-mob-item" data-page="schedules">
-    <i class="fas fa-clock"></i><span>Schedules</span>
-  </a>
-</div>
-
-<div class="mobile-sidebar-overlay" id="mobileSidebarOverlay"></div>
-<div class="mobile-sidebar" id="mobileSidebar">
-  <button class="close-sidebar" id="closeSidebarBtn"><i class="fas fa-times"></i></button>
-  <div class="mobile-sidebar-header">
-    <a href="dashboard.html" class="logo" style="text-decoration: none;">
-      <i class="fas fa-users"></i><span>Family Tracker</span>
-    </a>
-  </div>
-  <div class="mobile-sidebar-nav">
-    <a href="dashboard.html" class="mobile-nav-item active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-    <a href="tasks.html" class="mobile-nav-item" data-page="tasks"><i class="fas fa-calendar-alt"></i><span>Tasks</span></a>
-    <a href="members.html" class="mobile-nav-item" data-page="members"><i class="fas fa-user-friends"></i><span>Members</span></a>
-    <a href="schedule.html" class="mobile-nav-item" data-page="schedules"><i class="fas fa-clock"></i><span>Schedules</span></a>
-    <a href="profile.html" class="mobile-nav-item" data-page="profile"><i class="fas fa-user-circle"></i><span>Profile</span></a>
-  </div>
-  <div class="sidebar-footer" style="margin-top: auto;"><i class="fas fa-user-circle"></i> Family Account</div>
+<div id="notification-container">
+    <span id="notification-message"></span>
 </div>
 
 <script>
@@ -208,7 +124,6 @@
     });
   }
 
-  // Get current page
   const path = window.location.pathname;
   const currentPage = path.split('/').pop().replace('.html', '') || 'dashboard';
   setActiveNavItem(currentPage);
@@ -303,14 +218,12 @@
         badge.style.display = 'none';
       }
 
-      // Store notifications for dropdown
       window._notifications = data.notifications || [];
     } catch (err) {
       console.error('Notifications error:', err);
     }
   }
 
-  // Notification bell click
   document.getElementById('notificationBell').addEventListener('click', function (e) {
     e.stopPropagation();
     const dd = document.getElementById('notifDropdown');
@@ -338,6 +251,24 @@
     const dd = document.getElementById('notifDropdown');
     if (dd) dd.style.display = 'none';
   });
+
+  // ----- Notification System (team) -----
+  function showNotification(message, type) {
+    type = type || 'info';
+    const container = document.getElementById('notification-container');
+    const msgSpan = document.getElementById('notification-message');
+    msgSpan.textContent = message;
+    container.className = 'notif-' + type;
+    container.style.opacity = '1';
+    container.style.pointerEvents = 'auto';
+
+    if (type === 'success' || type === 'info') {
+      setTimeout(function () {
+        container.style.opacity = '0';
+        container.style.pointerEvents = 'none';
+      }, 3000);
+    }
+  }
 
   // ----- Init -----
   loadKPIs();

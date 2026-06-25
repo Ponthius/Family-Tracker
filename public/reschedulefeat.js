@@ -48,14 +48,14 @@ saveReschedule.addEventListener("click", async () => {
 
     if (!newDate.value || !newTime.value) {
 
-        alert("Please select a date and time");
+        showNotification("Please select a date and time", "warning");
 
         return;
     }
 
     if (isPast(newDate.value, newTime.value)) {
 
-        alert("Cannot reschedule to a past date");
+        showNotification("Cannot reschedule to a past date", "warning");
 
         return;
     }
@@ -97,7 +97,7 @@ saveReschedule.addEventListener("click", async () => {
 
     } catch (err) {
 
-        alert("Failed to reschedule task");
+        showNotification("Failed to reschedule task", "error");
 
         console.error(err);
     }
