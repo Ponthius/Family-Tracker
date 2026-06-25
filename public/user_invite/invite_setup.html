@@ -4,148 +4,104 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Join Family</title>
-
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  background: #e8e2d9;
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.card {
-  background: #f5f1ec;
-  border-radius: 12px;
-  padding: 32px 28px;
-  width: 100%;
-  max-width: 360px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-}
-
-.title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #2c2420;
-  text-align: center;
-  margin-bottom: 12px;
-  font-family: Georgia, serif;
-}
-
-label {
-  font-size: 0.82rem;
-  color: #5a4e46;
-  margin-top: 10px;
-}
-
-input {
-  width: 100%;
-  padding: 9px 12px;
-  border: 1px solid #c8bfb5;
-  border-radius: 6px;
-  background: #faf8f5;
-  font-size: 0.9rem;
-  color: #2c2420;
-  outline: none;
-}
-
-input:focus {
-  border-color: #8b7355;
-}
-
-.btn {
-  margin-top: 20px;
-  padding: 11px;
-  background: #3d3530;
-  color: #f5f1ec;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  letter-spacing: 0.03em;
-}
-
-.btn:hover {
-  background: #2c2420;
-}
-
-.family-name {
-  text-align: center;
-  color: #5a4e46;
-  font-size: 0.9rem;
-  margin-bottom: 10px;
-}
-
-.message {
-  text-align: center;
-  font-size: 0.85rem;
-  margin-top: 10px;
-}
-</style>
-
+<link rel="stylesheet" href="../login.css">
 </head>
 <body>
 
 <div class="card">
-
     <h2 class="title">Join Family</h2>
+    <p class="login-link" id="familyNameDisplay" style="text-align:center;font-size:0.9rem;margin-bottom:10px;color:#5a4e46;">Loading invitation...</p>
 
-    <div class="family-name">
-        Family: 
-    </div>
+    <label>Username</label>
+    <input type="text" id="username" placeholder="Enter username" required>
 
-    <form id="inviteForm">
+    <label>Email Address</label>
+    <input type="email" id="email" placeholder="Enter email address" required>
 
-        <label>Username</label>
-        <input
-            type="text"
-            id="username"
-            placeholder="Enter username"
-            required>
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Enter password" required>
 
-        <label>Email Address</label>
-        <input
-            type="email"
-            id="email"
-            placeholder="Enter email address"
-            required>
+    <label>Confirm Password</label>
+    <input type="password" id="confirmPassword" placeholder="Confirm password" required>
 
-        <label>Password</label>
-        <input
-            type="password"
-            id="password"
-            placeholder="Enter password"
-            required>
+    <button class="btn" id="acceptBtn">Create Account</button>
 
-        <label>Confirm Password</label>
-        <input
-            type="password"
-            id="confirmPassword"
-            placeholder="Confirm password"
-            required>
+    <p class="login-link" style="margin-top:12px;">
+        Already have an account? <a href="../login.html">Log in</a>
+    </p>
 
-        <button type="submit" class="btn">
-            Create Account
-        </button>
-
-    </form>
-
-    <div id="message" class="message"></div>
-
+    <div id="message" style="text-align:center;font-size:0.85rem;margin-top:10px;"></div>
 </div>
 
-<script src="../js/invite-setup.js"></script>
+<script>
+const API = '/api';
+
+function getQueryParam(name) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+}
+
+const token = getQueryParam('token');
+const msgDiv = document.getElementById('message');
+const familyDisplay = document.getElementById('familyNameDisplay');
+
+if (!token) {
+    familyDisplay.textContent = 'This invitation link is invalid or has expired.';
+}
+
+document.getElementById('acceptBtn').addEventListener('click', async function () {
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirmPassword').value;
+
+    if (!username || !email || !password || !confirm) {
+        msgDiv.textContent = 'All fields are required.';
+        msgDiv.style.color = '#a13d3d';
+        return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+        msgDiv.textContent = 'Please enter a valid email address.';
+        msgDiv.style.color = '#a13d3d';
+        return;
+    }
+    if (password.length < 4) {
+        msgDiv.textContent = 'Password must be at least 4 characters.';
+        msgDiv.style.color = '#a13d3d';
+        return;
+    }
+    if (password !== confirm) {
+        msgDiv.textContent = 'Passwords do not match.';
+        msgDiv.style.color = '#a13d3d';
+        return;
+    }
+
+    try {
+        const res = await fetch(API + '/invitations/accept', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, username, email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            // Auto-login
+            localStorage.setItem('user', JSON.stringify(data.user));
+            msgDiv.textContent = 'Account created! Redirecting...';
+            msgDiv.style.color = '#3c5a3c';
+            setTimeout(function () { window.location.href = '../dashboard.html'; }, 1500);
+        } else {
+            msgDiv.textContent = data.error || 'Failed to create account.';
+            msgDiv.style.color = '#a13d3d';
+        }
+    } catch (err) {
+        msgDiv.textContent = 'Server error. Please try again.';
+        msgDiv.style.color = '#a13d3d';
+        console.error(err);
+    }
+});
+</script>
 
 </body>
 </html>

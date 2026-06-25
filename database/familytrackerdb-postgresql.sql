@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
     fullname VARCHAR(100),
     profile_photo TEXT,
     emailverified BOOLEAN DEFAULT FALSE,
+    is_super_admin BOOLEAN DEFAULT FALSE,
+    family_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -64,4 +66,32 @@ CREATE TABLE IF NOT EXISTS Tasks (
     AssignedBy INT,
     AssignedByName VARCHAR(50),
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS families (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    admin_id INT REFERENCES users(id) ON DELETE SET NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'Active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50),
+    user_role VARCHAR(20),
+    action VARCHAR(100) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'Success',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS invitations (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(100) NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    family_id INT NOT NULL REFERENCES families(id) ON DELETE CASCADE,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expires_at TIMESTAMP NOT NULL,
+    accepted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

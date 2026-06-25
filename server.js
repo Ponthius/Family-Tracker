@@ -75,6 +75,20 @@ app.post('/register', async (req, res) => {
             [email, username, password, role]
         );
 
+        const userId = userResult.rows[0].id;
+
+        // If father, auto-create a family and assign family_id
+        if (role === 'father') {
+            const familyResult = await pool.query(
+                `INSERT INTO families (name, admin_id) VALUES ($1, $2) RETURNING id`,
+                [username + '\'s Family', userId]
+            );
+            await pool.query(
+                `UPDATE users SET family_id = $1 WHERE id = $2`,
+                [familyResult.rows[0].id, userId]
+            );
+        }
+
         res.json({ success: true, message: 'Registration successful.' });
     } catch (err) {
         console.error('Register error:', err.message);
@@ -190,7 +204,7 @@ app.post('/login', async (req, res) => {
 
     try {
         const result = await pool.query(
-            `SELECT id, email, username, role, emailverified FROM users WHERE username = $1 AND password = $2`,
+            `SELECT id, email, username, role, family_id, is_super_admin FROM users WHERE username = $1 AND password = $2`,
             [username, password]
         );
 
@@ -207,7 +221,9 @@ app.post('/login', async (req, res) => {
                 id: user.id,
                 email: user.email,
                 username: user.username,
-                role: user.role
+                role: user.role,
+                family_id: user.family_id,
+                is_super_admin: user.is_super_admin
             }
         });
     } catch (err) {
@@ -332,6 +348,8 @@ app.put('/profile/:id/password', async (req, res) => {
             `UPDATE users SET password = $1 WHERE id = $2`,
             [newPassword, id]
         );
+
+        await logAudit(username, role, 'Password Changed', 'Success');
 
         res.json({ success: true, message: 'Password updated successfully' });
     } catch (err) {
@@ -576,9 +594,279 @@ app.get('/notifications', async (req, res) => {
     }
 });
 
+// ----- Audit Log Helper -----
+
+async function logAudit(username, userRole, action, status) {
+    try {
+        await pool.query(
+            `INSERT INTO audit_logs (username, user_role, action, status) VALUES ($1, $2, $3, $4)`,
+            [username || 'system', userRole || 'system', action, status || 'Success']
+        );
+    } catch (err) {
+        console.error('Audit log error:', err.message);
+    }
+}
+
+// ----- Super Admin seed on startup (if not exists) -----
+
+async function seedSuperAdmin() {
+    try {
+        const result = await pool.query(`SELECT id FROM users WHERE is_super_admin = TRUE`);
+        if (result.rows.length === 0) {
+            const saEmail = process.env.SUPERADMIN_EMAIL || 'superadmin@gmail.com';
+            const saPass = process.env.SUPERADMIN_PASS || 'superadmin123';
+            await pool.query(
+                `INSERT INTO users (email, username, password, role, is_super_admin, emailverified)
+                 VALUES ($1, $2, $3, $4, TRUE, TRUE)`,
+                [saEmail, 'superadmin', saPass, 'super_admin']
+            );
+            console.log('Super admin seeded: ' + saEmail);
+        }
+    } catch (err) {
+        console.error('Super admin seed error:', err.message);
+    }
+}
+
+// ----- Audit Routes -----
+
+app.get('/api/audit/all', async (req, res) => {
+    try {
+        const { search, role, action, status, limit } = req.query;
+        const conditions = ['1=1'];
+        const params = [];
+        let idx = 1;
+
+        if (search) {
+            conditions.push(`(username ILIKE $${idx} OR action ILIKE $${idx})`);
+            params.push(`%${search}%`);
+            idx++;
+        }
+        if (role) {
+            conditions.push(`user_role = $${idx++}`);
+            params.push(role);
+        }
+        if (action) {
+            conditions.push(`action = $${idx++}`);
+            params.push(action);
+        }
+        if (status) {
+            conditions.push(`status = $${idx++}`);
+            params.push(status);
+        }
+
+        const where = conditions.join(' AND ');
+        const pageLimit = parseInt(limit) || 50;
+
+        const countR = await pool.query(`SELECT COUNT(*) AS total FROM audit_logs WHERE ${where}`, params);
+        const dataR = await pool.query(
+            `SELECT id, username, user_role AS role, action, status,
+                    TO_CHAR(created_at, 'YYYY-MM-DD') AS date,
+                    TO_CHAR(created_at, 'HH24:MI') AS time
+             FROM audit_logs WHERE ${where}
+             ORDER BY created_at DESC LIMIT $${idx}`, [...params, pageLimit]
+        );
+
+        res.json({ success: true, total: parseInt(countR.rows[0].total), data: dataR.rows });
+    } catch (err) {
+        console.error('Audit all error:', err.message);
+        res.status(500).json({ error: 'Failed to fetch audit logs' });
+    }
+});
+
+app.get('/api/audit/families-overview', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT f.id, f.name AS family_name,
+                   u.username AS admin_username, u.email AS admin_email,
+                   (SELECT COUNT(*) FROM users WHERE family_id = f.id) AS member_count,
+                   f.status, TO_CHAR(f.created_at, 'DD/MM/YYYY') AS date_created
+            FROM families f
+            LEFT JOIN users u ON u.id = f.admin_id
+            ORDER BY f.created_at DESC
+        `);
+        res.json({ success: true, data: result.rows });
+    } catch (err) {
+        console.error('Families overview error:', err.message);
+        res.status(500).json({ error: 'Failed to fetch families' });
+    }
+});
+
+// ----- Invitation Routes -----
+
+app.post('/api/invitations', async (req, res) => {
+    const { email, role, familyId } = req.body;
+
+    if (!email || !role || !familyId) {
+        return res.status(400).json({ error: 'Email, role, and family ID required' });
+    }
+
+    try {
+        const token = require('crypto').randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+        await pool.query(
+            `INSERT INTO invitations (email, role, family_id, token, expires_at)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [email, role, familyId, token, expiresAt]
+        );
+
+        await logAudit(req.body.username || 'system', 'family_admin', 'Member Invited', 'Success');
+
+        res.json({ success: true, message: 'Invitation created successfully', token });
+    } catch (err) {
+        console.error('Invitation error:', err.message);
+        res.status(500).json({ error: 'Failed to create invitation' });
+    }
+});
+
+app.post('/api/invitations/accept', async (req, res) => {
+    const { token, username, email, password } = req.body;
+
+    if (!token || !username || !email || !password) {
+        return res.status(400).json({ error: 'Token, username, email, and password required' });
+    }
+
+    try {
+        const invR = await pool.query(
+            `SELECT i.*, f.name AS family_name FROM invitations i
+             JOIN families f ON f.id = i.family_id
+             WHERE i.token = $1 AND i.accepted = FALSE AND i.expires_at > NOW()`,
+            [token]
+        );
+
+        if (invR.rows.length === 0) {
+            return res.status(400).json({ error: 'This invitation link is invalid or has expired.' });
+        }
+
+        const invitation = invR.rows[0];
+
+        const userR = await pool.query(
+            `INSERT INTO users (email, username, password, role, family_id, emailverified)
+             VALUES ($1, $2, $3, $4, $5, TRUE) RETURNING id`,
+            [email, username, password, invitation.role, invitation.family_id]
+        );
+
+        await pool.query(`UPDATE invitations SET accepted = TRUE WHERE id = $1`, [invitation.id]);
+
+        await logAudit(username, invitation.role, 'Account Created via Invitation', 'Success');
+
+        res.json({
+            success: true,
+            message: 'Account created successfully',
+            user: {
+                id: userR.rows[0].id,
+                email: email,
+                username: username,
+                role: invitation.role
+            }
+        });
+    } catch (err) {
+        console.error('Accept invitation error:', err.message);
+        if (err.code === '23505') {
+            return res.status(409).json({ error: 'Username or email already exists' });
+        }
+        res.status(500).json({ error: 'Failed to create account' });
+    }
+});
+
+// ----- Family Management Routes -----
+
+app.get('/api/families', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT f.*, u.username AS admin_username, u.email AS admin_email,
+                   (SELECT COUNT(*) FROM users WHERE family_id = f.id) AS member_count
+            FROM families f
+            LEFT JOIN users u ON u.id = f.admin_id
+            ORDER BY f.created_at DESC
+        `);
+        res.json({ success: true, families: result.rows });
+    } catch (err) {
+        console.error('Families list error:', err.message);
+        res.status(500).json({ error: 'Failed to fetch families' });
+    }
+});
+
+app.put('/api/families/:id/status', async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status || !['Active', 'Suspended'].includes(status)) {
+        return res.status(400).json({ error: 'Status must be Active or Suspended' });
+    }
+
+    try {
+        await pool.query(`UPDATE families SET status = $1 WHERE id = $2`, [status, id]);
+        await logAudit('system', 'super_admin', 'Family ' + status, 'Success');
+        res.json({ success: true, message: 'Family ' + status });
+    } catch (err) {
+        console.error('Family status error:', err.message);
+        res.status(500).json({ error: 'Failed to update family status' });
+    }
+});
+
+// ----- Delete Routes -----
+
+app.delete('/api/tasks/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const task = await pool.query(`SELECT TaskName, Username FROM Tasks WHERE TaskID = $1`, [id]);
+        if (task.rows.length === 0) return res.status(404).json({ error: 'Task not found' });
+
+        await pool.query(`DELETE FROM Tasks WHERE TaskID = $1`, [id]);
+        await logAudit(task.rows[0].username, 'system', 'Task Deleted', 'Success');
+        res.json({ success: true, message: 'Task deleted successfully' });
+    } catch (err) {
+        console.error('Delete task error:', err.message);
+        res.status(500).json({ error: 'Failed to delete task' });
+    }
+});
+
+app.delete('/api/events/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query(`DELETE FROM UpcomingEvents WHERE UpcomingEventID = $1`, [id]);
+        await logAudit('system', 'system', 'Event Deleted', 'Success');
+        res.json({ success: true, message: 'Event deleted successfully' });
+    } catch (err) {
+        console.error('Delete event error:', err.message);
+        res.status(500).json({ error: 'Failed to delete event' });
+    }
+});
+
+app.delete('/api/users/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await pool.query(`SELECT username, role, family_id, is_super_admin FROM users WHERE id = $1`, [id]);
+        if (user.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+
+        const u = user.rows[0];
+
+        // If super admin, don't allow deletion
+        if (u.is_super_admin) {
+            return res.status(403).json({ error: 'Cannot delete the super admin account' });
+        }
+
+        // If father (family admin), delete the whole family
+        if (u.role === 'father' && u.family_id) {
+            await pool.query(`DELETE FROM invitations WHERE family_id = $1`, [u.family_id]);
+            await pool.query(`UPDATE users SET family_id = NULL WHERE family_id = $1`, [u.family_id]);
+            await pool.query(`DELETE FROM families WHERE id = $1`, [u.family_id]);
+        }
+
+        await pool.query(`DELETE FROM users WHERE id = $1`, [id]);
+        await logAudit(u.username, u.role, 'Account Deleted', 'Success');
+        res.json({ success: true, message: 'User deleted successfully' });
+    } catch (err) {
+        console.error('Delete user error:', err.message);
+        res.status(500).json({ error: 'Failed to delete user' });
+    }
+});
+
 // ----- Start server -----
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
     console.log(`Database: ${process.env.PGDATABASE || 'familytrackerdb'} on ${process.env.PGHOST || 'localhost'}`);
+    seedSuperAdmin();
 });
