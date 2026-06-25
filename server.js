@@ -18,15 +18,15 @@ const pool = new Pool({
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER || 'yourgmail@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your-app-password'
+        user: process.env.EMAIL_USER || 'hafizashiraf180@gmail.com',
+        pass: process.env.EMAIL_PASS || 'HafizAshiraf@2005'
     }
 });
 
 async function sendVerificationEmail(email, token) {
     const verificationLink = `http://13.140.143.58:4001/verify-email?token=${token}`;
     await transporter.sendMail({
-        from: process.env.EMAIL_USER || 'yourgmail@gmail.com',
+        from: process.env.EMAIL_USER || 'hafizashiraf180@gmail.com',
         to: email,
         subject: 'Verify your Email - Family Tracker',
         html: `
