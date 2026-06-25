@@ -1,5 +1,5 @@
 // Tasks — backed by the database via API
-const API = 'http://localhost:4001';
+const API = 'http://13.140.143.58:4001';
 let tasks = [];
 
 const tableBody = document.getElementById("taskTableBody");

@@ -63,7 +63,7 @@ saveReschedule.addEventListener("click", async () => {
     try {
 
         const res = await fetch(
-          `http://localhost:4001/tasks/${selectedTaskId}/reschedule`,
+          `http://13.140.143.58:4001/tasks/${selectedTaskId}/reschedule`,
           {
             method: "PUT",
             headers: {
