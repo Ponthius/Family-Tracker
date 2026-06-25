@@ -1,7 +1,16 @@
-/* ===========================
-   RESET & BASE STYLES
-   =========================== */
+/* ==========================================================================
+   1. VARIABLES & THEME ROOT (Controls live coloring changes)
+   ========================================================================== */
+:root {
+  /* Default fallbacks if no user customization has been picked yet */
+  --theme-color: #8b7355;       /* Secondary details & highlight accents */
+  --theme-dark: #3d3530;        /* Main Save Button text/background */
+  --theme-dark-hover: #2c2420;  /* Button Hover interactive state */
+}
 
+/* ==========================================================================
+   RESET & BASE STYLES
+   ========================================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -18,10 +27,9 @@ body {
   min-height: 100vh;
 }
 
-/* ===========================
+/* ==========================================================================
    CARD IN THE CENTER
-   =========================== */
-
+   ========================================================================== */
 .card {
   background: #f5f1ec;
   border-radius: 12px;
@@ -31,10 +39,9 @@ body {
   padding: 24px 24px;
 }
 
-/* ===========================
+/* ==========================================================================
    TOP BAR
-   =========================== */
-
+   ========================================================================== */
 .top-bar {
   display: flex;
   align-items: center;
@@ -66,10 +73,9 @@ body {
   font-family: Georgia, serif;
 }
 
-/* ============================
-   SECTION HEADINGS
-   ============================ */
-
+/* ==========================================================================
+   SECTION HEADINGS (Uses Dynamic Theme Color Variable)
+   ========================================================================== */
 .section-heading {
   font-size: 16px;
   font-weight: 700;
@@ -84,7 +90,7 @@ body {
 .section-heading svg {
   width: 18px;
   height: 18px;
-  color: #8b7355;
+  color: var(--theme-color); /* Updated dynamically via JS */
 }
 
 .divider {
@@ -93,10 +99,9 @@ body {
   margin: 28px 0;
 }
 
-/* ============================
+/* ==========================================================================
    FORM FIELDS
-   ============================ */
-
+   ========================================================================== */
 .field {
   margin-bottom: 16px;
 }
@@ -123,19 +128,18 @@ body {
   font-family: Arial, sans-serif;
 }
 
-.field input:focus {
-  border-color: #8b7355;
+.field input:focus, .lang-dropdown:focus {
+  border-color: var(--theme-color); /* Highlight borders match selected theme color */
   background: #f5f1ec;
 }
 
-/* ============================
-   SAVE BUTTON
-   ============================ */
-
+/* ==========================================================================
+   MAIN SAVE BUTTON (Uses Dynamic Theme Dark Variables)
+   ========================================================================== */
 .save-btn-bottom {
   width: 100%;
   padding: 11px;
-  background: #3d3530;
+  background: var(--theme-dark); /* Generated dynamically to match selection */
   color: #f5f1ec;
   border: none;
   border-radius: 6px;
@@ -149,17 +153,16 @@ body {
 }
 
 .save-btn-bottom:hover {
-  background: #2c2420;
+  background: var(--theme-dark-hover); /* Generated dynamically for dark contrast hover */
 }
 
 .save-btn-bottom:active {
   transform: scale(0.98);
 }
 
-/* =============================
+/* ==========================================================================
    SUCCESS / ERROR MESSAGES
-   ============================= */
-
+   ========================================================================== */
 .success-msg {
   background: #e7efe2;
   color: #3c5a3c;
@@ -186,10 +189,109 @@ body {
   font-weight: 500;
 }
 
-/* =============================
-   RESPONSIVE
-   ============================= */
+/* ==========================================================================
+   WORKSPACE WHITE LABEL STYLES (Custom upload area)
+   ========================================================================== */
+.file-upload-wrapper {
+  position: relative;
+  width: 100%;
+}
 
+.file-upload-wrapper input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.file-upload-btn {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px dashed #c8bfb5;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: #faf8f5;
+  color: #5a4e46;
+  text-align: left;
+  font-family: Arial, sans-serif;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.file-upload-wrapper:hover .file-upload-btn {
+  border-color: var(--theme-color); /* Dashed border turns theme-colored on hover */
+  background: #f5f1ec;
+}
+
+/* Color Picker Row Layout */
+.color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 12px;
+  border: 1px solid #c8bfb5;
+  border-radius: 6px;
+  background: #faf8f5;
+}
+
+.color-picker-wrapper input[type="color"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.color-picker-wrapper input[type="color"]::-webkit-color-swatch {
+  border: 1px solid #c8bfb5;
+  border-radius: 4px;
+}
+
+.color-picker-wrapper input[type="color"]::-moz-color-swatch {
+  border: 1px solid #c8bfb5;
+  border-radius: 4px;
+}
+
+.color-value-preview {
+  font-size: 0.9rem;
+  color: #2c2420;
+  font-family: Arial, sans-serif;
+}
+
+/* ==========================================================================
+   TRANSLATION LANGUAGE SELECT DROPDOWN COMPONENT
+   ========================================================================== */
+.lang-dropdown {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #c8bfb5;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  background: #faf8f5;
+  color: #2c2420;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235a4e46' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================================================== */
 @media (max-width: 480px) {
   body {
     padding: 16px 12px;

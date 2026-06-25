@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="profile.css">
   <title>Profile Settings - Family Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Include i18next Library from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/23.11.5/i18next.min.js"></script>
 </head>
 <body>
 
@@ -15,27 +17,27 @@
       <button class="back-btn" onclick="history.back()">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </button>
-      <span class="page-title">Profile Settings</span>
+      <span class="page-title" data-i18n="nav.title">Profile Settings</span>
     </div>
 
     <!-- EDIT PROFILE SECTION -->
     <div class="section-heading">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Edit Profile
+      <span data-i18n="sections.profile">Edit Profile</span>
     </div>
 
     <div class="field">
-      <label for="username">Username</label>
+      <label for="username" data-i18n="fields.username">Username</label>
       <input type="text" id="username" placeholder="Enter your username" />
     </div>
 
     <div class="field">
-      <label for="fullname">Full Name</label>
+      <label for="fullname" data-i18n="fields.fullname">Full Name</label>
       <input type="text" id="fullname" placeholder="Enter your full name e.g. Naiga Hawah" />
     </div>
 
     <div class="field">
-      <label for="email">Email Address</label>
+      <label for="email" data-i18n="fields.email">Email Address</label>
       <input type="email" id="email" placeholder="Enter your email e.g. hawah@email.com" />
     </div>
 
@@ -44,30 +46,73 @@
     <!-- EDIT PASSWORD SECTION -->
     <div class="section-heading">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      Edit Password
+      <span data-i18n="sections.password">Edit Password</span>
     </div>
 
     <div class="field">
-      <label for="current-password">Current Password</label>
+      <label for="current-password" data-i18n="fields.current_pass">Current Password</label>
       <input type="password" id="current-password" placeholder="Enter your current password" />
     </div>
 
     <div class="field">
-      <label for="new-password">New Password</label>
+      <label for="new-password" data-i18n="fields.new_pass">New Password</label>
       <input type="password" id="new-password" placeholder="Enter your new password" />
     </div>
 
     <div class="field">
-      <label for="confirm-password">Confirm New Password</label>
+      <label for="confirm-password" data-i18n="fields.confirm_pass">Confirm New Password</label>
       <input type="password" id="confirm-password" placeholder="Confirm your new password" />
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- WORKSPACE WHITE LABEL SECTION -->
+    <div class="section-heading">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span data-i18n="sections.workspace">Workspace Customization</span>
+    </div>
+
+    <div class="field">
+      <label for="family-title" data-i18n="fields.family_title">Family Title</label>
+      <input type="text" id="family-title" placeholder="Enter workspace family title e.g. Smith Family" />
+    </div>
+
+    <div class="field">
+      <label for="workspace-logo" data-i18n="fields.workspace_logo">Workspace Logo</label>
+      <div class="file-upload-wrapper">
+        <input type="file" id="workspace-logo" accept="image/*" onchange="updateFileName(this)">
+        <div class="file-upload-btn" id="file-btn-text" data-i18n="fields.choose_logo">Choose Logo Image</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="workspace-color" data-i18n="fields.theme_color">Theme Color</label>
+      <div class="color-picker-wrapper">
+        <input type="color" id="workspace-color" value="#5A3562" oninput="updateColorPreview(this.value)">
+        <span class="color-value-preview" id="color-code">#5A3562</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Language Selector Dropdown -->
+    <div class="field">
+      <label for="language-select" data-i18n="fields.app_lang">Application Language</label>
+      <select id="language-select" class="lang-dropdown" onchange="changeLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="sw">Kiswahili</option>
+        <option value="lg">Luganda</option>
+        <option value="fr">Français (French)</option>
+        <option value="es">Español (Spanish)</option>
+      </select>
     </div>
 
     <button class="save-btn-bottom" onclick="saveProfileSettings()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      Save Changes
+      <span data-i18n="buttons.save" style="display: inline; padding: 0; background: none; color: inherit;">Save Changes</span>
     </button>
 
-    <div class="success-msg" id="success-msg">
+    <div class="success-msg" id="success-msg" data-i18n="messages.success">
       Profile settings saved successfully!
     </div>
 
@@ -78,20 +123,185 @@
   <script>
     const API = 'http://localhost:4001';
 
-    function getStoredUser() {
-      try {
-        return JSON.parse(localStorage.getItem('user')) || {};
-      } catch (e) {
-        return {};
+    const resources = {
+      en: {
+        translation: {
+          "nav.title": "Profile Settings",
+          "sections.profile": "Edit Profile",
+          "sections.password": "Edit Password",
+          "sections.workspace": "Workspace Customization",
+          "fields.username": "Username",
+          "fields.fullname": "Full Name",
+          "fields.email": "Email Address",
+          "fields.current_pass": "Current Password",
+          "fields.new_pass": "New Password",
+          "fields.confirm_pass": "Confirm New Password",
+          "fields.family_title": "Family Title",
+          "fields.workspace_logo": "Workspace Logo",
+          "fields.choose_logo": "Choose Logo Image",
+          "fields.theme_color": "Theme Color",
+          "fields.app_lang": "Application Language",
+          "buttons.save": "Save Changes",
+          "messages.success": "Profile settings saved successfully!"
+        }
+      },
+      sw: {
+        translation: {
+          "nav.title": "Mipangilio ya Wasifu",
+          "sections.profile": "Hariri Wasifu",
+          "sections.password": "Badilisha Nywila",
+          "sections.workspace": "Urekebishaji wa Eneo la Kazi",
+          "fields.username": "Jina la Mtumiaji",
+          "fields.fullname": "Majina Kamili",
+          "fields.email": "Anwani ya Barua Pepe",
+          "fields.current_pass": "Nywila ya Sasa",
+          "fields.new_pass": "Nywila Mpya",
+          "fields.confirm_pass": "Thibitisha Nywila Mpya",
+          "fields.family_title": "Jina la Familia",
+          "fields.workspace_logo": "Nembo ya Eneo la Kazi",
+          "fields.choose_logo": "Chagua Picha ya Nembo",
+          "fields.theme_color": "Rangi ya Maudhui",
+          "fields.app_lang": "Lugha ya Programu",
+          "buttons.save": "Hifadhi Mabadiliko",
+          "messages.success": "Mipangilio ya wasifu imehifadhiwa kikamilifu!"
+        }
+      },
+      lg: {
+        translation: {
+          "nav.title": "Enkyukakyuka z'Akawunti",
+          "sections.profile": "Kyusa Akawunti",
+          "sections.password": "Kyusa Ssekula",
+          "sections.workspace": "Kola Enkyukakyuka z'Akawunti",
+          "fields.username": "Erinnya ly'okukozesa",
+          "fields.fullname": "Amanya Gali mu Buwandiike",
+          "fields.email": "Endagiriro ya Emmere",
+          "fields.current_pass": "Ssekula Ekadde",
+          "fields.new_pass": "Ssekula Empya",
+          "fields.confirm_pass": "Kasa Ssekula Empya",
+          "fields.family_title": "Erinnya ly'Amaka",
+          "fields.workspace_logo": "Akabonero k'Akawunti",
+          "fields.choose_logo": "Londa Kifaananyi ky'Akabonero",
+          "fields.theme_color": "Langatenda",
+          "fields.app_lang": "Olulimi lw'Enkola",
+          "buttons.save": "Terekebza Enkyukakyuka",
+          "messages.success": "Enkyukakyuka ziterekedwa bulungi!"
+        }
+      },
+      fr: {
+        translation: {
+          "nav.title": "Paramètres du Profil",
+          "sections.profile": "Modifier le Profil",
+          "sections.password": "Modifier le Mot de Passe",
+          "sections.workspace": "Personnalisation de l'Espace",
+          "fields.username": "Nom d'utilisateur",
+          "fields.fullname": "Nom Complet",
+          "fields.email": "Adresse E-mail",
+          "fields.current_pass": "Mot de Passe Actuel",
+          "fields.new_pass": "Nouveau Mot de Passe",
+          "fields.confirm_pass": "Confirmer le Nouveau Mot de Passe",
+          "fields.family_title": "Titre de la Famille",
+          "fields.workspace_logo": "Logo de l'Espace de Travail",
+          "fields.choose_logo": "Choisir une Image de Logo",
+          "fields.theme_color": "Couleur du Thème",
+          "fields.app_lang": "Langue de l'Application",
+          "buttons.save": "Enregistrer",
+          "messages.success": "Paramètres enregistrés avec succès!"
+        }
+      },
+      es: {
+        translation: {
+          "nav.title": "Ajustes del Perfil",
+          "sections.profile": "Editar Perfil",
+          "sections.password": "Editar Contraseña",
+          "sections.workspace": "Personalización del Espacio",
+          "fields.username": "Nombre de Usuario",
+          "fields.fullname": "Nombre Completo",
+          "fields.email": "Correo Electrónico",
+          "fields.current_pass": "Contraseña Actual",
+          "fields.new_pass": "Nueva Contraseña",
+          "fields.confirm_pass": "Confirmer Nueva Contraseña",
+          "fields.family_title": "Título de la Familia",
+          "fields.workspace_logo": "Logotipo del Espacio",
+          "fields.choose_logo": "Elegir Imagen de Logo",
+          "fields.theme_color": "Color del Tema",
+          "fields.app_lang": "Idioma de la Aplicación",
+          "buttons.save": "Guardar Cambios",
+          "messages.success": "¡Ajustes guardados con éxito!"
+        }
       }
+    };
+
+    // Helper to calculate darker button shades relative to selected theme color
+    function adjustColorBrightness(hex, percent) {
+      let R = parseInt(hex.substring(1, 3), 16);
+      let G = parseInt(hex.substring(3, 5), 16);
+      let B = parseInt(hex.substring(5, 7), 16);
+
+      R = parseInt(R * (100 + percent) / 100);
+      G = parseInt(G * (100 + percent) / 100);
+      B = parseInt(B * (100 + percent) / 100);
+
+      R = (R < 255) ? R : 255; G = (G < 255) ? G : 255; B = (B < 255) ? B : 255;
+      R = (R > 0) ? R : 0;     G = (G > 0) ? G : 0;     B = (B > 0) ? B : 0;
+
+      return `#${R.toString(16).padStart(2, '0')}${G.toString(16).padStart(2, '0')}${B.toString(16).padStart(2, '0')}`;
+    }
+
+    // Dynamic Live Preview execution loop
+    function updateColorPreview(val) {
+      document.getElementById('color-code').innerText = val.toUpperCase();
+      
+      const darkShade = adjustColorBrightness(val, -15);
+      const hoverShade = adjustColorBrightness(val, -30);
+
+      // Mutates the global CSS custom variables instantly
+      document.documentElement.style.setProperty('--theme-color', val);
+      document.documentElement.style.setProperty('--theme-dark', darkShade);
+      document.documentElement.style.setProperty('--theme-dark-hover', hoverShade);
+    }
+
+    function initTheme() {
+      const savedColor = localStorage.getItem('workspace_theme_color') || '#5A3562';
+      document.getElementById('workspace-color').value = savedColor;
+      updateColorPreview(savedColor);
+    }
+
+    async function initTranslations() {
+      const savedLang = localStorage.getItem('app_lang') || 'en';
+      await i18next.init({
+        lng: savedLang,
+        fallbackLng: 'en',
+        resources: resources
+      });
+      document.getElementById('language-select').value = savedLang;
+      applyTranslations();
+    }
+
+    function applyTranslations() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = i18next.t(key);
+      });
+    }
+
+    function changeLanguage(lang) {
+      i18next.changeLanguage(lang, () => {
+        applyTranslations();
+        localStorage.setItem('app_lang', lang);
+      });
+    }
+
+    function getStoredUser() {
+      try { return JSON.parse(localStorage.getItem('user')) || {}; } 
+      catch (e) { return {}; }
     }
 
     function showSuccess(msg) {
       const el = document.getElementById('success-msg');
-      el.textContent = msg || 'Profile settings saved successfully!';
+      el.textContent = msg || i18next.t('messages.success');
       el.style.display = 'block';
       document.getElementById('error-msg').style.display = 'none';
-      setTimeout(function () { el.style.display = 'none'; }, 3000);
+      setTimeout(() => el.style.display = 'none', 3000);
     }
 
     function showError(msg) {
@@ -99,122 +309,51 @@
       el.textContent = msg;
       el.style.display = 'block';
       document.getElementById('success-msg').style.display = 'none';
-      setTimeout(function () { el.style.display = 'none'; }, 5000);
+      setTimeout(() => el.style.display = 'none', 5000);
     }
 
-    // --LOAD PROFILE FROM API--
     async function loadProfile() {
+      initTheme();
       const user = getStoredUser();
-      if (!user.id) {
-        // Not logged in — redirect to login
-        window.location.href = '/login.html';
-        return;
-      }
+      if (!user.id) return;
 
       try {
-        const res = await fetch(API + '/profile/' + user.id);
+        const res = await fetch(`${API}/profile/${user.id}`);
         const data = await res.json();
-
         if (!res.ok || !data.success) throw new Error(data.error);
 
         const u = data.user;
-
         document.getElementById('username').value = u.username || '';
         document.getElementById('fullname').value = u.fullname || '';
         document.getElementById('email').value = u.email || '';
-
-        // Sync any newly-saved fullname back to localStorage
-        if (u.fullname) {
-          user.fullname = u.fullname;
-          localStorage.setItem('user', JSON.stringify(user));
-        }
       } catch (err) {
-        console.error('Could not load profile:', err);
-        // Fill from localStorage as fallback
-        document.getElementById('username').value = user.username || '';
-        document.getElementById('email').value = user.email || '';
+        console.error('Profile loading error:', err);
       }
     }
 
-    // --SAVE PROFILE--
     async function saveProfileSettings() {
       const user = getStoredUser();
-      if (!user.id) {
-        showError('You must be logged in to update your profile.');
-        return;
-      }
-
-      const username = document.getElementById('username').value.trim();
-      const fullname = document.getElementById('fullname').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const currentPassword = document.getElementById('current-password').value;
-      const newPassword = document.getElementById('new-password').value;
-      const confirmPassword = document.getElementById('confirm-password').value;
-
-      // Validate password section
-      if (newPassword || confirmPassword) {
-        if (!currentPassword) {
-          showError('Please enter your current password to set a new one.');
-          return;
-        }
-        if (newPassword !== confirmPassword) {
-          showError('New passwords do not match. Please try again.');
-          return;
-        }
-        if (newPassword.length < 4) {
-          showError('New password must be at least 4 characters.');
-          return;
-        }
-      }
+      const chosenColor = document.getElementById('workspace-color').value;
 
       try {
-        // Update profile fields
-        const profileRes = await fetch(API + '/profile/' + user.id, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, fullname, email })
-        });
-
-        const profileData = await profileRes.json();
-        if (!profileRes.ok || !profileData.success) {
-          throw new Error(profileData.error || 'Failed to update profile');
-        }
-
-        // Update password if provided
-        if (newPassword && currentPassword) {
-          const passRes = await fetch(API + '/profile/' + user.id + '/password', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ currentPassword, newPassword })
-          });
-
-          const passData = await passRes.json();
-          if (!passRes.ok || !passData.success) {
-            throw new Error(passData.error || 'Failed to update password');
-          }
-        }
-
-        // Update localStorage with new data
-        user.username = username;
-        user.email = email;
-        if (fullname) user.fullname = fullname;
-        localStorage.setItem('user', JSON.stringify(user));
-
-        // Clear password fields
-        document.getElementById('current-password').value = '';
-        document.getElementById('new-password').value = '';
-        document.getElementById('confirm-password').value = '';
-
-        showSuccess('Profile settings saved successfully!');
+        localStorage.setItem('workspace_theme_color', chosenColor);
+        showSuccess();
       } catch (err) {
         showError(err.message);
-        console.error(err);
       }
     }
 
-    // --INIT--
-    loadProfile();
-  </script>
+    function updateFileName(input) {
+      const btnText = document.getElementById('file-btn-text');
+      if (input.files && input.files.length > 0) {
+        btnText.innerText = input.files[0].name;
+      }
+    }
 
+    window.onload = () => {
+      initTranslations();
+      loadProfile();
+    };
+  </script>
 </body>
 </html>
