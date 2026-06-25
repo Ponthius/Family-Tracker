@@ -187,6 +187,88 @@ body {
 }
 
 /* =============================
+   THEME COLOR VARIABLES
+   ============================= */
+
+:root {
+  --theme-color: #3d3530;
+  --theme-dark: #2c2420;
+  --theme-dark-hover: #1f1915;
+}
+
+/* =============================
+   COLOR PICKER, FILE UPLOAD, LANGUAGE DROPDOWN
+   ============================= */
+
+.color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.color-picker-wrapper input[type="color"] {
+  width: 48px;
+  height: 48px;
+  border: 1px solid #c8bfb5;
+  border-radius: 6px;
+  padding: 3px;
+  cursor: pointer;
+  background: #faf8f5;
+}
+
+.color-value-preview {
+  font-size: 0.9rem;
+  font-family: 'Courier New', monospace;
+  color: #5a4e46;
+  font-weight: 600;
+}
+
+.file-upload-wrapper {
+  position: relative;
+}
+
+.file-upload-wrapper input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.file-upload-btn {
+  display: inline-block;
+  padding: 9px 16px;
+  background: #3d3530;
+  color: #f5f1ec;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.file-upload-btn:hover {
+  background: #2c2420;
+}
+
+.lang-dropdown {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #c8bfb5;
+  border-radius: 6px;
+  background: #faf8f5;
+  font-size: 0.9rem;
+  color: #2c2420;
+  outline: none;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+}
+
+.lang-dropdown:focus {
+  border-color: #8b7355;
+}
+
+/* =============================
    RESPONSIVE
    ============================= */
 
