@@ -14,10 +14,10 @@ async function fetchWithTimeout(url, options = {}, timeout = 5000) {
 
 document.getElementById('loginBtn').addEventListener('click', async () => {
     const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
+    const [REDACTED:KEYVALUE]('password').value.trim();
 
     if (!username || !password) {
-        alert('Please enter both username and password');
+        showToast('Please enter both username and password', 'warning');
         return;
     }
 
@@ -33,21 +33,21 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
         if (response.ok && data.success) {
             saveOfflineUser(username, password);
             localStorage.setItem('user', JSON.stringify(data.user));
-            alert('Login successful! Welcome ' + data.user.username);
+            showToast('Welcome ' + data.user.username + '!', 'success');
             window.location.href = 'dashboard.html';
         } else {
-            alert(data.error || 'Login failed');
+            showToast(data.error || 'Login failed', 'error');
         }
     } catch (error) {
         const results = offlineLogin(username, password);
 
         if (results.success) {
-            alert('Offline login successful');
+            showToast('Offline login successful', 'success');
             window.location.href = 'dashboard.html';
             return;
         }
 
-        alert('Server is unreachable. Please try again later.');
+        showToast('Server is unreachable. Please try again later.', 'error');
         console.error(error);
     }
 });

@@ -1,23 +1,79 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Family Tracker</title>
-  <link rel="stylesheet" href="splashscreen.css">
-</head>
-<body>
-  <div class="splash">
-    <div class="logo-wrap">
-      <img src="images/Family-tracker-logo.png" alt="Family Tracker Logo" class="logo">
-    </div>
-    <h1 class="app-name">Family Tracker</h1>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Family Tracker App - Keep Your Family Organized</title>
+    <link rel="stylesheet" href="landing-page.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  </head>
 
-  <script>
-    setTimeout(() => {
-      window.location.href = '/login.html';
-    }, 3000);
-  </script>
-</body>
+  <body>
+    <nav class="navbar">
+      <div class="nav-inner">
+        <a href="#" class="logo">
+          <span class="logo-icon">🏠</span>
+          <span class="logo-text">Family Tracker App</span>
+        </a>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="register.html" class="btn-nav-signin">Get Started</a>
+        </div>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="hero-eyebrow">Your Family, Always Organized</p>
+        <h1 class="hero-title">Keep Your Family<br />On Track, Always</h1>
+        <p class="hero-subtitle">
+          Assign tasks, track schedules, and stay ready for anything — all in
+          one place for your family. Built for heads of the family who need
+          things done.
+        </p>
+        <div class="hero-actions">
+          <a href="register.html" class="btn-primary">Get Started — It's Free</a>
+          <a href="login.html" class="btn-secondary">Sign In</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="features-inner">
+        <h2 class="section-title">Everything your family needs</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">✅</div>
+            <h3>Task Assignment</h3>
+            <p>The head of the family can assign tasks to any member instantly — perfect for emergencies and daily routines.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📅</div>
+            <h3>Family Schedules</h3>
+            <p>Keep track of everyone's plans and activities in one shared view. Never let anything slip through the cracks.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🚨</div>
+            <h3>Emergency Mode</h3>
+            <p>When things need to happen now, alert your family and assign urgent tasks on the spot.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🏷️</div>
+            <h3>Family Identity</h3>
+            <p>Add your family name, upload a logo, and make the app truly yours. Every family gets their own space.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-strip">
+      <h2>Ready to take charge of your family?</h2>
+      <p>Join families already using Family Tracker App to stay organized and connected.</p>
+      <a href="register.html" class="btn-primary">Get Started Free</a>
+    </section>
+
+    <footer class="footer">
+      <p>&copy; 2026 Family Tracker App. Built for families who get things done.</p>
+    </footer>
+  </body>
 </html>
