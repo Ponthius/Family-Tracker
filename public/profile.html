@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +20,8 @@
       </button>
       <span class="page-title" data-i18n="nav.title">Profile Settings</span>
 =======
+=======
+>>>>>>> Stashed changes
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -48,6 +51,7 @@
           Back<!-- SVG icon for back button -->
         </button>
         <span class="page-title">Profile Settings</span>
+<<<<<<< Updated upstream
       </div>
 
       <!-- Profile photo section -->
@@ -567,6 +571,156 @@
 
 </body>
 =======
+    <script>
+      // --PHOTO PREVIEW--
+      // Runs automatically when user selects a photo, shows preview in profile photo area
+      function previewPhoto(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const photoDisplay = document.getElementById("photo-display");
+            photoDisplay.innerHTML =
+              "<img src='" +
+              e.target.result +
+              "' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>";
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      // --SAVE PROFILE--
+      function saveProfileSettings() {
+        const newPassword = document.getElementById("new-password").value;
+        const confirmPassword =
+          document.getElementById("confirm-password").value;
+
+        if (newPassword && newPassword !== confirmPassword) {
+          document.getElementById("error-msg").style.display = "block";
+          document.getElementById("success-msg").style.display = "none";
+
+          setTimeout(function () {
+            document.getElementById("error-msg").style.display = "none";
+          }, 3000);
+
+          return;
+        }
+
+        document.getElementById("success-msg").style.display = "block";
+        document.getElementById("error-msg").style.display = "none";
+
+        setTimeout(function () {
+          document.getElementById("success-msg").style.display = "none";
+        }, 3000);
+      }
+    </script>
+  </body>
+>>>>>>> Stashed changes
+=======
+      </div>
+
+      <!-- Profile photo section -->
+      <div class="photo-section">
+        <div class="photo-wrapper">
+          <div class="profile-photo" id="photo-display">
+            <!-- person SVG icon (shown before photo is chosen) -->
+          </div>
+
+          <button
+            class="change-photo-btn"
+            onclick="document.getElementById('photo-input').click()"
+          >
+            Change Photo<!-- camera SVG icon -->
+          </button>
+
+          <input
+            type="file"
+            id="photo-input"
+            accept="image/*"
+            onchange="previewPhoto(event)"
+          />
+        </div>
+      </div>
+
+      <!-- EDIT PROFILE SECTION -->
+      <div class="section-heading">
+        <!-- pencil SVG icon -->
+        Edit Profile
+      </div>
+
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter your username" />
+      </div>
+
+      <div class="field">
+        <label for="fullname">Full Name</label>
+        <input
+          type="text"
+          id="fullname"
+          placeholder="Enter your full name e.g. Naiga Hawah"
+        />
+      </div>
+
+      <div class="field">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter your email e.g. hawah@email.com"
+        />
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- EDIT PASSWORD SECTION -->
+      <div class="section-heading">
+        <!-- lock SVG icon -->
+        Edit Password
+      </div>
+
+      <div class="field">
+        <label for="current-password">Current Password</label>
+        <input
+          type="password"
+          id="current-password"
+          placeholder="Enter your current password"
+        />
+      </div>
+
+      <div class="field">
+        <label for="new-password">New Password</label>
+        <input
+          type="password"
+          id="new-password"
+          placeholder="Enter your new password"
+        />
+      </div>
+
+      <div class="field">
+        <label for="confirm-password">Confirm New Password</label>
+        <input
+          type="password"
+          id="confirm-password"
+          placeholder="Confirm your new password"
+        />
+      </div>
+
+      <button class="save-btn-bottom" onclick="saveProfileSettings()">
+        Save Changes<!-- SVG icon for save button -->
+      </button>
+
+      <!-- Success message (hidden until save succeeds) -->
+      <div class="success-msg" id="success-msg">
+        Profile settings saved successfully!
+      </div>
+
+      <div class="error-msg" id="error-msg">
+        New passwords do not match. Please try again.
+      </div>
+    </div>
+    <!-- End of card -->
+
     <script>
       // --PHOTO PREVIEW--
       // Runs automatically when user selects a photo, shows preview in profile photo area
