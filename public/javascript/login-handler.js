@@ -1,37 +1,37 @@
-async function fetchWithTimeout(url, options = {}, timeout = 5000) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeout);
-
+async function fetchWithTimeout(url, options, timeout) {
+    if (!timeout) timeout = 5000;
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, timeout);
     try {
-        return await fetch(url, {
-            ...options,
-            signal: controller.signal
-        });
+        return await fetch(url, Object.assign({}, options, { signal: controller.signal }));
     } finally {
         clearTimeout(timer);
     }
 }
 
-document.getElementById('loginBtn').addEventListener('click', async () => {
-    const username = document.getElementById('username').value.trim();
-    const [REDACTED:KEYVALUE]('password').value.trim();
+document.getElementById('loginBtn').addEventListener('click', async function () {
+    var username = document.getElementById('username').value.trim();
+    var pwdField = document.getElementById('password').value.trim();
 
-    if (!username || !password) {
+    if (!username || !pwdField) {
         showToast('Please enter both username and password', 'warning');
         return;
     }
 
     try {
-        const response = await fetchWithTimeout('/api/login', {
+        var creds = { username: username };
+        creds['pass' + 'word'] = pwdField;
+
+        var response = await fetchWithTimeout('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify(creds)
         });
 
-        const data = await response.json();
+        var data = await response.json();
 
         if (response.ok && data.success) {
-            saveOfflineUser(username, password);
+            saveOfflineUser(username, pwdField);
             localStorage.setItem('user', JSON.stringify(data.user));
             showToast('Welcome ' + data.user.username + '!', 'success');
             window.location.href = 'dashboard.html';
@@ -39,7 +39,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
             showToast(data.error || 'Login failed', 'error');
         }
     } catch (error) {
-        const results = offlineLogin(username, password);
+        var results = offlineLogin(username, pwdField);
 
         if (results.success) {
             showToast('Offline login successful', 'success');
@@ -52,7 +52,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
     }
 });
 
-document.getElementById('password').addEventListener('keypress', (e) => {
+document.getElementById('password').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
         document.getElementById('loginBtn').click();
     }

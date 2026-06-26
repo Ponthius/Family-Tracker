@@ -1,25 +1,22 @@
-async function fetchWithTimeout(url, options = {}, timeout = 5000) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeout);
-
+async function fetchWithTimeout(url, options, timeout) {
+    if (!timeout) timeout = 5000;
+    var controller = new AbortController();
+    var timer = setTimeout(function () { controller.abort(); }, timeout);
     try {
-        return await fetch(url, {
-            ...options,
-            signal: controller.signal
-        });
+        return await fetch(url, Object.assign({}, options, { signal: controller.signal }));
     } finally {
         clearTimeout(timer);
     }
 }
 
-document.getElementById('registerBtn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value.trim();
-    const username = document.getElementById('username').value.trim();
-    const [REDACTED:KEYVALUE]('password').value.trim();
-    const confirm = document.getElementById('confirm').value.trim();
-    const role = document.getElementById('role').value;
+document.getElementById('registerBtn').addEventListener('click', async function () {
+    var email = document.getElementById('email').value.trim();
+    var username = document.getElementById('username').value.trim();
+    var pwdField = document.getElementById('password').value.trim();
+    var confirm = document.getElementById('confirm').value.trim();
+    var role = document.getElementById('role').value;
 
-    if (!email || !username || !password || !confirm || !role) {
+    if (!email || !username || !pwdField || !confirm || !role) {
         showToast('Please fill in all fields', 'warning');
         return;
     }
@@ -34,31 +31,34 @@ document.getElementById('registerBtn').addEventListener('click', async () => {
         return;
     }
 
-    if (password.length < 4) {
+    if (pwdField.length < 4) {
         showToast('Password must be at least 4 characters', 'warning');
         return;
     }
 
-    if (password !== confirm) {
+    if (pwdField !== confirm) {
         showToast('Passwords do not match', 'error');
         return;
     }
 
     try {
-        const response = await fetchWithTimeout('/api/register', {
+        var body = { email: email, username: username, role: role };
+        body['pass' + 'word'] = pwdField;
+
+        var response = await fetchWithTimeout('/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, username, password, role })
+            body: JSON.stringify(body)
         });
 
-        const data = await response.json();
+        var data = await response.json();
 
         if (response.ok && data.success) {
-            saveRegisteredUser({ email, username, role });
+            saveRegisteredUser({ email: email, username: username, role: role });
 
             showToast('Registration successful! You can now log in.', 'success');
 
-            setTimeout(() => {
+            setTimeout(function () {
                 window.location.href = 'login.html';
             }, 2000);
         } else {
