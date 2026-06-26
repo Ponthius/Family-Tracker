@@ -187,6 +187,134 @@ body {
 }
 
 /* =============================
+   DELETE ACCOUNT
+   ============================= */
+
+.danger-heading {
+  color: #8a3b36;
+}
+
+.danger-note {
+  font-size: 0.8rem;
+  color: #6f5b54;
+  line-height: 1.4;
+  margin: -6px 0 14px;
+}
+
+.delete-btn {
+  width: 100%;
+  padding: 11px;
+  border: none;
+  border-radius: 6px;
+  background: #8a3b36;
+  color: #f5f1ec;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 0.03em;
+}
+
+.delete-btn:hover {
+  background: #722f2b;
+}
+
+.delete-btn:active {
+  transform: scale(0.98);
+}
+
+#notification-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 22px;
+  border-radius: 30px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 9999;
+  font-weight: 600;
+  font-size: 0.85rem;
+  pointer-events: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+
+.notif-success { background: #e7efe2; color: #3c5a3c; border: 1px solid #b9cdb0; }
+.notif-error { background: #f3dada; color: #a13d3d; border: 1px solid #e1b5b5; }
+.notif-warning { background: #f5efe4; color: #5a4038; border: 1px solid #e0d6ce; }
+.notif-info { background: #e5ecef; color: #4c5b63; border: 1px solid #c8d3d8; }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 36, 32, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  padding: 20px;
+  z-index: 10000;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-card {
+  background: #f5f1ec;
+  border-radius: 12px;
+  padding: 22px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  border: 1px solid #e1d6cd;
+}
+
+.modal-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3d3530;
+  margin-bottom: 10px;
+  font-family: Georgia, serif;
+}
+
+.modal-text {
+  font-size: 0.85rem;
+  color: #5a4e46;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.modal-btn {
+  padding: 9px 16px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.modal-btn.ghost {
+  background: #efe8e1;
+  color: #5a4e46;
+}
+
+.modal-btn.danger {
+  background: #8a3b36;
+  color: #f5f1ec;
+}
+
+/* =============================
    RESPONSIVE
    ============================= */
 

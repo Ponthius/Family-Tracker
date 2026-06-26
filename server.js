@@ -30,6 +30,13 @@ function isValidEmail(email) {
     return emailRegex.test(String(email || '').trim());
 }
 
+function hashIdentifier(value) {
+    return crypto
+        .createHash('sha256')
+        .update(String(value || '').trim().toLowerCase())
+        .digest('hex');
+}
+
 async function sendVerificationEmail(email, token) {
     const verificationLink = `https://family-tracker-sooty-one.vercel.app/api/verify-email?token=${token}`;
     await transporter.sendMail({
@@ -362,20 +369,34 @@ app.post('/login', async (req, res) => {
     }
 
     try {
+        const normalizedUsername = String(username).trim();
         const result = await pool.query(
-            `SELECT u.id, u.email, u.username, u.role, u.emailverified, u.familyid,
+            `SELECT u.id, u.email, u.username, u.password, u.role, u.emailverified, u.familyid,
                     f.familyname
              FROM users u
              LEFT JOIN Families f ON f.FamilyID = u.familyid
-             WHERE u.username = $1 AND u.password = $2`,
-            [username, password]
+             WHERE u.username = $1`,
+            [normalizedUsername]
         );
 
         if (result.rows.length === 0) {
+            const deletedCheck = await pool.query(
+                `SELECT 1 FROM DeletedAccounts WHERE UsernameHash = $1 LIMIT 1`,
+                [hashIdentifier(normalizedUsername)]
+            );
+
+            if (deletedCheck.rows.length > 0) {
+                return res.status(403).json({ error: 'This account has been deleted or suspended.' });
+            }
+
             return res.status(401).json({ error: 'Invalid username or password' });
         }
 
         const user = result.rows[0];
+
+        if (user.password !== password) {
+            return res.status(401).json({ error: 'Invalid username or password' });
+        }
 
         res.json({
             success: true,
@@ -520,6 +541,100 @@ app.put('/profile/:id/password', async (req, res) => {
     } catch (err) {
         console.error('Password update error:', err.message);
         res.status(500).json({ error: 'Server error while updating password' });
+    }
+});
+
+app.post('/profile/:id/delete', async (req, res) => {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+        return res.status(400).json({ error: 'Password confirmation is required' });
+    }
+
+    const client = await pool.connect();
+
+    try {
+        const userResult = await client.query(
+            `SELECT id, username, role, familyid
+             FROM users
+             WHERE id = $1 AND password = $2`,
+            [id, password]
+        );
+
+        if (userResult.rows.length === 0) {
+            return res.status(401).json({ error: 'Password confirmation failed' });
+        }
+
+        const user = userResult.rows[0];
+        const isAdmin = user.role === 'admin' || user.role === 'father';
+        const familyId = user.familyid;
+
+        await client.query('BEGIN');
+
+        let userIds = [user.id];
+        let usernames = [user.username];
+
+        if (isAdmin && familyId) {
+            const familyUsers = await client.query(
+                `SELECT id, username FROM users WHERE familyid = $1`,
+                [familyId]
+            );
+            if (familyUsers.rows.length) {
+                userIds = familyUsers.rows.map(row => row.id);
+                usernames = familyUsers.rows.map(row => row.username);
+            }
+        }
+
+        const hashes = usernames.filter(Boolean).map(hashIdentifier);
+        if (hashes.length) {
+            await client.query(
+                `INSERT INTO DeletedAccounts (UsernameHash)
+                 SELECT UNNEST($1::text[])
+                 ON CONFLICT (UsernameHash) DO NOTHING`,
+                [hashes]
+            );
+        }
+
+        if (usernames.length) {
+            await client.query(
+                `DELETE FROM Tasks
+                 WHERE Username = ANY($1::text[])
+                    OR AssignedBy = ANY($2::int[])`,
+                [usernames, userIds]
+            );
+            await client.query(
+                `DELETE FROM UpcomingEvents WHERE MemberName = ANY($1::text[])`,
+                [usernames]
+            );
+            await client.query(
+                `DELETE FROM RecentEvents WHERE MemberName = ANY($1::text[])`,
+                [usernames]
+            );
+        }
+
+        if (userIds.length) {
+            await client.query(
+                `DELETE FROM Members WHERE AddedByUserID = ANY($1::int[])`,
+                [userIds]
+            );
+        }
+
+        if (isAdmin && familyId) {
+            await client.query(`DELETE FROM users WHERE familyid = $1`, [familyId]);
+            await client.query(`DELETE FROM Families WHERE FamilyID = $1`, [familyId]);
+        } else {
+            await client.query(`DELETE FROM users WHERE id = $1`, [user.id]);
+        }
+
+        await client.query('COMMIT');
+        res.json({ success: true, message: 'Account deleted successfully' });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('Account deletion error:', err.message);
+        res.status(500).json({ error: 'Server error while deleting account' });
+    } finally {
+        client.release();
     }
 });
 

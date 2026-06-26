@@ -73,6 +73,38 @@
 
     <div class="error-msg" id="error-msg"></div>
 
+    <div class="divider"></div>
+
+    <div class="section-heading danger-heading">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></svg>
+      Delete Account
+    </div>
+    <p class="danger-note" id="delete-warning"></p>
+
+    <div class="field">
+      <label for="delete-password">Confirm Password</label>
+      <input type="password" id="delete-password" placeholder="Enter your password to confirm" />
+    </div>
+
+    <button class="delete-btn" id="delete-account-btn" onclick="openDeleteModal()">
+      Delete Account
+    </button>
+
+  </div>
+
+  <div id="notification-container">
+    <span id="notification-message"></span>
+  </div>
+
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal-card">
+      <div class="modal-title">Confirm Account Deletion</div>
+      <p class="modal-text" id="delete-modal-text"></p>
+      <div class="modal-actions">
+        <button class="modal-btn ghost" type="button" onclick="closeDeleteModal()">Cancel</button>
+        <button class="modal-btn danger" type="button" onclick="confirmDeleteAccount()">Yes, delete</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -102,6 +134,88 @@
       setTimeout(function () { el.style.display = 'none'; }, 5000);
     }
 
+    function showNotification(message, type) {
+      const container = document.getElementById('notification-container');
+      const msgSpan = document.getElementById('notification-message');
+      if (!container || !msgSpan) return;
+      container.className = `notif-${type || 'info'}`;
+      msgSpan.textContent = message;
+      container.style.opacity = '1';
+      container.style.pointerEvents = 'auto';
+      setTimeout(() => {
+        container.style.opacity = '0';
+        container.style.pointerEvents = 'none';
+      }, 3200);
+    }
+
+    function updateDeleteWarning(profileUser) {
+      const warning = document.getElementById('delete-warning');
+      const modalText = document.getElementById('delete-modal-text');
+      const user = profileUser || getStoredUser();
+      const isAdmin = user.role === 'admin' || user.role === 'father';
+      const familyLabel = user.familyName ? `the ${user.familyName} family` : 'your family';
+      const adminText = `Deleting your admin account will permanently remove ${familyLabel}, all members, tasks, and schedules. This cannot be undone.`;
+      const memberText = 'Deleting your account removes your profile and tasks assigned to you. Your family and other members remain active.';
+
+      if (warning) {
+        warning.textContent = isAdmin ? adminText : memberText;
+      }
+      if (modalText) {
+        modalText.textContent = isAdmin ? adminText : memberText;
+      }
+    }
+
+    function openDeleteModal() {
+      const user = getStoredUser();
+      const password = document.getElementById('delete-password').value;
+      if (!user.id) {
+        showError('You must be logged in to delete your account.');
+        return;
+      }
+      if (!password) {
+        showError('Please enter your password to confirm deletion.');
+        return;
+      }
+      updateDeleteWarning(user);
+      document.getElementById('delete-modal').classList.add('show');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('delete-modal').classList.remove('show');
+    }
+
+    async function confirmDeleteAccount() {
+      const user = getStoredUser();
+      const password = document.getElementById('delete-password').value;
+      if (!password) {
+        showError('Please enter your password to confirm deletion.');
+        return;
+      }
+
+      try {
+        const res = await fetch(API + '/profile/' + user.id + '/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Failed to delete account');
+        }
+
+        closeDeleteModal();
+        showNotification(data.message || 'Account deleted successfully.', 'success');
+        localStorage.removeItem('user');
+        localStorage.removeItem('offlineUser');
+        localStorage.removeItem('registeredUsers');
+        setTimeout(() => {
+          window.location.href = '/login.html';
+        }, 1600);
+      } catch (err) {
+        showError(err.message);
+      }
+    }
+
     // --LOAD PROFILE FROM API--
     async function loadProfile() {
       const user = getStoredUser();
@@ -123,6 +237,10 @@
         document.getElementById('fullname').value = u.fullname || '';
         document.getElementById('email').value = u.email || '';
 
+        user.role = u.role || user.role;
+        localStorage.setItem('user', JSON.stringify(user));
+        updateDeleteWarning(user);
+
         // Sync any newly-saved fullname back to localStorage
         if (u.fullname) {
           user.fullname = u.fullname;
@@ -133,6 +251,7 @@
         // Fill from localStorage as fallback
         document.getElementById('username').value = user.username || '';
         document.getElementById('email').value = user.email || '';
+        updateDeleteWarning(user);
       }
     }
 
