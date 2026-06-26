@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS users (
     fullname VARCHAR(100),
     profile_photo TEXT,
     emailverified BOOLEAN DEFAULT FALSE,
+    account_status VARCHAR(20) DEFAULT 'active',
+    deleted_at TIMESTAMP,
+    recovery_deadline TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

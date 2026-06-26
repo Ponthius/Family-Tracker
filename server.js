@@ -3,6 +3,7 @@ const { Pool } = require('pg');
 const cors = require('cors');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const { RECOVERY_WINDOW_DAYS, calculateRecoveryDeadline, isRecoveryExpired, getSuspensionMessage } = require('./account-recovery');
 
 const app = express();
 const port = process.env.PORT || 4001;
@@ -22,6 +23,33 @@ const transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASS || 'HafizAshiraf@2005'
     }
 });
+
+async function ensureAccountRecoveryColumns() {
+    await pool.query(`
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS account_status VARCHAR(20) DEFAULT 'active',
+        ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS recovery_deadline TIMESTAMP
+    `);
+}
+
+async function permanentlyDeleteUser(user) {
+    const deletedAt = new Date();
+
+    await pool.query(
+        `UPDATE users
+         SET account_status = 'deleted',
+             deleted_at = $1,
+             recovery_deadline = NULL,
+             password = $2
+         WHERE id = $3`,
+        [deletedAt, `deleted:${user.id}`, user.id]
+    );
+
+    await pool.query(`DELETE FROM Tasks WHERE Username = $1 OR AssignedBy = $2`, [user.username, user.id]);
+    await pool.query(`DELETE FROM UpcomingEvents WHERE MemberName = $1`, [user.username]);
+    await pool.query(`DELETE FROM RecentEvents WHERE MemberName = $1`, [user.username]);
+}
 
 async function sendVerificationEmail(email, token) {
     const verificationLink = `https://family-tracker-sooty-one.vercel.app/api/verify-email?token=${token}`;
@@ -190,8 +218,9 @@ app.post('/login', async (req, res) => {
 
     try {
         const result = await pool.query(
-            `SELECT id, email, username, role, emailverified FROM users WHERE username = $1 AND password = $2`,
-            [username, password]
+            `SELECT id, email, username, role, password, emailverified, account_status, recovery_deadline
+             FROM users WHERE username = $1`,
+            [username]
         );
 
         if (result.rows.length === 0) {
@@ -199,6 +228,39 @@ app.post('/login', async (req, res) => {
         }
 
         const user = result.rows[0];
+
+        if (user.password !== password) {
+            return res.status(401).json({ error: 'Invalid username or password' });
+        }
+
+        if (user.account_status === 'deleted') {
+            return res.status(403).json({
+                success: false,
+                error: 'This account has been permanently deleted and can no longer be recovered.'
+            });
+        }
+
+        if (user.account_status === 'suspended') {
+            if (isRecoveryExpired(user.recovery_deadline)) {
+                await permanentlyDeleteUser(user);
+                return res.status(403).json({
+                    success: false,
+                    error: 'This account has been permanently deleted and can no longer be recovered.'
+                });
+            }
+
+            return res.status(403).json({
+                success: false,
+                error: getSuspensionMessage(),
+                suspended: true,
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    role: user.role
+                },
+                recoveryDeadline: user.recovery_deadline
+            });
+        }
 
         res.json({
             success: true,
@@ -213,6 +275,92 @@ app.post('/login', async (req, res) => {
     } catch (err) {
         console.error('Login error:', err.message);
         res.status(500).json({ error: 'Server error while logging in' });
+    }
+});
+
+app.post('/account/delete', async (req, res) => {
+    const { userId, password } = req.body;
+
+    if (!userId || !password) {
+        return res.status(400).json({ error: 'User ID and password are required' });
+    }
+
+    try {
+        const userResult = await pool.query(
+            `SELECT id, username, role, password FROM users WHERE id = $1 AND password = $2`,
+            [userId, password]
+        );
+
+        if (userResult.rows.length === 0) {
+            return res.status(401).json({ error: 'Current password is incorrect' });
+        }
+
+        const user = userResult.rows[0];
+        const deletedAt = new Date();
+        const recoveryDeadline = calculateRecoveryDeadline(deletedAt);
+
+        await pool.query(
+            `UPDATE users
+             SET account_status = 'suspended',
+                 deleted_at = $1,
+                 recovery_deadline = $2
+             WHERE id = $3`,
+            [deletedAt, recoveryDeadline, user.id]
+        );
+
+        res.json({
+            success: true,
+            message: 'Your account has been suspended. Recovery is available for 7 days. Permanent deletion will occur after the recovery period expires.',
+            recoveryDeadline
+        });
+    } catch (err) {
+        console.error('Account delete error:', err.message);
+        res.status(500).json({ error: 'Server error while suspending account' });
+    }
+});
+
+app.post('/account/recover', async (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    try {
+        const userResult = await pool.query(
+            `SELECT id, email, username, role, account_status, recovery_deadline FROM users WHERE username = $1 AND password = $2`,
+            [username, password]
+        );
+
+        if (userResult.rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid username or password' });
+        }
+
+        const user = userResult.rows[0];
+
+        if (user.account_status !== 'suspended') {
+            return res.status(400).json({ error: 'This account is not suspended.' });
+        }
+
+        if (isRecoveryExpired(user.recovery_deadline)) {
+            await permanentlyDeleteUser(user);
+            return res.status(410).json({ error: 'This account has been permanently deleted and can no longer be recovered.' });
+        }
+
+        await pool.query(
+            `UPDATE users
+             SET account_status = 'active', deleted_at = NULL, recovery_deadline = NULL
+             WHERE id = $1`,
+            [user.id]
+        );
+
+        res.json({
+            success: true,
+            message: 'Account recovered successfully.'
+        });
+    } catch (err) {
+        console.error('Account recovery error:', err.message);
+        res.status(500).json({ error: 'Server error while recovering account' });
     }
 });
 
@@ -577,6 +725,10 @@ app.get('/notifications', async (req, res) => {
 });
 
 // ----- Start server -----
+
+ensureAccountRecoveryColumns().catch(err => {
+    console.error('Account recovery setup error:', err.message);
+});
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);

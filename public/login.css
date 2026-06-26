@@ -89,4 +89,23 @@ input:focus, select:focus {
   text-decoration: underline;
 }
 
+.recovery-banner {
+  background: #fff4d6;
+  color: #7a4f00;
+  border: 1px solid #f0c36d;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.btn.secondary {
+  margin-top: 10px;
+  background: #8b7355;
+}
+
+.btn.secondary:hover {
+  background: #6a5940;
+}
+
 

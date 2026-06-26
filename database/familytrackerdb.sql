@@ -11,6 +11,9 @@ CREATE TABLE dbo.users (
     username NVARCHAR(50) UNIQUE NOT NULL,
     password NVARCHAR(100) NOT NULL,
     role NVARCHAR(20) NOT NULL,
+    account_status NVARCHAR(20) NOT NULL DEFAULT 'active',
+    deleted_at DATETIME NULL,
+    recovery_deadline DATETIME NULL,
     created_at DATETIME DEFAULT GETDATE()
 );
 

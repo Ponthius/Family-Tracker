@@ -156,6 +156,27 @@ body {
   transform: scale(0.98);
 }
 
+.delete-btn {
+  width: 100%;
+  padding: 11px;
+  margin-top: 12px;
+  background: #a13d3d;
+  color: #f5f1ec;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.delete-btn:hover {
+  background: #8d3030;
+}
+
 /* =============================
    SUCCESS / ERROR MESSAGES
    ============================= */
