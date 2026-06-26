@@ -629,7 +629,7 @@ async function seedSuperAdmin() {
 
 // ----- Audit Routes -----
 
-app.get('/api/audit/all', async (req, res) => {
+app.get('/audit/all', async (req, res) => {
     try {
         const { search, role, action, status, limit } = req.query;
         const conditions = ['1=1'];
@@ -673,7 +673,7 @@ app.get('/api/audit/all', async (req, res) => {
     }
 });
 
-app.get('/api/audit/families-overview', async (req, res) => {
+app.get('/audit/families-overview', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT f.id, f.name AS family_name,
@@ -693,7 +693,7 @@ app.get('/api/audit/families-overview', async (req, res) => {
 
 // ----- Invitation Routes -----
 
-app.post('/api/invitations', async (req, res) => {
+app.post('/invitations', async (req, res) => {
     const { email, role, familyId } = req.body;
 
     if (!email || !role || !familyId) {
@@ -719,7 +719,7 @@ app.post('/api/invitations', async (req, res) => {
     }
 });
 
-app.post('/api/invitations/accept', async (req, res) => {
+app.post('/invitations/accept', async (req, res) => {
     const { token, username, email, password } = req.body;
 
     if (!token || !username || !email || !password) {
@@ -771,7 +771,7 @@ app.post('/api/invitations/accept', async (req, res) => {
 
 // ----- Family Management Routes -----
 
-app.get('/api/families', async (req, res) => {
+app.get('/families', async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT f.*, u.username AS admin_username, u.email AS admin_email,
@@ -787,7 +787,7 @@ app.get('/api/families', async (req, res) => {
     }
 });
 
-app.put('/api/families/:id/status', async (req, res) => {
+app.put('/families/:id/status', async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
@@ -807,7 +807,7 @@ app.put('/api/families/:id/status', async (req, res) => {
 
 // ----- Delete Routes -----
 
-app.delete('/api/tasks/:id', async (req, res) => {
+app.delete('/tasks/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const task = await pool.query(`SELECT TaskName, Username FROM Tasks WHERE TaskID = $1`, [id]);
@@ -822,7 +822,7 @@ app.delete('/api/tasks/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/events/:id', async (req, res) => {
+app.delete('/events/:id', async (req, res) => {
     const { id } = req.params;
     try {
         await pool.query(`DELETE FROM UpcomingEvents WHERE UpcomingEventID = $1`, [id]);
@@ -834,7 +834,7 @@ app.delete('/api/events/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/users/:id', async (req, res) => {
+app.delete('/users/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const user = await pool.query(`SELECT username, role, family_id, is_super_admin FROM users WHERE id = $1`, [id]);
