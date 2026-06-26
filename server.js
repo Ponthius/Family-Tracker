@@ -679,7 +679,7 @@ app.get('/audit/families-overview', async (req, res) => {
             SELECT f.id, f.name AS family_name,
                    u.username AS admin_username, u.email AS admin_email,
                    (SELECT COUNT(*) FROM users WHERE family_id = f.id) AS member_count,
-                   f.status, TO_CHAR(f.created_at, 'DD/MM/YYYY') AS date_created
+                   f.status, f.created_at AS date_created
             FROM families f
             LEFT JOIN users u ON u.id = f.admin_id
             ORDER BY f.created_at DESC
