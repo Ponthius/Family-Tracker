@@ -71,6 +71,34 @@ async function migrate() {
         `);
         console.log('Table: invitations');
 
+        // Create DeletedAccounts table
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS DeletedAccounts (
+                id SERIAL PRIMARY KEY,
+                username_hash VARCHAR(64) NOT NULL UNIQUE,
+                deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                expires_at TIMESTAMP NOT NULL
+            )
+        `);
+        console.log('Table: DeletedAccounts');
+
+        // Create FamilyInvitations table
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS FamilyInvitations (
+                id SERIAL PRIMARY KEY,
+                family_id INT NOT NULL REFERENCES families(id) ON DELETE CASCADE,
+                recipient_email VARCHAR(100) NOT NULL,
+                token VARCHAR(255) NOT NULL UNIQUE,
+                invited_by INT REFERENCES users(id),
+                is_active BOOLEAN DEFAULT TRUE,
+                expires_at TIMESTAMP NOT NULL,
+                accepted_at TIMESTAMP,
+                accepted_by INT REFERENCES users(id),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        console.log('Table: FamilyInvitations');
+
         // Create super admin if not exists
         const sa = await pool.query(`SELECT id FROM users WHERE is_super_admin = TRUE`);
         if (sa.rows.length === 0) {

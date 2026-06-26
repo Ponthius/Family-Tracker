@@ -47,6 +47,26 @@ app.get('/health', (req, res) => {
 
 // ----- Register -----
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isValidEmail(email) {
+    return emailRegex.test(String(email || '').trim());
+}
+
+function hashIdentifier(value) {
+    const cr = require('crypto');
+    return cr.createHash('sha256').update(String(value || '').trim().toLowerCase()).digest('hex');
+}
+
+async function sendInviteEmail(recipientEmail, familyName, token) {
+    await transporter.sendMail({
+        from: process.env.EMAIL_USER || 'yourgmail@gmail.com',
+        to: recipientEmail,
+        subject: 'You\'re invited to join ' + familyName,
+        html: '<h2>Family Tracker Invitation</h2><p>You have been invited to join <strong>' + familyName + '</strong></p><p><a href="https://family-tracker-project.vercel.app/user_invite/invite_setup.html?token=' + token + '">Accept Invitation</a></p>'
+    });
+}
+
 app.post('/register', async (req, res) => {
     const { email, username, password, role } = req.body;
 
@@ -209,6 +229,14 @@ app.post('/login', async (req, res) => {
         );
 
         if (result.rows.length === 0) {
+            // Check if account was deleted
+            const delCheck = await pool.query(
+                `SELECT id FROM DeletedAccounts WHERE username_hash = $1 AND expires_at > NOW()`,
+                [hashIdentifier(username)]
+            );
+            if (delCheck.rows.length > 0) {
+                return res.status(403).json({ error: 'This account has been deleted. Please contact your family admin or wait for 7-day recovery period.' });
+            }
             return res.status(401).json({ error: 'Invalid username or password' });
         }
 
@@ -591,6 +619,124 @@ app.get('/notifications', async (req, res) => {
     } catch (err) {
         console.error('Notifications error:', err.message);
         res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ----- Invite Routes -----
+
+app.get('/invites/:token', async (req, res) => {
+    const { token } = req.params;
+    try {
+        const result = await pool.query(
+            `SELECT fi.id, fi.family_id, f.name AS family_name
+             FROM FamilyInvitations fi
+             JOIN families f ON f.id = fi.family_id
+             WHERE fi.token = $1 AND fi.is_active = TRUE AND fi.expires_at > NOW()`,
+            [token]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Invitation not found or expired' });
+        }
+        res.json({ success: true, familyName: result.rows[0].family_name });
+    } catch (err) {
+        console.error('Invite lookup error:', err.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+app.post('/invite', async (req, res) => {
+    const { recipientEmail, familyId } = req.body;
+
+    if (!recipientEmail || !familyId) {
+        return res.status(400).json({ error: 'Recipient email and family ID required' });
+    }
+    if (!isValidEmail(recipientEmail)) {
+        return res.status(400).json({ error: 'Invalid email address' });
+    }
+
+    try {
+        const token = crypto.randomBytes(24).toString('hex');
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+        await pool.query(
+            `INSERT INTO FamilyInvitations (family_id, recipient_email, token, expires_at)
+             VALUES ($1, $2, $3, $4)`,
+            [familyId, recipientEmail, token, expiresAt]
+        );
+
+        const familyR = await pool.query(`SELECT name FROM families WHERE id = $1`, [familyId]);
+
+        sendInviteEmail(recipientEmail, familyR.rows[0]?.name || 'Family', token).catch(function () {});
+
+        res.json({
+            success: true,
+            message: 'Invitation sent',
+            token: token,
+            inviteLink: 'https://family-tracker-project.vercel.app/user_invite/invite_setup.html?token=' + token
+        });
+    } catch (err) {
+        console.error('Invite error:', err.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// ----- Delete Account Route (7-day grace) -----
+
+app.post('/profile/:id/delete', async (req, res) => {
+    const { id } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+        return res.status(400).json({ error: 'Password confirmation is required' });
+    }
+
+    const client = await pool.connect();
+    try {
+        const userR = await client.query(
+            `SELECT id, username, role, family_id FROM users WHERE id = $1 AND password = $2`,
+            [id, password]
+        );
+        if (userR.rows.length === 0) {
+            return res.status(401).json({ error: 'Password confirmation failed' });
+        }
+
+        const user = userR.rows[0];
+        const isAdmin = (user.role === 'father' || user.role === 'mother');
+
+        await client.query('BEGIN');
+
+        // Record in DeletedAccounts for 7-day grace
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        const hash = hashIdentifier(user.username);
+
+        await client.query(
+            `INSERT INTO DeletedAccounts (username_hash, expires_at) VALUES ($1, $2)
+             ON CONFLICT (username_hash) DO UPDATE SET expires_at = $2`,
+            [hash, expiresAt]
+        );
+
+        if (isAdmin && user.family_id) {
+            // Delete entire family
+            await client.query(`UPDATE users SET family_id = NULL WHERE family_id = $1`, [user.family_id]);
+            await client.query(`DELETE FROM users WHERE family_id = $1`, [user.family_id]);
+            await client.query(`DELETE FROM families WHERE id = $1`, [user.family_id]);
+        } else {
+            // Delete just this user's data
+            await client.query(`DELETE FROM Tasks WHERE Username = $1 OR AssignedByName = $1`, [user.username]);
+            await client.query(`DELETE FROM UpcomingEvents WHERE MemberName = $1`, [user.username]);
+            await client.query(`DELETE FROM RecentEvents WHERE MemberName = $1`, [user.username]);
+            await client.query(`DELETE FROM users WHERE id = $1`, [user.id]);
+        }
+
+        await client.query('COMMIT');
+        await logAudit(user.username, user.role, 'Account Deleted (7-day grace)', 'Success');
+        res.json({ success: true, message: 'Account deleted successfully. You have 7 days to recover.' });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('Account deletion error:', err.message);
+        res.status(500).json({ error: 'Server error while deleting account' });
+    } finally {
+        client.release();
     }
 });
 
