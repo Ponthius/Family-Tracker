@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cron Jobs - Family Tracker</title>
   <link rel="stylesheet" href="cronjobs.css">
+  <script>
+    var u = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!u.is_super_admin) {
+      document.write('<div style="max-width:500px;margin:80px auto;padding:40px;background:#f5f1ec;border-radius:12px;text-align:center;font-family:Arial,sans-serif;"><h2 style="color:#a13d3d;">Access Denied</h2><p style="color:#5a4e46;margin-top:12px;">Only Super Admin can access this page.</p><a href="dashboard.html" style="display:inline-block;margin-top:20px;padding:10px 24px;background:#3d3530;color:#f5f1ec;border-radius:6px;text-decoration:none;">Back to Dashboard</a></div>');
+      throw new Error('Access denied');
+    }
+  </script>
 </head>
 <body>
   <div class="page">

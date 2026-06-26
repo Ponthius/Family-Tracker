@@ -61,14 +61,18 @@
         <span>Family Tracker</span>
       </a>
     </div>
-    <div class="sidebar-nav">
+    <div class="sidebar-nav" id="mainSidebar">
       <a href="dashboard.html" class="nav-item-side active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-      <a href="tasks.html" class="nav-item-side" data-page="tasks"><i class="fas fa-calendar-alt"></i><span>Tasks</span></a>
-      <a href="members.html" class="nav-item-side" data-page="members"><i class="fas fa-user-friends"></i><span>Members</span></a>
-      <a href="schedule.html" class="nav-item-side" data-page="schedules"><i class="fas fa-clock"></i><span>Schedules</span></a>
-      <a href="user_invite/invite_bttn.html" class="nav-item-side" data-page="invite" id="navInvite"><i class="fas fa-user-plus"></i><span>Invite User</span></a>
-      <a href="audit-super.html" class="nav-item-side" data-page="audit" id="navAudit"><i class="fas fa-shield-alt"></i><span>Audit Logs</span></a>
-      <a href="cronjobs.html" class="nav-item-side" data-page="cronjobs" id="navCron"><i class="fas fa-clock"></i><span>Cron Jobs</span></a>
+      <div id="userNav">
+        <a href="tasks.html" class="nav-item-side" data-page="tasks"><i class="fas fa-calendar-alt"></i><span>Tasks</span></a>
+        <a href="members.html" class="nav-item-side" data-page="members"><i class="fas fa-user-friends"></i><span>Members</span></a>
+        <a href="schedule.html" class="nav-item-side" data-page="schedules"><i class="fas fa-clock"></i><span>Schedules</span></a>
+        <a href="user_invite/invite_bttn.html" class="nav-item-side" data-page="invite" id="navInvite" style="display:none;"><i class="fas fa-user-plus"></i><span>Invite User</span></a>
+      </div>
+      <div id="superAdminNav" style="display:none;">
+        <a href="audit-super.html" class="nav-item-side" data-page="audit"><i class="fas fa-shield-alt"></i><span>Audit Logs</span></a>
+        <a href="cronjobs.html" class="nav-item-side" data-page="cronjobs"><i class="fas fa-clock"></i><span>Cron Jobs</span></a>
+      </div>
       <a href="profile.html" class="nav-item-side" data-page="profile"><i class="fas fa-user-circle"></i><span>Profile</span></a>
     </div>
   </aside>
@@ -178,12 +182,16 @@
   </div>
   <div class="mobile-sidebar-nav">
     <a href="dashboard.html" class="mobile-nav-item active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-    <a href="tasks.html" class="mobile-nav-item" data-page="tasks"><i class="fas fa-calendar-alt"></i><span>Tasks</span></a>
-    <a href="members.html" class="mobile-nav-item" data-page="members"><i class="fas fa-user-friends"></i><span>Members</span></a>
-    <a href="schedule.html" class="mobile-nav-item" data-page="schedules"><i class="fas fa-clock"></i><span>Schedules</span></a>
-    <a href="user_invite/invite_bttn.html" class="mobile-nav-item" data-page="invite" id="mSideInvite"><i class="fas fa-user-plus"></i><span>Invite User</span></a>
-    <a href="audit-super.html" class="mobile-nav-item" data-page="audit" id="mSideAudit"><i class="fas fa-shield-alt"></i><span>Audit Logs</span></a>
-    <a href="cronjobs.html" class="mobile-nav-item" data-page="cronjobs" id="mSideCron"><i class="fas fa-clock"></i><span>Cron Jobs</span></a>
+    <div id="mUserNav">
+      <a href="tasks.html" class="mobile-nav-item" data-page="tasks"><i class="fas fa-calendar-alt"></i><span>Tasks</span></a>
+      <a href="members.html" class="mobile-nav-item" data-page="members"><i class="fas fa-user-friends"></i><span>Members</span></a>
+      <a href="schedule.html" class="mobile-nav-item" data-page="schedules"><i class="fas fa-clock"></i><span>Schedules</span></a>
+      <a href="user_invite/invite_bttn.html" class="mobile-nav-item" data-page="invite" id="mSideInvite" style="display:none;"><i class="fas fa-user-plus"></i><span>Invite User</span></a>
+    </div>
+    <div id="mSuperAdminNav" style="display:none;">
+      <a href="audit-super.html" class="mobile-nav-item" data-page="audit"><i class="fas fa-shield-alt"></i><span>Audit Logs</span></a>
+      <a href="cronjobs.html" class="mobile-nav-item" data-page="cronjobs"><i class="fas fa-clock"></i><span>Cron Jobs</span></a>
+    </div>
     <a href="profile.html" class="mobile-nav-item" data-page="profile"><i class="fas fa-user-circle"></i><span>Profile</span></a>
   </div>
   <div class="sidebar-footer" style="margin-top: auto;"><i class="fas fa-user-circle"></i> Family Account</div>
@@ -233,24 +241,19 @@
   // Show/hide nav items based on user role
   const user = getStoredUser();
   if (user.is_super_admin) {
-    document.getElementById('navAudit').style.display = '';
-    document.getElementById('navCron').style.display = '';
-    document.getElementById('mSideAudit').style.display = '';
-    document.getElementById('mSideCron').style.display = '';
+    document.getElementById('superAdminNav').style.display = '';
+    document.getElementById('mSuperAdminNav').style.display = '';
+    document.getElementById('userNav').style.display = 'none';
+    document.getElementById('mUserNav').style.display = 'none';
   } else {
-    document.getElementById('navAudit').style.display = 'none';
-    document.getElementById('navCron').style.display = 'none';
-    document.getElementById('mSideAudit').style.display = 'none';
-    document.getElementById('mSideCron').style.display = 'none';
-  }
-  if (user.family_id) {
-    document.getElementById('navInvite').style.display = '';
-    document.getElementById('mobNavInvite').style.display = '';
-    document.getElementById('mSideInvite').style.display = '';
-  } else {
-    document.getElementById('navInvite').style.display = 'none';
-    document.getElementById('mobNavInvite').style.display = 'none';
-    document.getElementById('mSideInvite').style.display = 'none';
+    document.getElementById('superAdminNav').style.display = 'none';
+    document.getElementById('mSuperAdminNav').style.display = 'none';
+    document.getElementById('userNav').style.display = '';
+    document.getElementById('mUserNav').style.display = '';
+    if (user.family_id) {
+      document.getElementById('navInvite').style.display = '';
+      document.getElementById('mSideInvite').style.display = '';
+    }
   }
 
   // Hamburger menu

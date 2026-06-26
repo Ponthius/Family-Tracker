@@ -265,7 +265,7 @@ app.post('/login', async (req, res) => {
 app.get('/members', async (req, res) => {
     try {
         const result = await pool.query(
-            `SELECT id, role, username, email FROM users ORDER BY created_at DESC`
+            `SELECT id, role, username, email FROM users WHERE is_super_admin = FALSE ORDER BY created_at DESC`
         );
 
         res.json({ success: true, members: result.rows });
