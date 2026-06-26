@@ -1,15 +1,34 @@
 /* ==========================================================================
-   1. VARIABLES & THEME ROOT (Controls live coloring changes)
+   1. GLOBAL REUSABLE ROOT COMPONENT VARIABLES
    ========================================================================== */
 :root {
-  /* Default fallbacks if no user customization has been picked yet */
-  --theme-color: #8b7355;       /* Secondary details & highlight accents */
-  --theme-dark: #3d3530;        /* Main Save Button text/background */
-  --theme-dark-hover: #2c2420;  /* Button Hover interactive state */
+  --theme-color: #5a3562;       
+  --theme-dark: #432549;        
+  --theme-dark-hover: #2e1732;   
+
+  --bg-main: #e8e2d9;
+  --bg-card: #f5f1ec;
+  --bg-input: #faf8f5;
+  --border-ui: #c8bfb5;
+  --text-main: #2c2420;
+  --text-muted: #5a4e46;
+  --divider-ui: #e2d8d0;
+  --shadow-ui: rgba(0, 0, 0, 0.06);
+}
+
+body.dark-mode {
+  --bg-main: #12100e;
+  --bg-card: #1c1815;
+  --bg-input: #26211d;
+  --border-ui: #443b35;
+  --text-main: #f5f1ec;
+  --text-muted: #a6968a;
+  --divider-ui: #2d2621;
+  --shadow-ui: rgba(0, 0, 0, 0.4);
 }
 
 /* ==========================================================================
-   RESET & BASE STYLES
+   2. SYSTEM LAYOUT STRUCTURAL WRAPPERS
    ========================================================================== */
 * {
   margin: 0;
@@ -18,232 +37,208 @@
 }
 
 body {
-  background: #e8e2d9;
-  color: #2c2420;
+  background: var(--bg-main);
+  color: var(--text-main);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 30px 16px;
   min-height: 100vh;
+  font-family: 'Inter', -apple-system, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* ==========================================================================
-   CARD IN THE CENTER
-   ========================================================================== */
 .card {
-  background: #f5f1ec;
+  background: var(--bg-card);
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 24px var(--shadow-ui);
   width: 100%;
   max-width: 420px;
-  padding: 24px 24px;
+  padding: 24px;
+  position: relative;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* ==========================================================================
-   TOP BAR
+   3. ACTION HEADERS & NAVIGATION SEGMENTS
    ========================================================================== */
 .top-bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 28px;
+  gap: 12px;
 }
 
-.back-btn {
+.back-btn, .theme-toggle-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 6px;
+  padding: 8px;
   border-radius: 8px;
-  color: #5a4e46;
-  font-size: 22px;
-  line-height: 1;
-  transition: background 0.2s;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
 }
 
-.back-btn:hover {
-  background: #e8e0d8;
+.back-btn:hover, .theme-toggle-btn:hover {
+  background: var(--divider-ui);
+  color: var(--text-main);
 }
 
 .page-title {
-  flex: 1;
-  text-align: center;
-  font-size: 17px;
-  font-weight: 600;
-  color: #2c2420;
-  font-family: Georgia, serif;
-}
-
-/* ==========================================================================
-   SECTION HEADINGS (Uses Dynamic Theme Color Variable)
-   ========================================================================== */
-.section-heading {
   font-size: 16px;
   font-weight: 700;
-  color: #3d3530;
+  color: var(--text-main);
+  font-family: Georgia, serif;
+  letter-spacing: -0.3px;
+}
+
+.section-heading {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
   margin-bottom: 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-family: Georgia, serif;
 }
 
 .section-heading svg {
-  width: 18px;
-  height: 18px;
-  color: var(--theme-color); /* Updated dynamically via JS */
+  color: var(--theme-color);
+  transition: color 0.2s ease;
 }
 
 .divider {
   height: 1px;
-  background: #e2d8d0;
-  margin: 28px 0;
+  background: var(--divider-ui);
+  margin: 24px 0;
+  transition: background 0.3s ease;
 }
 
 /* ==========================================================================
-   FORM FIELDS
+   4. INPUT LABELS & SELECTION STYLES
    ========================================================================== */
 .field {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .field label {
   display: block;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #5a4e46;
+  color: var(--text-muted);
   margin-bottom: 6px;
-  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .field input {
   width: 100%;
-  padding: 9px 12px;
-  border: 1px solid #c8bfb5;
+  padding: 11px 14px;
+  border: 1px solid var(--border-ui);
   border-radius: 6px;
   font-size: 0.9rem;
-  transition: border-color 0.2s, background 0.2s;
   outline: none;
-  background: #faf8f5;
-  color: #2c2420;
-  font-family: Arial, sans-serif;
+  background: var(--bg-input);
+  color: var(--text-main);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.3s, color 0.3s;
 }
 
-.field input:focus, .lang-dropdown:focus {
-  border-color: var(--theme-color); /* Highlight borders match selected theme color */
-  background: #f5f1ec;
+.field input:focus {
+  border-color: var(--theme-color);
+  box-shadow: 0 0 0 3px rgba(145, 93, 158, 0.2);
 }
 
 /* ==========================================================================
-   MAIN SAVE BUTTON (Uses Dynamic Theme Dark Variables)
+   5. LOGO SPOT: Perfect Circle Frame
    ========================================================================== */
-.save-btn-bottom {
+.brand-preview-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  padding: 11px;
-  background: var(--theme-dark); /* Generated dynamically to match selection */
-  color: #f5f1ec;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  letter-spacing: 0.03em;
-  margin-top: 28px;
-  font-family: Arial, sans-serif;
+  margin: 12px 0 20px 0;
 }
 
-.save-btn-bottom:hover {
-  background: var(--theme-dark-hover); /* Generated dynamically for dark contrast hover */
+.circular-logo-frame {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  border: 2px dashed var(--border-ui);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--text-muted);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: border-color 0.2s, background 0.3s;
 }
 
-.save-btn-bottom:active {
-  transform: scale(0.98);
-}
-
-/* ==========================================================================
-   SUCCESS / ERROR MESSAGES
-   ========================================================================== */
-.success-msg {
-  background: #e7efe2;
-  color: #3c5a3c;
-  border: 1px solid #b9cdb0;
-  padding: 10px;
-  border-radius: 6px;
-  margin-top: 14px;
-  font-size: 0.85rem;
-  display: none;
-  text-align: center;
-  font-weight: 500;
-}
-
-.error-msg {
-  background: #fbe9e9;
-  color: #a13d3d;
-  border: 1px solid #eac0c0;
-  padding: 10px;
-  border-radius: 6px;
-  margin-top: 14px;
-  font-size: 0.85rem;
-  display: none;
-  text-align: center;
-  font-weight: 500;
-}
-
-/* ==========================================================================
-   WORKSPACE WHITE LABEL STYLES (Custom upload area)
-   ========================================================================== */
-.file-upload-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.file-upload-wrapper input[type="file"] {
-  position: absolute;
-  left: 0;
-  top: 0;
-  opacity: 0;
+.circular-logo-frame img {
   width: 100%;
   height: 100%;
-  cursor: pointer;
-  z-index: 2;
+  object-fit: cover;
 }
 
-.file-upload-btn {
+/* ==========================================================================
+   6. INTERACTIVE UPLOADER CONTAINER STYLING
+   ========================================================================== */
+.file-upload-wrapper {
   width: 100%;
-  padding: 9px 12px;
-  border: 1px dashed #c8bfb5;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  background: #faf8f5;
-  color: #5a4e46;
-  text-align: left;
-  font-family: Arial, sans-serif;
-  transition: border-color 0.2s, background 0.2s;
 }
 
-.file-upload-wrapper:hover .file-upload-btn {
-  border-color: var(--theme-color); /* Dashed border turns theme-colored on hover */
-  background: #f5f1ec;
-}
-
-/* Color Picker Row Layout */
-.color-picker-wrapper {
+.file-upload-container {
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 6px 12px;
-  border: 1px solid #c8bfb5;
+  padding: 12px;
+  border: 1px solid var(--border-ui);
   border-radius: 6px;
-  background: #faf8f5;
+  background: var(--bg-input);
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.file-upload-btn {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-align: left;
+  user-select: none;
+}
+
+.file-upload-container:hover {
+  border-color: var(--theme-color);
+  background: var(--divider-ui);
+}
+
+/* ==========================================================================
+   7. COLOR PICKER WRAPPERS
+   ========================================================================== */
+.color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 7px 12px;
+  border: 1px solid var(--border-ui);
+  border-radius: 6px;
+  background: var(--bg-input);
+  transition: background 0.3s, border-color 0.3s;
 }
 
 .color-picker-wrapper input[type="color"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   background: none;
   border: none;
   cursor: pointer;
@@ -251,64 +246,152 @@ body {
 }
 
 .color-picker-wrapper input[type="color"]::-webkit-color-swatch {
-  border: 1px solid #c8bfb5;
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
 
 .color-picker-wrapper input[type="color"]::-moz-color-swatch {
-  border: 1px solid #c8bfb5;
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
 
 .color-value-preview {
   font-size: 0.9rem;
-  color: #2c2420;
-  font-family: Arial, sans-serif;
+  color: var(--text-main);
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 /* ==========================================================================
-   TRANSLATION LANGUAGE SELECT DROPDOWN COMPONENT
+   8. LANGUAGE SEARCH FIELD AND TRANSLATE INJECTION OVERRIDES
    ========================================================================== */
-.lang-dropdown {
+.search-box-wrapper {
+  position: relative;
   width: 100%;
-  padding: 9px 12px;
-  border: 1px solid #c8bfb5;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.search-box-wrapper svg {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-box-wrapper input {
+  width: 100%;
+  padding: 9px 12px 9px 34px !important;
+  font-size: 0.85rem !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--border-ui) !important;
+  background: var(--bg-input) !important;
+  color: var(--text-main) !important;
+}
+
+#google_translate_element {
+  width: 100%;
+  position: relative;
+}
+
+/* Hide unstyled Google elements completely */
+.goog-te-gadget-simple, 
+.skiptranslate > span,
+.goog-te-gadget > span {
+  display: none !important;
+}
+
+/* Google drop down combo list formatting sync */
+select.goog-te-combo {
+  width: 100% !important;
+  padding: 11px 14px !important;
+  border: 1px solid var(--border-ui) !important;
+  border-radius: 6px !important;
+  font-size: 0.9rem !important;
+  outline: none !important;
+  background-color: var(--bg-input) !important;
+  color: var(--text-main) !important;
+  cursor: pointer !important;
+  display: block !important;
+  font-family: 'Inter', sans-serif !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: select !important;
+  -moz-appearance: select !important;
+  appearance: select !important;
+}
+
+select.goog-te-combo:focus {
+  border-color: var(--theme-color) !important;
+  box-shadow: 0 0 0 3px rgba(145, 93, 158, 0.2) !important;
+}
+
+.goog-te-gadget {
+  font-size: 0 !important;
+  color: transparent !important;
+}
+.goog-te-gadget-icon {
+  display: none !important;
+}
+.goog-te-banner-frame.skiptranslate, 
+iframe.goog-te-banner-frame,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+body {
+  top: 0px !important;
+}
+
+/* ==========================================================================
+   9. INTERACTIVE ACCENT BUTTON CONTROLS
+   ========================================================================== */
+.save-btn-bottom {
+  width: 100%;
+  padding: 13px;
+  background: var(--theme-dark);
+  color: #faf8f5;
+  border: none;
   border-radius: 6px;
   font-size: 0.9rem;
-  outline: none;
-  background: #faf8f5;
-  color: #2c2420;
-  font-family: Arial, sans-serif;
+  font-weight: 600;
   cursor: pointer;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235a4e46' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  transition: border-color 0.2s, background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 24px;
+}
+
+.save-btn-bottom:hover {
+  background: var(--theme-dark-hover);
+}
+
+.save-btn-bottom:active {
+  transform: scale(0.985);
 }
 
 /* ==========================================================================
-   RESPONSIVE DESIGN BREAKPOINTS
+   10. STATUS TOAST FEEDBACK NOTIFICATIONS
    ========================================================================== */
-@media (max-width: 480px) {
-  body {
-    padding: 16px 12px;
-  }
-  .card {
-    padding: 20px 18px 28px;
-  }
-  .page-title {
-    font-size: 15px;
-  }
-  .section-heading {
-    font-size: 14px;
-  }
-  .field input {
-    font-size: 14px;
-  }
-  .save-btn-bottom {
-    font-size: 15px;
-  }
+.success-msg, .error-msg {
+  padding: 11px;
+  border-radius: 6px;
+  margin-top: 16px;
+  font-size: 0.85rem;
+  display: none;
+  text-align: center;
+  font-weight: 500;
+}
+
+.success-msg {
+  background: rgba(76, 140, 76, 0.15);
+  color: #52a352;
+  border: 1px solid rgba(76, 140, 76, 0.3);
+}
+
+.error-msg {
+  background: rgba(214, 82, 82, 0.15);
+  color: #e05c5c;
+  border: 1px solid rgba(214, 82, 82, 0.3);
 }

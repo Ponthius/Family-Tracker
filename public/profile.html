@@ -4,10 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="profile.css">
-  <title>Profile Settings - Family Tracker</title>
+  <title>Account Settings — Management Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Include i18next Library from CDN -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/23.11.5/i18next.min.js"></script>
+  
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en'
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
 <body>
 
@@ -15,344 +22,301 @@
 
     <div class="top-bar">
       <button class="back-btn" onclick="history.back()">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </button>
-      <span class="page-title" data-i18n="nav.title">Profile Settings</span>
+      <span class="page-title">Account Settings</span>
+      
+      <button class="theme-toggle-btn" id="theme-toggle" title="Toggle System Mode">
+        <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
 
-    <!-- EDIT PROFILE SECTION -->
-    <div class="section-heading">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      <span data-i18n="sections.profile">Edit Profile</span>
-    </div>
-
-    <div class="field">
-      <label for="username" data-i18n="fields.username">Username</label>
-      <input type="text" id="username" placeholder="Enter your username" />
-    </div>
-
-    <div class="field">
-      <label for="fullname" data-i18n="fields.fullname">Full Name</label>
-      <input type="text" id="fullname" placeholder="Enter your full name e.g. Naiga Hawah" />
-    </div>
-
-    <div class="field">
-      <label for="email" data-i18n="fields.email">Email Address</label>
-      <input type="email" id="email" placeholder="Enter your email e.g. hawah@email.com" />
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- EDIT PASSWORD SECTION -->
-    <div class="section-heading">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      <span data-i18n="sections.password">Edit Password</span>
-    </div>
-
-    <div class="field">
-      <label for="current-password" data-i18n="fields.current_pass">Current Password</label>
-      <input type="password" id="current-password" placeholder="Enter your current password" />
-    </div>
-
-    <div class="field">
-      <label for="new-password" data-i18n="fields.new_pass">New Password</label>
-      <input type="password" id="new-password" placeholder="Enter your new password" />
-    </div>
-
-    <div class="field">
-      <label for="confirm-password" data-i18n="fields.confirm_pass">Confirm New Password</label>
-      <input type="password" id="confirm-password" placeholder="Confirm your new password" />
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- WORKSPACE WHITE LABEL SECTION -->
     <div class="section-heading">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span data-i18n="sections.workspace">Workspace Customization</span>
+      <span>Personal Information</span>
     </div>
 
     <div class="field">
-      <label for="family-title" data-i18n="fields.family_title">Family Title</label>
-      <input type="text" id="family-title" placeholder="Enter workspace family title e.g. Smith Family" />
+      <label for="username">Username Unique Handle</label>
+      <input type="text" id="username" placeholder="e.g. naiga_hawah" />
     </div>
 
     <div class="field">
-      <label for="workspace-logo" data-i18n="fields.workspace_logo">Workspace Logo</label>
-      <div class="file-upload-wrapper">
-        <input type="file" id="workspace-logo" accept="image/*" onchange="updateFileName(this)">
-        <div class="file-upload-btn" id="file-btn-text" data-i18n="fields.choose_logo">Choose Logo Image</div>
+      <label for="fullname">Legal Full Name</label>
+      <input type="text" id="fullname" placeholder="e.g. Naiga Hawah" />
+    </div>
+
+    <div class="field">
+      <label for="email">Verified Email Address</label>
+      <input type="email" id="email" placeholder="name@domain.com" />
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-heading">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span>Security & Credentials</span>
+    </div>
+
+    <div class="field">
+      <label for="current-password">Current Secure Password</label>
+      <input type="password" id="current-password" placeholder="••••••••••••" />
+    </div>
+
+    <div class="field">
+      <label for="new-password">New Account Password</label>
+      <input type="password" id="new-password" placeholder="Minimum 8 characters" />
+    </div>
+
+    <div class="field">
+      <label for="confirm-password">Verify New Password</label>
+      <input type="password" id="confirm-password" placeholder="Re-enter your new password" />
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-heading">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
+      <span>Workspace Brand Styling</span>
+    </div>
+
+    <div class="field">
+      <label for="family-title">Workspace Brand Name</label>
+      <input type="text" id="family-title" placeholder="e.g. Smith Family Network" />
+    </div>
+
+    <div class="brand-preview-center">
+      <div class="circular-logo-frame" id="logo-circle-frame">
+        <svg id="placeholder-logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <img id="logo-img-element" src="" alt="Brand Logo Preview" style="display: none;" />
       </div>
     </div>
 
     <div class="field">
-      <label for="workspace-color" data-i18n="fields.theme_color">Theme Color</label>
+      <label for="workspace-logo">Corporate Workspace Logo</label>
+      <div class="file-upload-wrapper">
+        <div class="file-upload-container" id="upload-clickable-zone">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          <div class="file-upload-btn" id="file-btn-text">Upload Local Image Asset</div>
+        </div>
+        <input type="file" id="workspace-logo" accept="image/*" style="display: none;">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="workspace-logo-url">Or Paste Direct Image URL Link</label>
+      <input type="url" id="workspace-logo-url" placeholder="https://example.com/logo.png" />
+    </div>
+
+    <div class="field">
+      <label for="workspace-color">Accent Core Theme Color</label>
       <div class="color-picker-wrapper">
-        <input type="color" id="workspace-color" value="#5A3562" oninput="updateColorPreview(this.value)">
+        <input type="color" id="workspace-color" value="#5A3562">
         <span class="color-value-preview" id="color-code">#5A3562</span>
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Language Selector Dropdown -->
     <div class="field">
-      <label for="language-select" data-i18n="fields.app_lang">Application Language</label>
-      <select id="language-select" class="lang-dropdown" onchange="changeLanguage(this.value)">
-        <option value="en">English</option>
-        <option value="sw">Kiswahili</option>
-        <option value="lg">Luganda</option>
-        <option value="fr">Français (French)</option>
-        <option value="es">Español (Spanish)</option>
-      </select>
+      <label>Interface Application Language</label>
+      
+      <div class="search-box-wrapper">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="lang-search-bar" placeholder="Type to filter languages..." />
+      </div>
+
+      <div id="google_translate_element"></div>
     </div>
 
-    <button class="save-btn-bottom" onclick="saveProfileSettings()">
+    <button class="save-btn-bottom" id="save-settings-btn">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      <span data-i18n="buttons.save" style="display: inline; padding: 0; background: none; color: inherit;">Save Changes</span>
+      <span style="display:inline; padding:0; background:none; color:inherit;">Commit Changes</span>
     </button>
 
-    <div class="success-msg" id="success-msg" data-i18n="messages.success">
-      Profile settings saved successfully!
+    <div class="success-msg" id="success-msg">
+      Account configuration profiles saved successfully!
     </div>
-
     <div class="error-msg" id="error-msg"></div>
 
   </div>
 
-  <script>
-    const API = 'http://localhost:4001';
-
-    const resources = {
-      en: {
-        translation: {
-          "nav.title": "Profile Settings",
-          "sections.profile": "Edit Profile",
-          "sections.password": "Edit Password",
-          "sections.workspace": "Workspace Customization",
-          "fields.username": "Username",
-          "fields.fullname": "Full Name",
-          "fields.email": "Email Address",
-          "fields.current_pass": "Current Password",
-          "fields.new_pass": "New Password",
-          "fields.confirm_pass": "Confirm New Password",
-          "fields.family_title": "Family Title",
-          "fields.workspace_logo": "Workspace Logo",
-          "fields.choose_logo": "Choose Logo Image",
-          "fields.theme_color": "Theme Color",
-          "fields.app_lang": "Application Language",
-          "buttons.save": "Save Changes",
-          "messages.success": "Profile settings saved successfully!"
-        }
-      },
-      sw: {
-        translation: {
-          "nav.title": "Mipangilio ya Wasifu",
-          "sections.profile": "Hariri Wasifu",
-          "sections.password": "Badilisha Nywila",
-          "sections.workspace": "Urekebishaji wa Eneo la Kazi",
-          "fields.username": "Jina la Mtumiaji",
-          "fields.fullname": "Majina Kamili",
-          "fields.email": "Anwani ya Barua Pepe",
-          "fields.current_pass": "Nywila ya Sasa",
-          "fields.new_pass": "Nywila Mpya",
-          "fields.confirm_pass": "Thibitisha Nywila Mpya",
-          "fields.family_title": "Jina la Familia",
-          "fields.workspace_logo": "Nembo ya Eneo la Kazi",
-          "fields.choose_logo": "Chagua Picha ya Nembo",
-          "fields.theme_color": "Rangi ya Maudhui",
-          "fields.app_lang": "Lugha ya Programu",
-          "buttons.save": "Hifadhi Mabadiliko",
-          "messages.success": "Mipangilio ya wasifu imehifadhiwa kikamilifu!"
-        }
-      },
-      lg: {
-        translation: {
-          "nav.title": "Enkyukakyuka z'Akawunti",
-          "sections.profile": "Kyusa Akawunti",
-          "sections.password": "Kyusa Ssekula",
-          "sections.workspace": "Kola Enkyukakyuka z'Akawunti",
-          "fields.username": "Erinnya ly'okukozesa",
-          "fields.fullname": "Amanya Gali mu Buwandiike",
-          "fields.email": "Endagiriro ya Emmere",
-          "fields.current_pass": "Ssekula Ekadde",
-          "fields.new_pass": "Ssekula Empya",
-          "fields.confirm_pass": "Kasa Ssekula Empya",
-          "fields.family_title": "Erinnya ly'Amaka",
-          "fields.workspace_logo": "Akabonero k'Akawunti",
-          "fields.choose_logo": "Londa Kifaananyi ky'Akabonero",
-          "fields.theme_color": "Langatenda",
-          "fields.app_lang": "Olulimi lw'Enkola",
-          "buttons.save": "Terekebza Enkyukakyuka",
-          "messages.success": "Enkyukakyuka ziterekedwa bulungi!"
-        }
-      },
-      fr: {
-        translation: {
-          "nav.title": "Paramètres du Profil",
-          "sections.profile": "Modifier le Profil",
-          "sections.password": "Modifier le Mot de Passe",
-          "sections.workspace": "Personnalisation de l'Espace",
-          "fields.username": "Nom d'utilisateur",
-          "fields.fullname": "Nom Complet",
-          "fields.email": "Adresse E-mail",
-          "fields.current_pass": "Mot de Passe Actuel",
-          "fields.new_pass": "Nouveau Mot de Passe",
-          "fields.confirm_pass": "Confirmer le Nouveau Mot de Passe",
-          "fields.family_title": "Titre de la Famille",
-          "fields.workspace_logo": "Logo de l'Espace de Travail",
-          "fields.choose_logo": "Choisir une Image de Logo",
-          "fields.theme_color": "Couleur du Thème",
-          "fields.app_lang": "Langue de l'Application",
-          "buttons.save": "Enregistrer",
-          "messages.success": "Paramètres enregistrés avec succès!"
-        }
-      },
-      es: {
-        translation: {
-          "nav.title": "Ajustes del Perfil",
-          "sections.profile": "Editar Perfil",
-          "sections.password": "Editar Contraseña",
-          "sections.workspace": "Personalización del Espacio",
-          "fields.username": "Nombre de Usuario",
-          "fields.fullname": "Nombre Completo",
-          "fields.email": "Correo Electrónico",
-          "fields.current_pass": "Contraseña Actual",
-          "fields.new_pass": "Nueva Contraseña",
-          "fields.confirm_pass": "Confirmer Nueva Contraseña",
-          "fields.family_title": "Título de la Familia",
-          "fields.workspace_logo": "Logotipo del Espacio",
-          "fields.choose_logo": "Elegir Imagen de Logo",
-          "fields.theme_color": "Color del Tema",
-          "fields.app_lang": "Idioma de la Aplicación",
-          "buttons.save": "Guardar Cambios",
-          "messages.success": "¡Ajustes guardados con éxito!"
-        }
-      }
-    };
-
-    // Helper to calculate darker button shades relative to selected theme color
+  <script type="text/javascript">
     function adjustColorBrightness(hex, percent) {
       let R = parseInt(hex.substring(1, 3), 16);
       let G = parseInt(hex.substring(3, 5), 16);
       let B = parseInt(hex.substring(5, 7), 16);
-
       R = parseInt(R * (100 + percent) / 100);
       G = parseInt(G * (100 + percent) / 100);
       B = parseInt(B * (100 + percent) / 100);
-
       R = (R < 255) ? R : 255; G = (G < 255) ? G : 255; B = (B < 255) ? B : 255;
       R = (R > 0) ? R : 0;     G = (G > 0) ? G : 0;     B = (B > 0) ? B : 0;
-
       return `#${R.toString(16).padStart(2, '0')}${G.toString(16).padStart(2, '0')}${B.toString(16).padStart(2, '0')}`;
     }
 
-    // Dynamic Live Preview execution loop
     function updateColorPreview(val) {
       document.getElementById('color-code').innerText = val.toUpperCase();
+      const isDark = document.body.classList.contains('dark-mode');
       
-      const darkShade = adjustColorBrightness(val, -15);
-      const hoverShade = adjustColorBrightness(val, -30);
+      const displayColor = isDark ? adjustColorBrightness(val, 20) : val;
+      const darkShade = adjustColorBrightness(displayColor, -15);
+      const hoverShade = adjustColorBrightness(displayColor, -30);
 
-      // Mutates the global CSS custom variables instantly
-      document.documentElement.style.setProperty('--theme-color', val);
+      document.documentElement.style.setProperty('--theme-color', displayColor);
       document.documentElement.style.setProperty('--theme-dark', darkShade);
       document.documentElement.style.setProperty('--theme-dark-hover', hoverShade);
     }
 
+    function toggleThemeMode() {
+      const body = document.body;
+      const sunIcon = document.querySelector('.sun-icon');
+      const moonIcon = document.querySelector('.moon-icon');
+      
+      if (body.classList.contains('dark-mode')) {
+        body.classList.remove('dark-mode');
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+        localStorage.setItem('display_mode', 'light');
+      } else {
+        body.classList.add('dark-mode');
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+        localStorage.setItem('display_mode', 'dark');
+      }
+      const currentColor = document.getElementById('workspace-color').value;
+      updateColorPreview(currentColor);
+    }
+
+    function displayLogoImage(sourceUrl) {
+      const imgElement = document.getElementById('logo-img-element');
+      const placeholderIcon = document.getElementById('placeholder-logo-icon');
+      
+      if (sourceUrl && sourceUrl.trim() !== "") {
+        imgElement.src = sourceUrl;
+        imgElement.style.display = 'block';
+        placeholderIcon.style.display = 'none';
+      } else {
+        imgElement.style.display = 'none';
+        placeholderIcon.style.display = 'block';
+      }
+    }
+
     function initTheme() {
+      const savedMode = localStorage.getItem('display_mode') || 'light';
+      const sunIcon = document.querySelector('.sun-icon');
+      const moonIcon = document.querySelector('.moon-icon');
+      
+      if (savedMode === 'dark') {
+        document.body.classList.add('dark-mode');
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+      } else {
+        document.body.classList.remove('dark-mode');
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+      }
+
       const savedColor = localStorage.getItem('workspace_theme_color') || '#5A3562';
       document.getElementById('workspace-color').value = savedColor;
       updateColorPreview(savedColor);
+
+      const savedLogo = localStorage.getItem('workspace_logo_data');
+      const savedUrl = localStorage.getItem('workspace_logo_url');
+
+      if (savedUrl) {
+        document.getElementById('workspace-logo-url').value = savedUrl;
+        displayLogoImage(savedUrl);
+      } else if (savedLogo) {
+        displayLogoImage(savedLogo);
+        document.getElementById('file-btn-text').innerText = "Loaded Local Image";
+      }
     }
 
-    async function initTranslations() {
-      const savedLang = localStorage.getItem('app_lang') || 'en';
-      await i18next.init({
-        lng: savedLang,
-        fallbackLng: 'en',
-        resources: resources
-      });
-      document.getElementById('language-select').value = savedLang;
-      applyTranslations();
-    }
-
-    function applyTranslations() {
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        el.textContent = i18next.t(key);
-      });
-    }
-
-    function changeLanguage(lang) {
-      i18next.changeLanguage(lang, () => {
-        applyTranslations();
-        localStorage.setItem('app_lang', lang);
-      });
-    }
-
-    function getStoredUser() {
-      try { return JSON.parse(localStorage.getItem('user')) || {}; } 
-      catch (e) { return {}; }
-    }
-
-    function showSuccess(msg) {
+    function showSuccess() {
       const el = document.getElementById('success-msg');
-      el.textContent = msg || i18next.t('messages.success');
       el.style.display = 'block';
       document.getElementById('error-msg').style.display = 'none';
       setTimeout(() => el.style.display = 'none', 3000);
     }
 
-    function showError(msg) {
-      const el = document.getElementById('error-msg');
-      el.textContent = msg;
-      el.style.display = 'block';
-      document.getElementById('success-msg').style.display = 'none';
-      setTimeout(() => el.style.display = 'none', 5000);
-    }
-
-    async function loadProfile() {
-      initTheme();
-      const user = getStoredUser();
-      if (!user.id) return;
-
-      try {
-        const res = await fetch(`${API}/profile/${user.id}`);
-        const data = await res.json();
-        if (!res.ok || !data.success) throw new Error(data.error);
-
-        const u = data.user;
-        document.getElementById('username').value = u.username || '';
-        document.getElementById('fullname').value = u.fullname || '';
-        document.getElementById('email').value = u.email || '';
-      } catch (err) {
-        console.error('Profile loading error:', err);
-      }
-    }
-
-    async function saveProfileSettings() {
-      const user = getStoredUser();
-      const chosenColor = document.getElementById('workspace-color').value;
-
-      try {
-        localStorage.setItem('workspace_theme_color', chosenColor);
-        showSuccess();
-      } catch (err) {
-        showError(err.message);
-      }
-    }
-
-    function updateFileName(input) {
+    function handleLocalFileSelection() {
+      const fileInput = document.getElementById('workspace-logo');
       const btnText = document.getElementById('file-btn-text');
-      if (input.files && input.files.length > 0) {
-        btnText.innerText = input.files[0].name;
+
+      if (fileInput.files && fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        btnText.innerText = file.name;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const dataUrl = event.target.result;
+          displayLogoImage(dataUrl);
+          localStorage.setItem('workspace_logo_data', dataUrl);
+          localStorage.removeItem('workspace_logo_url');
+          document.getElementById('workspace-logo-url').value = ""; 
+        };
+        reader.readAsDataURL(file);
       }
     }
+
+    function handleUrlLinkChange(e) {
+      const urlValue = e.target.value;
+      if (urlValue.trim() !== "") {
+        displayLogoImage(urlValue);
+        localStorage.setItem('workspace_logo_url', urlValue);
+        localStorage.removeItem('workspace_logo_data'); 
+        document.getElementById('file-btn-text').innerText = "Upload Local Image Asset";
+      } else {
+        displayLogoImage("");
+        localStorage.removeItem('workspace_logo_url');
+      }
+    }
+
+    // Dynamic Live Language Search Filter Core Loop Logic
+    document.getElementById('lang-search-bar').addEventListener('input', function(e) {
+      const searchTerms = e.target.value.toLowerCase().trim();
+      const googleSelect = document.querySelector('select.goog-te-combo');
+
+      if (googleSelect) {
+        const optionsList = googleSelect.getElementsByTagName('option');
+        
+        for (let i = 0; i < optionsList.length; i++) {
+          const opt = optionsList[i];
+          const textVal = opt.textContent.toLowerCase();
+          
+          // Keep the blank default line option active always
+          if (opt.value === "") continue;
+
+          if (textVal.includes(searchTerms)) {
+            opt.style.display = 'block';
+            opt.disabled = false;
+          } else {
+            opt.style.display = 'none';
+            opt.disabled = true;
+          }
+        }
+      }
+    });
+
+    // Wire up actions safely
+    document.getElementById('theme-toggle').addEventListener('click', toggleThemeMode);
+    document.getElementById('workspace-color').addEventListener('input', (e) => updateColorPreview(e.target.value));
+    document.getElementById('workspace-logo-url').addEventListener('input', handleUrlLinkChange);
+    document.getElementById('workspace-logo').addEventListener('change', handleLocalFileSelection);
+    
+    document.getElementById('upload-clickable-zone').addEventListener('click', () => {
+      document.getElementById('workspace-logo').click();
+    });
+
+    document.getElementById('save-settings-btn').addEventListener('click', () => {
+      const chosenColor = document.getElementById('workspace-color').value;
+      localStorage.setItem('workspace_theme_color', chosenColor);
+      showSuccess();
+    });
 
     window.onload = () => {
-      initTranslations();
-      loadProfile();
+      initTheme();
     };
   </script>
 </body>
