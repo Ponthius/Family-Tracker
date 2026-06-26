@@ -6,8 +6,6 @@
   <title>Family Tracker · Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="dashboard.css">
-  <script src="javascript/offline-queue.js"></script>
-  <script src="javascript/sync-service.js"></script>
   <script src="toast.js"></script>
   <style>
     /* Added Styles for Back Button & Notifications */
@@ -318,9 +316,13 @@
         return;
       }
       tbody.innerHTML = data.tasks.map(t => {
-        const d = new Date((t.TaskDate || '').includes('T') ? t.TaskDate : t.TaskDate + 'T' + (t.TaskTime || '00:00'));
-        const dtStr = d.toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
-        return '<tr><td>' + t.EventName + '</td><td>' + dtStr + '</td><td><span class="badge">' + (t.Username || '—') + '</span></td></tr>';
+        var td = t.taskdate || t.TaskDate || '';
+        var tt = t.tasktime || t.TaskTime || '';
+        var en = t.eventname || t.EventName || '';
+        var un = t.username || t.Username || '—';
+        var d = new Date((td.includes('T') ? td : td + 'T' + (tt || '00:00')).substring(0, 19));
+        var dtStr = d.toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+        return '<tr><td>' + en + '</td><td>' + dtStr + '</td><td><span class="badge">' + un + '</span></td></tr>';
       }).join('');
     } catch (err) {
       console.error('Upcoming tasks error:', err);

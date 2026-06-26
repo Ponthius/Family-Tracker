@@ -1,7 +1,5 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -88,6 +86,7 @@
     </div>
   </div>
 
+  <script src="toast.js"></script>
   <script>
     const API = '/api';
     let events = [];
@@ -103,29 +102,25 @@
     const saveBtn = document.getElementById('saveBtn');
 
     const assignMember = document.getElementById('assignMember');
-    const eventName = document.getElementById('eventName');
-    const eventDesc = document.getElementById('eventDesc');
-    const eventDate = document.getElementById('eventDate');
-    const eventTime = document.getElementById('eventTime');
-    const eventStatus = document.getElementById('eventStatus');
+    const eventNameEl = document.getElementById('eventName');
+    const eventDescEl = document.getElementById('eventDesc');
+    const eventDateEl = document.getElementById('eventDate');
+    const eventTimeEl = document.getElementById('eventTime');
+    const eventStatusEl = document.getElementById('eventStatus');
 
     const errMember = document.getElementById('errMember');
     const errEvent = document.getElementById('errEvent');
     const errDate = document.getElementById('errDate');
     const errTime = document.getElementById('errTime');
 
-    // ----- Helpers -----
-
     function formatDate(d) {
       if (!d) return '';
-      const date = new Date(d);
-      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
     function formatTime(d) {
       if (!d) return '';
-      const date = new Date(d);
-      return date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+      return new Date(d).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
     }
 
     function renderTable(list) {
@@ -136,65 +131,63 @@
       }
       noResults.classList.add('hidden');
 
-      list.forEach(ev => {
-        const tr = document.createElement('tr');
-        const statusColor = ev.Status === 'Occupied'
+      list.forEach(function (ev) {
+        var tr = document.createElement('tr');
+        var statusClass = (ev.status === 'Occupied' || ev.Status === 'Occupied')
+          ? 'Occupied' : 'Unoccupied';
+        var statusColor = statusClass === 'Occupied'
           ? '<span style="background:#f0d8d0;color:#a13d3d;padding:3px 10px;border-radius:999px;font-size:0.7rem;font-weight:600;">Occupied</span>'
           : '<span style="background:#d4e6c6;color:#3c5a3c;padding:3px 10px;border-radius:999px;font-size:0.7rem;font-weight:600;">Unoccupied</span>';
 
         tr.innerHTML =
-          '<td><span class="role-tag">' + (ev.Role || '—') + '</span></td>' +
-          '<td>' + (ev.MemberName || ev.username || '') + '</td>' +
-          '<td>' + ev.EventName + '</td>' +
-          '<td>' + formatDate(ev.EventDate) + '</td>' +
-          '<td>' + formatTime(ev.EventDate) + '</td>' +
+          '<td><span class="role-tag">' + (ev.role || ev.Role || '—') + '</span></td>' +
+          '<td>' + (ev.membername || ev.MemberName || ev.username || '') + '</td>' +
+          '<td>' + (ev.eventname || ev.EventName) + '</td>' +
+          '<td>' + formatDate(ev.eventdate || ev.EventDate) + '</td>' +
+          '<td>' + formatTime(ev.eventdate || ev.EventDate) + '</td>' +
           '<td>' + statusColor + '</td>';
         tableBody.appendChild(tr);
       });
     }
 
     function applySearch() {
-      const term = searchInput.value.trim().toLowerCase();
+      var term = searchInput.value.trim().toLowerCase();
       if (!term) { renderTable(events); return; }
-      const filtered = events.filter(ev =>
-        (ev.EventName || '').toLowerCase().includes(term) ||
-        (ev.MemberName || '').toLowerCase().includes(term) ||
-        (ev.Role || '').toLowerCase().includes(term)
-      );
+      var filtered = events.filter(function (ev) {
+        var en = (ev.eventname || ev.EventName || '').toLowerCase();
+        var mn = (ev.membername || ev.MemberName || '').toLowerCase();
+        return en.indexOf(term) >= 0 || mn.indexOf(term) >= 0;
+      });
       renderTable(filtered);
     }
 
     searchInput.addEventListener('input', applySearch);
 
-    // ----- Modal -----
-
     function openModal() { modalOverlay.style.display = 'flex'; }
     function closeModal() {
       modalOverlay.style.display = 'none';
       assignMember.value = '';
-      eventName.value = '';
-      eventDesc.value = '';
-      eventDate.value = '';
-      eventTime.value = '';
-      eventStatus.value = 'Occupied';
-      [errMember, errEvent, errDate, errTime].forEach(e => { e.classList.add('hidden'); e.textContent = ''; });
+      eventNameEl.value = '';
+      eventDescEl.value = '';
+      eventDateEl.value = '';
+      eventTimeEl.value = '';
+      eventStatusEl.value = 'Occupied';
+      [errMember, errEvent, errDate, errTime].forEach(function (e) { e.classList.add('hidden'); e.textContent = ''; });
     }
 
     createBtn.addEventListener('click', openModal);
     cancelBtn.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
-
-    // ----- Load members into dropdown -----
+    modalOverlay.addEventListener('click', function (e) { if (e.target === modalOverlay) closeModal(); });
 
     async function loadMembers() {
       try {
-        const res = await fetch(API + '/members');
-        const data = await res.json();
+        var res = await fetch(API + '/members');
+        var data = await res.json();
         if (!res.ok || !data.success) throw new Error(data.error);
-        const users = data.members || [];
+        var users = data.members || [];
         assignMember.innerHTML = '<option value="">Select member</option>';
-        users.forEach(u => {
-          const opt = document.createElement('option');
+        users.forEach(function (u) {
+          var opt = document.createElement('option');
           opt.value = u.role + '|' + u.username;
           opt.textContent = u.role.charAt(0).toUpperCase() + u.role.slice(1) + ' — ' + u.username;
           assignMember.appendChild(opt);
@@ -204,27 +197,12 @@
       }
     }
 
-    // ----- Fetch events -----
-
     async function loadEvents() {
       try {
-        const res = await fetch(API + '/events');
-        const data = await res.json();
+        var res = await fetch(API + '/events');
+        var data = await res.json();
         if (!res.ok || !data.success) throw new Error(data.error);
         events = data.events || [];
-        // Attach Role to each event from member data (stored in dropdown)
-        const memberMap = {};
-        document.querySelectorAll('#assignMember option').forEach(opt => {
-          if (opt.value) {
-            const [role, uname] = opt.value.split('|');
-            memberMap[uname ? uname.toLowerCase() : ''] = role;
-          }
-        });
-        events.forEach(ev => {
-          if (!ev.Role && ev.MemberName) {
-            ev.Role = memberMap[ev.MemberName.toLowerCase()] || ev.Role || '—';
-          }
-        });
       } catch (err) {
         console.error('Could not load events:', err);
         events = [];
@@ -232,34 +210,32 @@
       renderTable(events);
     }
 
-    // ----- Save event -----
-
-    saveBtn.addEventListener('click', async () => {
-      let valid = true;
-      [errMember, errEvent, errDate, errTime].forEach(e => { e.classList.add('hidden'); e.textContent = ''; });
+    saveBtn.addEventListener('click', async function () {
+      var valid = true;
+      [errMember, errEvent, errDate, errTime].forEach(function (e) { e.classList.add('hidden'); e.textContent = ''; });
 
       if (!assignMember.value) { errMember.classList.remove('hidden'); valid = false; }
-      if (!eventName.value.trim()) { errEvent.classList.remove('hidden'); valid = false; }
-      if (!eventDate.value) { errDate.classList.remove('hidden'); valid = false; }
-      if (!eventTime.value) { errTime.classList.remove('hidden'); valid = false; }
+      if (!eventNameEl.value.trim()) { errEvent.classList.remove('hidden'); valid = false; }
+      if (!eventDateEl.value) { errDate.classList.remove('hidden'); valid = false; }
+      if (!eventTimeEl.value) { errTime.classList.remove('hidden'); valid = false; }
       if (!valid) return;
 
-      const [role, username] = assignMember.value.split('|');
-      const dateTimeStr = eventDate.value + 'T' + eventTime.value;
+      var username = assignMember.value.split('|')[1];
+      var dateTimeStr = eventDateEl.value + 'T' + eventTimeEl.value;
 
       try {
-        const res = await fetch(API + '/events', {
+        var res = await fetch(API + '/events', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            eventName: eventName.value.trim(),
-            description: eventDesc.value.trim(),
+            eventName: eventNameEl.value.trim(),
+            description: eventDescEl.value.trim(),
             eventDate: dateTimeStr,
             memberName: username
           })
         });
 
-        const data = await res.json();
+        var data = await res.json();
         if (!res.ok || !data.success) throw new Error(data.error || 'Failed');
 
         closeModal();
@@ -267,127 +243,15 @@
         await loadEvents();
 
         confirmation.classList.remove('hidden');
-        setTimeout(() => confirmation.classList.add('hidden'), 3000);
+        setTimeout(function () { confirmation.classList.add('hidden'); }, 3000);
       } catch (err) {
-        showNotification('Could not create schedule: ' + err.message, 'error');
+        showToast('Could not create schedule: ' + err.message, 'error');
         console.error(err);
       }
     });
 
-    // ----- Init -----
     loadMembers();
     loadEvents();
   </script>
 </body>
-=======
-=======
->>>>>>> Stashed changes
-  <head>
-    <meta charset="UTF-8" />
-    <title>Family Tracker - View Schedules</title>
-    <style>
-      /* Basic table styling for readability (Requirement #9) */
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-      }
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 12px;
-        text-align: left;
-      }
-      th {
-        background-color: #f4f4f4;
-      }
-      .status-occupied {
-        color: red;
-        font-weight: bold;
-      }
-      .status-unoccupied {
-        color: green;
-      }
-    </style>
-  </head>
-  <body>
-    <div style="max-width: 1100px; margin: 1rem auto; padding: 0 2rem">
-      <nav class="breadcrumb" aria-label="breadcrumb">
-        <ol>
-          <li><a href="dashbaord.html">Dashboard</a></li>
-          <li aria-current="page">Schedule</li>
-        </ol>
-      </nav>
-    </div>
-
-    <h2>Upcoming Family Schedule</h2>
-    <button id="createScheduleBtn">CREATE SCHEDULE</button>
-
-    <!-- Table setup per Requirement #2 and #3 -->
-    <div
-      id="formSection"
-      style="
-        margin-bottom: 30px;
-        border: 1px solid #ccc;
-        padding: 15px;
-        display: none;
-      "
-    >
-      <h3>Create New Schedule</h3>
-      <form id="scheduleForm">
-        <label>Role: </label>
-        <select id="roleInput">
-          <option value="Father">Father</option>
-          <option value="Mother">Mother</option>
-          <option value="Son">Son</option>
-          <option value="Daughter">Daughter</option>
-        </select>
-        <br /><br />
-        <input type="text" id="usernameInput" placeholder="Username" required />
-        <input type="text" id="eventInput" placeholder="Task/Event" required />
-        <input type="date" id="dateInput" required />
-        <input type="time" id="timeInput" required />
-        <label>Status</label>
-        <input
-          type="text"
-          id="statusInput"
-          placeholder="Occupied/Unoccupied"
-          required
-        />
-        <br /><br />
-        <button type="button" onclick="addSchedule()">Add to Schedule</button>
-        <button id="closeBtn">CLOSE</button>
-      </form>
-    </div>
-
-    <table id="scheduleTable">
-      <thead>
-        <tr>
-          <th>Role</th>
-          <th>Username</th>
-          <th>Event</th>
-          <th>Time</th>
-          <th>Date</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody id="scheduleBody">
-        <!-- Data will be injected here by script.js -->
-      </tbody>
-    </table>
-
-    <!-- Handling empty state per Requirement #11 -->
-    <div
-      id="noEventsMessage"
-      style="display: none; margin-top: 20px; color: gray"
-    >
-      No scheduled events available.
-    </div>
-
-    <script src="script.js"></script>
-  </body>
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 </html>
