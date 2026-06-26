@@ -1,7 +1,3 @@
-/* ===========================
-   RESET & BASE STYLES
-   =========================== */
-
 * {
   margin: 0;
   padding: 0;
@@ -18,10 +14,6 @@ body {
   min-height: 100vh;
 }
 
-/* ===========================
-   CARD IN THE CENTER
-   =========================== */
-
 .card {
   background: #f5f1ec;
   border-radius: 12px;
@@ -30,10 +22,6 @@ body {
   max-width: 420px;
   padding: 24px 24px;
 }
-
-/* ===========================
-   TOP BAR
-   =========================== */
 
 .top-bar {
   display: flex;
@@ -66,10 +54,6 @@ body {
   font-family: Georgia, serif;
 }
 
-/* ============================
-   SECTION HEADINGS
-   ============================ */
-
 .section-heading {
   font-size: 16px;
   font-weight: 700;
@@ -92,10 +76,6 @@ body {
   background: #e2d8d0;
   margin: 28px 0;
 }
-
-/* ============================
-   FORM FIELDS
-   ============================ */
 
 .field {
   margin-bottom: 16px;
@@ -128,10 +108,6 @@ body {
   background: #f5f1ec;
 }
 
-/* ============================
-   SAVE BUTTON
-   ============================ */
-
 .save-btn-bottom {
   width: 100%;
   padding: 11px;
@@ -146,6 +122,10 @@ body {
   letter-spacing: 0.03em;
   margin-top: 28px;
   font-family: Arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .save-btn-bottom:hover {
@@ -155,10 +135,6 @@ body {
 .save-btn-bottom:active {
   transform: scale(0.98);
 }
-
-/* =============================
-   SUCCESS / ERROR MESSAGES
-   ============================= */
 
 .success-msg {
   background: #e7efe2;
@@ -186,19 +162,11 @@ body {
   font-weight: 500;
 }
 
-/* =============================
-   THEME COLOR VARIABLES
-   ============================= */
-
 :root {
   --theme-color: #3d3530;
   --theme-dark: #2c2420;
   --theme-dark-hover: #1f1915;
 }
-
-/* =============================
-   COLOR PICKER, FILE UPLOAD, LANGUAGE DROPDOWN
-   ============================= */
 
 .color-picker-wrapper {
   display: flex;
@@ -223,34 +191,6 @@ body {
   font-weight: 600;
 }
 
-.file-upload-wrapper {
-  position: relative;
-}
-
-.file-upload-wrapper input[type="file"] {
-  position: absolute;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 2;
-}
-
-.file-upload-btn {
-  display: inline-block;
-  padding: 9px 16px;
-  background: #3d3530;
-  color: #f5f1ec;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.file-upload-btn:hover {
-  background: #2c2420;
-}
-
 .lang-dropdown {
   width: 100%;
   padding: 9px 12px;
@@ -267,10 +207,6 @@ body {
 .lang-dropdown:focus {
   border-color: #8b7355;
 }
-
-/* =============================
-   RESPONSIVE
-   ============================= */
 
 @media (max-width: 480px) {
   body {

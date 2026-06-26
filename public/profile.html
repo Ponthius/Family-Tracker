@@ -1,7 +1,5 @@
 <!doctype html>
 <html lang="en">
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +10,17 @@
 </head>
 <body>
 
+  <!-- BREADCRUMB -->
+  <div style="max-width: 1100px; margin: 1rem auto; padding: 0 2rem;">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+      <ol>
+        <li><a href="dashbaord.html">Dashboard</a></li>
+        <li><a href="members.html">Members</a></li>
+        <li aria-current="page">Profile</li>
+      </ol>
+    </nav>
+  </div>
+
   <div class="card">
 
     <div class="top-bar">
@@ -19,145 +28,19 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </button>
       <span class="page-title" data-i18n="nav.title">Profile Settings</span>
-=======
-=======
->>>>>>> Stashed changes
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <link rel="stylesheet" href="profile.css" />
-
-    <title>Profile Settings Page</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div style="max-width: 1100px; margin: 1rem auto; padding: 0 2rem">
-      <nav class="breadcrumb" aria-label="breadcrumb">
-        <ol>
-          <li><a href="dashbaord.html">Dashboard</a></li>
-          <li><a href="members.html">Members</a></li>
-          <li aria-current="page">Profile</li>
-        </ol>
-      </nav>
     </div>
 
-    <div class="card">
-      <div class="top-bar">
-        <button class="back-btn" onclick="history.back()">
-          Back<!-- SVG icon for back button -->
+    <!-- Profile photo section -->
+    <div class="photo-section">
+      <div class="photo-wrapper">
+        <div class="profile-photo" id="photo-display"></div>
+        <button class="change-photo-btn" onclick="document.getElementById('photo-input').click()">
+          Change Photo
         </button>
-        <span class="page-title">Profile Settings</span>
-<<<<<<< Updated upstream
+        <input type="file" id="photo-input" accept="image/*" onchange="previewPhoto(event)" />
       </div>
-
-      <!-- Profile photo section -->
-      <div class="photo-section">
-        <div class="photo-wrapper">
-          <div class="profile-photo" id="photo-display">
-            <!-- person SVG icon (shown before photo is chosen) -->
-          </div>
-
-          <button
-            class="change-photo-btn"
-            onclick="document.getElementById('photo-input').click()"
-          >
-            Change Photo<!-- camera SVG icon -->
-          </button>
-
-          <input
-            type="file"
-            id="photo-input"
-            accept="image/*"
-            onchange="previewPhoto(event)"
-          />
-        </div>
-      </div>
-
-      <!-- EDIT PROFILE SECTION -->
-      <div class="section-heading">
-        <!-- pencil SVG icon -->
-        Edit Profile
-      </div>
-
-      <div class="field">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter your username" />
-      </div>
-
-      <div class="field">
-        <label for="fullname">Full Name</label>
-        <input
-          type="text"
-          id="fullname"
-          placeholder="Enter your full name e.g. Naiga Hawah"
-        />
-      </div>
-
-      <div class="field">
-        <label for="email">Email Address</label>
-        <input
-          type="email"
-          id="email"
-          placeholder="Enter your email e.g. hawah@email.com"
-        />
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- EDIT PASSWORD SECTION -->
-      <div class="section-heading">
-        <!-- lock SVG icon -->
-        Edit Password
-      </div>
-
-      <div class="field">
-        <label for="current-password">Current Password</label>
-        <input
-          type="password"
-          id="current-password"
-          placeholder="Enter your current password"
-        />
-      </div>
-
-      <div class="field">
-        <label for="new-password">New Password</label>
-        <input
-          type="password"
-          id="new-password"
-          placeholder="Enter your new password"
-        />
-      </div>
-
-      <div class="field">
-        <label for="confirm-password">Confirm New Password</label>
-        <input
-          type="password"
-          id="confirm-password"
-          placeholder="Confirm your new password"
-        />
-      </div>
-
-      <button class="save-btn-bottom" onclick="saveProfileSettings()">
-        Save Changes<!-- SVG icon for save button -->
-      </button>
-
-      <!-- Success message (hidden until save succeeds) -->
-      <div class="success-msg" id="success-msg">
-        Profile settings saved successfully!
-      </div>
-
-      <div class="error-msg" id="error-msg">
-        New passwords do not match. Please try again.
-      </div>
->>>>>>> Stashed changes
     </div>
-    <!-- End of card -->
 
-<<<<<<< Updated upstream
     <!-- EDIT PROFILE SECTION -->
     <div class="section-heading">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -204,7 +87,7 @@
 
     <div class="divider"></div>
 
-    <!-- WORKSPACE WHITE LABEL SECTION -->
+    <!-- WORKSPACE CUSTOMIZATION SECTION -->
     <div class="section-heading">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       <span data-i18n="sections.workspace">Workspace Customization</span>
@@ -225,7 +108,7 @@
 
     <div class="divider"></div>
 
-    <!-- Language Selector -->
+    <!-- LANGUAGE SELECTOR -->
     <div class="field">
       <label for="language-select" data-i18n="fields.app_lang">Application Language</label>
       <select id="language-select" class="lang-dropdown" onchange="changeLanguage(this.value)">
@@ -267,8 +150,6 @@
           "fields.new_pass": "New Password",
           "fields.confirm_pass": "Confirm New Password",
           "fields.family_title": "Family Title",
-          "fields.workspace_logo": "Workspace Logo",
-          "fields.choose_logo": "Choose Logo Image",
           "fields.theme_color": "Theme Color",
           "fields.app_lang": "Application Language",
           "buttons.save": "Save Changes",
@@ -288,8 +169,6 @@
           "fields.new_pass": "Nywila Mpya",
           "fields.confirm_pass": "Thibitisha Nywila Mpya",
           "fields.family_title": "Jina la Familia",
-          "fields.workspace_logo": "Nembo ya Eneo la Kazi",
-          "fields.choose_logo": "Chagua Picha ya Nembo",
           "fields.theme_color": "Rangi ya Maudhui",
           "fields.app_lang": "Lugha ya Programu",
           "buttons.save": "Hifadhi Mabadiliko",
@@ -309,8 +188,6 @@
           "fields.new_pass": "Ssekula Empya",
           "fields.confirm_pass": "Kasa Ssekula Empya",
           "fields.family_title": "Erinnya ly'Amaka",
-          "fields.workspace_logo": "Akabonero k'Akawunti",
-          "fields.choose_logo": "Londa Kifaananyi ky'Akabonero",
           "fields.theme_color": "Langatenda",
           "fields.app_lang": "Olulimi lw'Enkola",
           "buttons.save": "Terekebza Enkyukakyuka",
@@ -330,8 +207,6 @@
           "fields.new_pass": "Nouveau Mot de Passe",
           "fields.confirm_pass": "Confirmer le Nouveau Mot de Passe",
           "fields.family_title": "Titre de la Famille",
-          "fields.workspace_logo": "Logo de l'Espace",
-          "fields.choose_logo": "Choisir une Image",
           "fields.theme_color": "Couleur du Thème",
           "fields.app_lang": "Langue de l'Application",
           "buttons.save": "Enregistrer",
@@ -351,8 +226,6 @@
           "fields.new_pass": "Nueva Contraseña",
           "fields.confirm_pass": "Confirmar Nueva Contraseña",
           "fields.family_title": "Título de la Familia",
-          "fields.workspace_logo": "Logotipo del Espacio",
-          "fields.choose_logo": "Elegir Imagen",
           "fields.theme_color": "Color del Tema",
           "fields.app_lang": "Idioma de la Aplicación",
           "buttons.save": "Guardar Cambios",
@@ -382,7 +255,17 @@
       setTimeout(function () { el.style.display = 'none'; }, 5000);
     }
 
-    // ----- i18next Translations -----
+    function previewPhoto(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const photoDisplay = document.getElementById('photo-display');
+          photoDisplay.innerHTML = "<img src='" + e.target.result + "' style='width:100%;height:100%;border-radius:50%;object-fit:cover;'>";
+        };
+        reader.readAsDataURL(file);
+      }
+    }
 
     async function initTranslations() {
       const savedLang = localStorage.getItem('app_lang') || 'en';
@@ -409,8 +292,6 @@
       });
     }
 
-    // ----- Theme Color -----
-
     function adjustColorBrightness(hex, percent) {
       var R = parseInt(hex.substring(1, 3), 16);
       var G = parseInt(hex.substring(3, 5), 16);
@@ -418,8 +299,8 @@
       R = parseInt(R * (100 + percent) / 100);
       G = parseInt(G * (100 + percent) / 100);
       B = parseInt(B * (100 + percent) / 100);
-      R = (R < 255) ? R : 255;  G = (G < 255) ? G : 255;  B = (B < 255) ? B : 255;
-      R = (R > 0) ? R : 0;     G = (G > 0) ? G : 0;     B = (B > 0) ? B : 0;
+      R = (R < 255) ? R : 255; G = (G < 255) ? G : 255; B = (B < 255) ? B : 255;
+      R = (R > 0) ? R : 0;    G = (G > 0) ? G : 0;    B = (B > 0) ? B : 0;
       return '#' + [R, G, B].map(function (c) { return c.toString(16).padStart(2, '0'); }).join('');
     }
 
@@ -438,36 +319,27 @@
       updateColorPreview(savedColor);
     }
 
-    // ----- Family Title -----
-
     function initFamilyTitle() {
       var saved = localStorage.getItem('family_title') || '';
       document.getElementById('family-title').value = saved;
     }
 
-    // ----- Load Profile from API -----
-
     async function loadProfile() {
       initTheme();
       initFamilyTitle();
-
       var user = getStoredUser();
       if (!user.id) {
         window.location.href = '/login.html';
         return;
       }
-
       try {
         var res = await fetch(API + '/profile/' + user.id);
         var data = await res.json();
-
         if (!res.ok || !data.success) throw new Error(data.error);
-
         var u = data.user;
         document.getElementById('username').value = u.username || '';
         document.getElementById('fullname').value = u.fullname || '';
         document.getElementById('email').value = u.email || '';
-
         if (u.fullname) {
           user.fullname = u.fullname;
           localStorage.setItem('user', JSON.stringify(user));
@@ -479,15 +351,12 @@
       }
     }
 
-    // ----- Save Profile to API + Workspace to localStorage -----
-
     async function saveProfileSettings() {
       var user = getStoredUser();
       if (!user.id) {
         showError('You must be logged in to update your profile.');
         return;
       }
-
       var username = document.getElementById('username').value.trim();
       var fullname = document.getElementById('fullname').value.trim();
       var email = document.getElementById('email').value.trim();
@@ -497,60 +366,38 @@
       var familyTitle = document.getElementById('family-title').value.trim();
       var themeColor = document.getElementById('workspace-color').value;
 
-      // Validate password section
       if (newPassword || confirmPassword) {
-        if (!currentPassword) {
-          showError('Please enter your current password to set a new one.');
-          return;
-        }
-        if (newPassword !== confirmPassword) {
-          showError('New passwords do not match.');
-          return;
-        }
-        if (newPassword.length < 4) {
-          showError('New password must be at least 4 characters.');
-          return;
-        }
+        if (!currentPassword) { showError('Please enter your current password to set a new one.'); return; }
+        if (newPassword !== confirmPassword) { showError('New passwords do not match.'); return; }
+        if (newPassword.length < 4) { showError('New password must be at least 4 characters.'); return; }
       }
 
       try {
-        // Save profile fields to API
         var profileRes = await fetch(API + '/profile/' + user.id, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: username, fullname: fullname, email: email })
+          body: JSON.stringify({ username, fullname, email })
         });
-
         var profileData = await profileRes.json();
-        if (!profileRes.ok || !profileData.success) {
-          throw new Error(profileData.error || 'Failed to update profile');
-        }
+        if (!profileRes.ok || !profileData.success) throw new Error(profileData.error || 'Failed to update profile');
 
-        // Save password if provided
         if (newPassword && currentPassword) {
           var passRes = await fetch(API + '/profile/' + user.id + '/password', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ currentPassword: currentPassword, newPassword: newPassword })
+            body: JSON.stringify({ currentPassword, newPassword })
           });
-
           var passData = await passRes.json();
-          if (!passRes.ok || !passData.success) {
-            throw new Error(passData.error || 'Failed to update password');
-          }
+          if (!passRes.ok || !passData.success) throw new Error(passData.error || 'Failed to update password');
         }
 
-        // Save workspace settings to localStorage
         localStorage.setItem('family_title', familyTitle);
         localStorage.setItem('workspace_theme_color', themeColor);
-
-        // Update localStorage user
         user.username = username;
         user.email = email;
         if (fullname) user.fullname = fullname;
         localStorage.setItem('user', JSON.stringify(user));
 
-        // Clear password fields
         document.getElementById('current-password').value = '';
         document.getElementById('new-password').value = '';
         document.getElementById('confirm-password').value = '';
@@ -562,7 +409,6 @@
       }
     }
 
-    // ----- Init -----
     window.onload = function () {
       initTranslations();
       loadProfile();
@@ -570,200 +416,4 @@
   </script>
 
 </body>
-=======
-    <script>
-      // --PHOTO PREVIEW--
-      // Runs automatically when user selects a photo, shows preview in profile photo area
-      function previewPhoto(event) {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            const photoDisplay = document.getElementById("photo-display");
-            photoDisplay.innerHTML =
-              "<img src='" +
-              e.target.result +
-              "' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>";
-          };
-          reader.readAsDataURL(file);
-        }
-      }
-
-      // --SAVE PROFILE--
-      function saveProfileSettings() {
-        const newPassword = document.getElementById("new-password").value;
-        const confirmPassword =
-          document.getElementById("confirm-password").value;
-
-        if (newPassword && newPassword !== confirmPassword) {
-          document.getElementById("error-msg").style.display = "block";
-          document.getElementById("success-msg").style.display = "none";
-
-          setTimeout(function () {
-            document.getElementById("error-msg").style.display = "none";
-          }, 3000);
-
-          return;
-        }
-
-        document.getElementById("success-msg").style.display = "block";
-        document.getElementById("error-msg").style.display = "none";
-
-        setTimeout(function () {
-          document.getElementById("success-msg").style.display = "none";
-        }, 3000);
-      }
-    </script>
-  </body>
->>>>>>> Stashed changes
-=======
-      </div>
-
-      <!-- Profile photo section -->
-      <div class="photo-section">
-        <div class="photo-wrapper">
-          <div class="profile-photo" id="photo-display">
-            <!-- person SVG icon (shown before photo is chosen) -->
-          </div>
-
-          <button
-            class="change-photo-btn"
-            onclick="document.getElementById('photo-input').click()"
-          >
-            Change Photo<!-- camera SVG icon -->
-          </button>
-
-          <input
-            type="file"
-            id="photo-input"
-            accept="image/*"
-            onchange="previewPhoto(event)"
-          />
-        </div>
-      </div>
-
-      <!-- EDIT PROFILE SECTION -->
-      <div class="section-heading">
-        <!-- pencil SVG icon -->
-        Edit Profile
-      </div>
-
-      <div class="field">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter your username" />
-      </div>
-
-      <div class="field">
-        <label for="fullname">Full Name</label>
-        <input
-          type="text"
-          id="fullname"
-          placeholder="Enter your full name e.g. Naiga Hawah"
-        />
-      </div>
-
-      <div class="field">
-        <label for="email">Email Address</label>
-        <input
-          type="email"
-          id="email"
-          placeholder="Enter your email e.g. hawah@email.com"
-        />
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- EDIT PASSWORD SECTION -->
-      <div class="section-heading">
-        <!-- lock SVG icon -->
-        Edit Password
-      </div>
-
-      <div class="field">
-        <label for="current-password">Current Password</label>
-        <input
-          type="password"
-          id="current-password"
-          placeholder="Enter your current password"
-        />
-      </div>
-
-      <div class="field">
-        <label for="new-password">New Password</label>
-        <input
-          type="password"
-          id="new-password"
-          placeholder="Enter your new password"
-        />
-      </div>
-
-      <div class="field">
-        <label for="confirm-password">Confirm New Password</label>
-        <input
-          type="password"
-          id="confirm-password"
-          placeholder="Confirm your new password"
-        />
-      </div>
-
-      <button class="save-btn-bottom" onclick="saveProfileSettings()">
-        Save Changes<!-- SVG icon for save button -->
-      </button>
-
-      <!-- Success message (hidden until save succeeds) -->
-      <div class="success-msg" id="success-msg">
-        Profile settings saved successfully!
-      </div>
-
-      <div class="error-msg" id="error-msg">
-        New passwords do not match. Please try again.
-      </div>
-    </div>
-    <!-- End of card -->
-
-    <script>
-      // --PHOTO PREVIEW--
-      // Runs automatically when user selects a photo, shows preview in profile photo area
-      function previewPhoto(event) {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            const photoDisplay = document.getElementById("photo-display");
-            photoDisplay.innerHTML =
-              "<img src='" +
-              e.target.result +
-              "' style='width: 100%; height: 100%; border-radius: 50%; object-fit: cover;'>";
-          };
-          reader.readAsDataURL(file);
-        }
-      }
-
-      // --SAVE PROFILE--
-      function saveProfileSettings() {
-        const newPassword = document.getElementById("new-password").value;
-        const confirmPassword =
-          document.getElementById("confirm-password").value;
-
-        if (newPassword && newPassword !== confirmPassword) {
-          document.getElementById("error-msg").style.display = "block";
-          document.getElementById("success-msg").style.display = "none";
-
-          setTimeout(function () {
-            document.getElementById("error-msg").style.display = "none";
-          }, 3000);
-
-          return;
-        }
-
-        document.getElementById("success-msg").style.display = "block";
-        document.getElementById("error-msg").style.display = "none";
-
-        setTimeout(function () {
-          document.getElementById("success-msg").style.display = "none";
-        }, 3000);
-      }
-    </script>
-  </body>
->>>>>>> Stashed changes
 </html>
