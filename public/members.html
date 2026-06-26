@@ -1,127 +1,128 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Members Page</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Members Page</title>
 
-<style>
-    * {
+    <style>
+      * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
         font-family: Arial, Helvetica, sans-serif;
-    }
+      }
 
-    body {
+      body {
         background: #e8e2d9;
         padding: 40px;
-    }
+      }
 
-    .container {
+      .container {
         max-width: 1000px;
         margin: auto;
-    }
+      }
 
-    .page-title {
+      .page-title {
         text-align: center;
         margin-bottom: 25px;
         color: #2c2420;
         font-family: Georgia, serif;
         font-size: 2rem;
-    }
+      }
 
-    .members-card {
+      .members-card {
         background: #f5f1ec;
         border-radius: 12px;
         padding: 20px;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
         overflow-x: auto;
-    }
+      }
 
-    table {
+      table {
         width: 100%;
         border-collapse: collapse;
-    }
+      }
 
-    thead {
+      thead {
         background: #3d3530;
         color: #f5f1ec;
-    }
+      }
 
-    th,
-    td {
+      th,
+      td {
         padding: 14px 16px;
         text-align: left;
-    }
+      }
 
-    th {
+      th {
         font-weight: 600;
-    }
+      }
 
-    tbody tr {
+      tbody tr {
         border-bottom: 1px solid #c8bfb5;
-    }
+      }
 
-    tbody tr:hover {
+      tbody tr:hover {
         background: #faf8f5;
-    }
+      }
 
-    td {
+      td {
         color: #2c2420;
-    }
+      }
 
-    .role {
+      .role {
         display: inline-block;
         padding: 6px 12px;
         border-radius: 20px;
         font-size: 0.85rem;
         font-weight: bold;
-    }
+      }
 
-    .father {
+      .father {
         background: #d8cec3;
         color: #3d3530;
-    }
+      }
 
-    .mother {
+      .mother {
         background: #e3d7cf;
         color: #5a4038;
-    }
+      }
 
-    .child {
+      .child {
         background: #ede6df;
         color: #5a4e46;
-    }
+      }
 
-    .member {
+      .member {
         background: #d7dde2;
         color: #24313a;
-    }
+      }
 
-    .empty-state {
+      .empty-state {
         text-align: center;
         color: #6d625b;
-    }
+      }
 
-    @media (max-width: 768px) {
+      @media (max-width: 768px) {
         body {
-            padding: 20px;
+          padding: 20px;
         }
 
         th,
         td {
-            padding: 12px;
-            font-size: 14px;
+          padding: 12px;
+          font-size: 14px;
         }
 
         .page-title {
-            font-size: 1.6rem;
+          font-size: 1.6rem;
         }
-    }
-</style>
-</head>
+      }
+    </style>
+  </head>
 
+<<<<<<< Updated upstream
 <body>
 
 <div class="container">
@@ -143,9 +144,40 @@
                 </tr>
             </tbody>
         </table>
+=======
+  <body>
+    <div style="max-width: 1100px; margin: 1rem auto; padding: 0 2rem">
+      <nav class="breadcrumb" aria-label="breadcrumb">
+        <ol>
+          <li><a href="dashbaord.html">Dashboard</a></li>
+          <li aria-current="page">Members</li>
+        </ol>
+      </nav>
+>>>>>>> Stashed changes
     </div>
-</div>
 
-<script src="javascript/members-handler.js"></script>
-</body>
+    <div class="container">
+      <h1 class="page-title">Members Page</h1>
+
+      <div class="members-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>Username</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+
+          <tbody id="membersTableBody">
+            <tr>
+              <td colspan="3" class="empty-state">Loading members...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="javascript/members-handler.js"></script>
+  </body>
 </html>

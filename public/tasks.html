@@ -1,5 +1,6 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+<<<<<<< Updated upstream
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,14 +12,31 @@
     <div class="topbar">
       <h1 class="title">Family Tracker</h1>
       <p class="subtitle">Tasks · <a href="dashboard.html" style="color:#8b7355;text-decoration:none;">Back to Dashboard</a></p>
+=======
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Events - Family Tracker</title>
+    <link rel="stylesheet" href="tasks.css" />
+  </head>
+  <body>
+    <div style="max-width: 1100px; margin: 1rem auto; padding: 0 2rem">
+      <nav class="breadcrumb" aria-label="breadcrumb">
+        <ol>
+          <li><a href="dashbaord.html">Dashboard</a></li>
+          <li aria-current="page">Tasks</li>
+        </ol>
+      </nav>
+>>>>>>> Stashed changes
     </div>
 
-    <div class="panel">
-      <div class="toolbar">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search by task, user, or description...">
-        <button class="btn" id="createTaskBtn">+ Create Task</button>
+    <div class="page">
+      <div class="topbar">
+        <h1 class="title">Family Tracker</h1>
+        <p class="subtitle">Tasks</p>
       </div>
 
+<<<<<<< Updated upstream
       <div id="confirmation" class="confirmation hidden">Task created successfully.</div>
 
       <div class="table-wrap">
@@ -65,21 +83,91 @@
           <label for="taskDate">Date</label>
           <input type="date" id="taskDate">
           <p class="error-msg hidden" id="errDate">Valid future date required.</p>
+=======
+      <div class="panel">
+        <div class="toolbar">
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Search by task, user, or description..."
+          />
+          <button class="btn" id="createTaskBtn">+ Create Task</button>
+>>>>>>> Stashed changes
         </div>
-        <div class="field-half">
-          <label for="taskTime">Time</label>
-          <input type="time" id="taskTime">
-          <p class="error-msg hidden" id="errTime">Valid time required.</p>
-        </div>
-      </div>
 
-      <div class="modal-actions">
-        <button class="btn-secondary" id="cancelBtn">Cancel</button>
-        <button class="btn" id="saveTaskBtn">Save Task</button>
+        <div id="confirmation" class="confirmation hidden">
+          Task created successfully.
+        </div>
+
+        <div class="table-wrap">
+          <table id="taskTable">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Username</th>
+                <th>Task</th>
+                <th>Description</th>
+                <th>Date/Time</th>
+              </tr>
+            </thead>
+            <tbody id="taskTableBody">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+          <p id="noResults" class="no-results hidden">No tasks found.</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script src="tasks.js"></script>
-</body>
+    <!-- Create Task Modal -->
+    <div class="modal-overlay" id="modalOverlay" style="display: none">
+      <div class="modal">
+        <h2 class="modal-title">Create Task</h2>
+
+        <label for="assignRole">User to Assign</label>
+        <select id="assignRole">
+          <option value="">Select user</option>
+        </select>
+        <p class="error-msg hidden" id="errAssign">Please select a user.</p>
+
+        <label for="taskName">Task Name</label>
+        <input
+          type="text"
+          id="taskName"
+          placeholder="e.g., Take out the trash"
+        />
+        <p class="error-msg hidden" id="errName">Task name is required.</p>
+
+        <label for="taskDesc">Task Description</label>
+        <textarea
+          id="taskDesc"
+          rows="3"
+          placeholder="Optional details..."
+        ></textarea>
+
+        <div class="row-fields">
+          <div class="field-half">
+            <label for="taskDate">Date</label>
+            <input type="date" id="taskDate" />
+            <p class="error-msg hidden" id="errDate">
+              Valid future date required.
+            </p>
+          </div>
+          <div class="field-half">
+            <label for="taskTime">Time</label>
+            <input type="time" id="taskTime" />
+            <p class="error-msg hidden" id="errTime">Valid time required.</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" id="cancelBtn">Cancel</button>
+          <button class="btn" id="saveTaskBtn">Save Task</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="tasks.js"></script>
+  </body>
 </html>
