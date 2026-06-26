@@ -1,5 +1,7 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -277,4 +279,115 @@
     loadEvents();
   </script>
 </body>
+=======
+=======
+>>>>>>> Stashed changes
+  <head>
+    <meta charset="UTF-8" />
+    <title>Family Tracker - View Schedules</title>
+    <style>
+      /* Basic table styling for readability (Requirement #9) */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+      .status-occupied {
+        color: red;
+        font-weight: bold;
+      }
+      .status-unoccupied {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="max-width: 1100px; margin: 1rem auto; padding: 0 2rem">
+      <nav class="breadcrumb" aria-label="breadcrumb">
+        <ol>
+          <li><a href="dashbaord.html">Dashboard</a></li>
+          <li aria-current="page">Schedule</li>
+        </ol>
+      </nav>
+    </div>
+
+    <h2>Upcoming Family Schedule</h2>
+    <button id="createScheduleBtn">CREATE SCHEDULE</button>
+
+    <!-- Table setup per Requirement #2 and #3 -->
+    <div
+      id="formSection"
+      style="
+        margin-bottom: 30px;
+        border: 1px solid #ccc;
+        padding: 15px;
+        display: none;
+      "
+    >
+      <h3>Create New Schedule</h3>
+      <form id="scheduleForm">
+        <label>Role: </label>
+        <select id="roleInput">
+          <option value="Father">Father</option>
+          <option value="Mother">Mother</option>
+          <option value="Son">Son</option>
+          <option value="Daughter">Daughter</option>
+        </select>
+        <br /><br />
+        <input type="text" id="usernameInput" placeholder="Username" required />
+        <input type="text" id="eventInput" placeholder="Task/Event" required />
+        <input type="date" id="dateInput" required />
+        <input type="time" id="timeInput" required />
+        <label>Status</label>
+        <input
+          type="text"
+          id="statusInput"
+          placeholder="Occupied/Unoccupied"
+          required
+        />
+        <br /><br />
+        <button type="button" onclick="addSchedule()">Add to Schedule</button>
+        <button id="closeBtn">CLOSE</button>
+      </form>
+    </div>
+
+    <table id="scheduleTable">
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Username</th>
+          <th>Event</th>
+          <th>Time</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="scheduleBody">
+        <!-- Data will be injected here by script.js -->
+      </tbody>
+    </table>
+
+    <!-- Handling empty state per Requirement #11 -->
+    <div
+      id="noEventsMessage"
+      style="display: none; margin-top: 20px; color: gray"
+    >
+      No scheduled events available.
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 </html>
