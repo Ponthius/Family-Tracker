@@ -49,8 +49,7 @@
         color: #f5f1ec;
       }
 
-      th,
-      td {
+      th, td {
         padding: 14px 16px;
         text-align: left;
       }
@@ -104,13 +103,41 @@
         color: #6d625b;
       }
 
+      .breadcrumb ol {
+        list-style: none;
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .breadcrumb ol li a {
+        color: #8b7355;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .breadcrumb ol li a:hover {
+        text-decoration: underline;
+      }
+
+      .breadcrumb ol li[aria-current="page"] {
+        color: #2c2420;
+        font-weight: 600;
+      }
+
+      .breadcrumb ol li + li::before {
+        content: '/';
+        margin-right: 0.5rem;
+        color: #c8bfb5;
+      }
+
       @media (max-width: 768px) {
         body {
           padding: 20px;
         }
 
-        th,
-        td {
+        th, td {
           padding: 12px;
           font-size: 14px;
         }
@@ -122,46 +149,17 @@
     </style>
   </head>
 
-
-<body>
-
-<div class="container">
-    <h1 class="page-title">Members Page · <a href="dashboard.html" style="color:#8b7355;text-decoration:none;font-family:Arial,sans-serif;font-size:0.9rem;">Back to Dashboard</a></h1>
-
-    <div class="members-card">
-        <table>
-            <thead>
-                <tr>
-                    <th>Role</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                </tr>
-            </thead>
-
-            <tbody id="membersTableBody">
-                <tr>
-                    <td colspan="3" class="empty-state">Loading members...</td>
-                </tr>
-            </tbody>
-        </table>
-=======
-=======
->>>>>>> Stashed changes
   <body>
-    <div style="max-width: 1100px; margin: 1rem auto; padding: 0 2rem">
+    <div class="container">
+
+      <!-- BREADCRUMB -->
       <nav class="breadcrumb" aria-label="breadcrumb">
         <ol>
           <li><a href="dashbaord.html">Dashboard</a></li>
           <li aria-current="page">Members</li>
         </ol>
       </nav>
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-    </div>
 
-    <div class="container">
       <h1 class="page-title">Members Page</h1>
 
       <div class="members-card">
@@ -181,6 +179,7 @@
           </tbody>
         </table>
       </div>
+
     </div>
 
     <script src="javascript/members-handler.js"></script>
