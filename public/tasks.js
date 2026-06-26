@@ -78,19 +78,19 @@ function renderTable(list) {
       ? '<span style="background:#d4e6c6;color:#3c5a3c;padding:3px 10px;border-radius:999px;font-size:0.7rem;font-weight:600;">Done</span>'
       : '<span style="background:#ece1d2;color:#5a4038;padding:3px 10px;border-radius:999px;font-size:0.7rem;font-weight:600;">Pending</span>';
 
-    let doneBtn = '';
-    if (isFather && status === 'pending') {
-      doneBtn = '<button class="btn-done" data-taskid="' + task.TaskID + '" style="padding:4px 10px;font-size:0.75rem;background:#3d3530;color:#f5f1ec;border:none;border-radius:6px;cursor:pointer;">Done</button>';
-    }
+	    let doneBtn = '';
+	    if (isFather && status === 'pending') {
+	      doneBtn = '<button class="btn-done" data-taskid="' + (task.taskid || task.TaskID) + '" style="padding:4px 10px;font-size:0.75rem;background:#3d3530;color:#f5f1ec;border:none;border-radius:6px;cursor:pointer;">Done</button>';
+	    }
 
-    tr.innerHTML = `
-      <td><span class="role-tag">${task.Role || task.role}</span></td>
-      <td>${task.Username || task.username}</td>
-      <td>${task.TaskName || task.name}</td>
-      <td>${(task.Description || task.desc) ? (task.Description || task.desc) : "—"}</td>
-      <td>${formatDateTime(task.TaskDate || task.date, task.TaskTime || task.time)}</td>
-      <td>${statusBadge} ${doneBtn}</td>
-    `;
+	    tr.innerHTML = `
+	      <td><span class="role-tag">${task.role || task.Role}</span></td>
+	      <td>${task.username || task.Username}</td>
+	      <td>${task.taskname || task.TaskName || task.name}</td>
+	      <td>${(task.description || task.Description || task.desc) ? (task.description || task.Description || task.desc) : "—"}</td>
+	      <td>${formatDateTime(task.taskdate || task.TaskDate || task.date, task.tasktime || task.TaskTime || task.time)}</td>
+	      <td>${statusBadge} ${doneBtn}</td>
+	    `;
     tableBody.appendChild(tr);
   });
 
@@ -107,9 +107,9 @@ function applySearch() {
   const term = searchInput.value.trim().toLowerCase();
   if (!term) { renderTable(tasks); return; }
   const filtered = tasks.filter(t => {
-    const name = (t.TaskName || t.name || "").toLowerCase();
-    const user = (t.Username || t.username || "").toLowerCase();
-    const desc = (t.Description || t.desc || "").toLowerCase();
+    const name = (t.taskname || t.TaskName || t.name || "").toLowerCase();
+    const user = (t.username || t.Username || "").toLowerCase();
+    const desc = (t.description || t.Description || t.desc || "").toLowerCase();
     return name.includes(term) || user.includes(term) || desc.includes(term);
   });
   renderTable(filtered);
