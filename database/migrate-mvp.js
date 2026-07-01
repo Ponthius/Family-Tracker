@@ -38,6 +38,7 @@ async function migrate() {
                 name VARCHAR(100) NOT NULL,
                 admin_id INT REFERENCES users(id) ON DELETE SET NULL,
                 status VARCHAR(20) NOT NULL DEFAULT 'Active',
+                language VARCHAR(10) DEFAULT 'en',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);

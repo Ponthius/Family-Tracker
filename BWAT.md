@@ -7,7 +7,9 @@ This file provides guidance to Bwat when working with code in this repository.
 - **Frontend**: Vanilla HTML / CSS / JavaScript (no framework, no build tooling) — deployed on Vercel
 - **Database**: PostgreSQL on Contabo VPS
 - **DB Driver**: `pg` (node-postgres)
-- **No CSS framework or design system**: raw CSS files per page
+- **Auth**: Plaintext password comparison (no hashing) — `WHERE username = $1 AND password = $2`
+- **Email**: Nodemailer via Gmail SMTP (fire-and-forget, never blocks registration)
+- **No CSS framework or design system**: raw CSS files per page with warm earthy palette
 
 ## Brand Identity
 **Colors** (warm, neutral palette — use existing tokens, never invent new values):
@@ -38,29 +40,85 @@ This file provides guidance to Bwat when working with code in this repository.
 **Visual language**: Warm, earthy minimalism — beige/cream palette, flat surfaces with gentle shadows, serif headings for warmth, sans-serif body text, generous whitespace, subtle hover transitions.
 
 ## Architecture Notes
-- Express 5 runs on the Contabo VPS (port 4001) behind PM2. It provides a REST API only (no static files). API routes: `/health`, `/register`, `/login`, `/members`, `/profile/:id` (GET, PUT), `/profile/:id/password` (PUT), `/tasks` (GET, POST), `/tasks/:id/done` (PUT), `/dashboard/stats`, `/dashboard/recent-tasks`, `/dashboard/upcoming-tasks`, `/events` (GET, POST), `/events/conflict`, `/notifications`, `/sync`.
-- Five DB tables: `users` (auth + roles, with `fullname`, `profile_photo`), `Members`, `UpcomingEvents`, `RecentEvents`, `Tasks` (role, username, task name, description, date, time, status, AssignedBy, AssignedByName).
-- **Role system**: Only one `father` and one `mother` allowed per registration (409 error). Father is the super admin — only father can create tasks and mark them done. Other roles can set schedules.
-- **Schedule conflict detection**: Before creating a task, the system checks `UpcomingEvents` for the assignee on that date. If they're busy (have an event), the task creation is blocked with a message to reschedule.
-- DB connection uses PostgreSQL via `pg` (Pool). Connection env vars: `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`.
-- Offline fallback: `offline-auth.js` stores the last successful login credentials in `localStorage` and lets the user log in when the server is unreachable. Also caches registered users in `localStorage('registeredUsers')`.
-- All JS pages do client-side fetch to `http://13.140.143.58:4001` with a 5-second timeout via `AbortController`.
-- `public/index.html` is the splash screen — shows logo for 3s then redirects to `/login.html`. Styled by `splashscreen.css` and uses the logo from `images/Family-tracker-logo.png`.
-- Members page (members.html) has **inline CSS** in the `<style>` tag — unlike other pages which use external stylesheets.
-- Dashboard loads `javascript/offline-queue.js` and `javascript/sync-service.js` for offline support.
+
+**Backend structure** — A single `server.js` file (~1050 lines) containing all routes inline. No router separation or middleware layers. Routes are grouped by domain: Health, Register, Login, Members, Profile, Tasks, Events, Schedules, Dashboard stats, Notifications, Audit, Invitations, Families, and Account deletion. Each route is a self-contained `async (req, res) => { ... }` handler with its own try/catch. The `pg` `Pool` is initialized at module level and used directly in every route. CORS is enabled globally. A `logAudit()` helper writes to the `audit_logs` table for every significant action (register, login, task create, password change, account delete).
+
+**Frontend** has no framework. Each HTML page has an inline `<script>` tag or references a `.js` file. Pages use `fetch()` to call the backend API through Vercel's rewrite proxy (`/api/*` → `http://13.140.143.58:4001/*`). Toast notifications via `toast.js` (floating, auto-dismiss, color-coded) replace all `alert()` calls. Pages are styled by individual CSS files in `public/` with no shared design token system — colors are hardcoded hex values.
+
+**Auth flow** — Plaintext password comparison. On login, the server returns `{ id, email, username, role, family_id, is_super_admin }` which is stored in `localStorage.getItem('user')`. There is no session or JWT — every subsequent request includes user data from localStorage (but the server uses its own parameterized queries for auth). Offline fallback via `offline-auth.js` stores last successful credentials in localStorage.
+
+**Multi-tenancy** is implemented through `family_id` on every user. When a father registers, a `families` row is created and the father's `family_id` is set. Invited members are linked to the same `family_id`. The `GET /members` endpoint optionally accepts `familyId` query param to filter — the members page uses this to show only the current family's members. Super admin sees all families via `GET /audit/families-overview`.
+
+**Super admin** is seeded on first server start via `seedSuperAdmin()` with credentials `superadmin@gmail.com` / `superadmin123`. Super admin has `is_super_admin = TRUE` and is excluded from all regular queries (`GET /members`, task assignee dropdown). Super admin sees a different sidebar (Audit Logs, Cron Jobs) and has access to `/audit-super.html` (family overview, audit logs with filters).
+
+**Account deletion** uses a 7-day grace period. When a user deletes their account (via `POST /profile/:id/delete`), their username hash is stored in `DeletedAccounts` with a 7-day expiry. Admin deletion cascades to all family members, tasks, events. Regular deletion only affects the user's data. The `DeletedAccounts` table is checked at login to block deleted users.
+
+**i18n** — Client-side translations via i18next CDN on the profile page. Five languages: EN, SW (Kiswahili), LG (Luganda), FR (Français), ES (Español). Language preference is saved to `localStorage` and the `families.language` column. The profile page's `loadProfile()` fetches the user's family language from the API and applies it via `changeLanguage()`.
+
+## Database Tables (PostgreSQL)
+
+| Table | Purpose |
+|---|---|
+| `users` | Auth + roles (id, email, username, password, role, family_id, is_super_admin, fullname, profile_photo, emailverified) |
+| `families` | Multi-tenant families (id, name, admin_id, status, language) |
+| `Tasks` | Pending tasks assigned to users (TaskID, Role, Username, TaskName, Description, TaskDate, TaskTime, status, AssignedBy, AssignedByName) |
+| `UpcomingEvents` | Schedule events (EventName, Description, EventDate, MemberName) |
+| `RecentEvents` | Completed/done tasks (EventName, Description, EventDate, MemberName) |
+| `Members` | Extended family member profiles |
+| `audit_logs` | Audit trail for all actions (username, user_role, action, status) |
+| `invitations` | Invitation tokens (email, role, family_id, token, expires_at) |
+| `FamilyInvitations` | Alternative invitation tracking (family_id, recipient_email, token, invited_by) |
+| `DeletedAccounts` | 7-day grace tracking (username_hash, expires_at) |
+| `EmailVerifications` | Verification tokens (UserID, VerificationToken, ExpiresAt) |
+
+## REST API Routes
+
+| Method | Route | Access | Description |
+|---|---|---|---|
+| GET | `/health` | Public | Server health check |
+| POST | `/register` | Public | Register user (creates family for father role) |
+| POST | `/login` | Public | Login (checks DeletedAccounts, returns user + family info) |
+| GET | `/members` | Public | List users (optional `?familyId=`) |
+| GET/POST | `/profile/:id` | Authenticated | Get/update profile (also saves family title + language to families table) |
+| PUT | `/profile/:id/password` | Authenticated | Change password |
+| GET/POST | `/tasks` | Authenticated | List pending tasks / create task (checks schedule conflict) |
+| PUT | `/tasks/:id/done` | Father only | Mark task done (moves to RecentEvents) |
+| DELETE | `/tasks/:id` | Authenticated | Delete task (audit logged) |
+| POST | `/sync` | Public | Sync pending offline actions |
+| GET | `/dashboard/stats` | Authenticated | KPI counts (tasks, members, schedules, upcoming) |
+| GET | `/dashboard/recent-tasks` | Authenticated | Last 5 done tasks |
+| GET | `/dashboard/upcoming-tasks` | Authenticated | Next 5 pending tasks |
+| GET/POST | `/events` | Authenticated | List/create schedule events |
+| GET | `/events/conflict` | Authenticated | Check if user is busy at given date |
+| DELETE | `/events/:id` | Authenticated | Delete event (audit logged) |
+| GET | `/notifications` | Authenticated | Tasks assigned to current user |
+| GET | `/audit/all` | Super Admin | Audit logs with filters (search, role, action, status) |
+| GET | `/audit/families-overview` | Super Admin | Family accounts overview |
+| GET/POST | `/invitations` / `/invitations/accept` | Authenticated | Invitation creation and acceptance |
+| GET/POST | `/invite` / `/invites/:token` | Authenticated | Alternative invite flow |
+| GET | `/families` | Authenticated | List all families (super admin sees all) |
+| PUT | `/families/:id/status` | Super Admin | Suspend/activate family |
+| POST | `/profile/:id/delete` | Authenticated | Soft-delete with 7-day grace period |
+| DELETE | `/users/:id` | Authenticated | Hard delete user |
 
 ## Commands
 - `npm start` — runs `node server.js` on port 4001
-- DB setup (first time): run `database/setup-postgresql.sh` on the Contabo server as root
+- `npm install` — installs `pg`, `express`, `cors`, `nodemailer`
+- DB setup (first time): run `bash database/setup-postgresql.sh` on Contabo server as root
+- DB migration: `node database/migrate-mvp.js` (adds new tables + columns safely)
 - DB schema (re-run safe): `psql -U familytracker_user -d familytrackerdb -f database/familytrackerdb-postgresql.sql`
-- Frontend deployment: push to GitHub, import repo in Vercel with root directory set to `public/`
+- Frontend deployment: push to GitHub → Vercel auto-deploys from `main` with `public/` as root
+- Server deployment: `cd /var/www/family-tracker && git pull && npm install && pm2 restart family-tracker`
 
 ## Gotchas
-- **Plaintext passwords**: stored and compared as-is in the database. The login query does `WHERE username = $1 AND password = $2` with no hashing. Offline auth also stores passwords in localStorage. Do not change this pattern without explicit user permission.
-- **`.env*` files are gitignored** — environment variables `PORT`, `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD` can be set.
-- **No input sanitization on login/register**: SQL injection is prevented by parameterized queries, but there is no server-side validation beyond checking for empty fields. XSS is possible if any user-supplied data gets rendered unsafely (currently roles/names are rendered as `textContent` in most places).
-- **Dashboard's `user-badge` shows the logged-in user's info** — it reads from `localStorage.getItem('user')`. If the user data shape differs from `{ id, email, username, role }`, rendering may break.
-- **Schedule page uses API-backed data** from `GET /events` and `POST /events` on `UpcomingEvents`. Tasks page fetches from `GET /tasks` (only pending), saves via `POST /tasks`, and can mark done via `PUT /tasks/:id/done` (which inserts into `RecentEvents`).
-- **Profile page matches the warm palette** — CSS uses `#3d3530`/`#8b7355`/Arial. Photo upload was removed (no storage).
-- **Role constraints**: Only one `father` and one `mother` can register. Father is the super admin — only he sees the "Create Task" and "Mark Done" buttons. Other roles cannot create or complete tasks.
-- **Orphan files**: `public/reschedulefeat.js` (unfinished, no wire-up or backend route), `database/familytrackerdb-postgresql.sql` (PostgreSQL variant, now the active schema). The old SQL Server schema file `database/familytrackerdb.sql` is no longer used.
+- **Plaintext passwords**: stored and compared as-is. Login does `WHERE username = $1 AND password = $2` with zero hashing. Offline auth also stores plaintext in localStorage. Do NOT change this without explicit permission.
+- **PostgreSQL lowercases column names**: `SELECT TaskName` returns `taskname` in the result object. All JS frontend code must check `task.taskname || task.TaskName` (lowercase first, then mixed-case fallback).
+- **Vercel rewrites add `/api` prefix**: Frontend calls `/api/tasks` → Vercel rewrites to `http://13.140.143.58:4001/tasks`. Server routes MUST NOT have `/api` in their path (the rewrite strips it). The exception is audit/invite/family routes which are registered without `/api` prefix.
+- **No session/auth tokens**: The server trusts any request. There's no middleware verifying `req.headers.authorization` or cookies. Authentication is done per-route by querying the database with the credentials from `req.body`. The browser stores user info in `localStorage` for display purposes only.
+- **Toast system**: `toast.js` must be loaded via `<script src="toast.js">` before any page code that calls `showToast()`. The script checks `document.body` and defers to `DOMContentLoaded` if body isn't ready.
+- **`.env*` files are gitignored**: Set `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`, `EMAIL_USER`, `EMAIL_PASS`, `SUPERADMIN_EMAIL`, `SUPERADMIN_PASS` as environment variables on the server.
+- **Email is fire-and-forget**: `sendVerificationEmail()` and `sendInviteEmail()` are called with `.catch()` — they never block registration. If Gmail SMTP is misconfigured, the app works but emails silently fail.
+- **Super admin is excluded from all regular queries**: `GET /members`, task assignee dropdown, and all other user-facing lists explicitly exclude `WHERE is_super_admin = FALSE`. Super admin's dedicated pages (`audit-super.html`, `cronjobs.html`) have client-side access control that redirects non-super-admins.
+- **Account deletion is NOT permanent immediately**: `POST /profile/:id/delete` records the username hash in `DeletedAccounts` with a 7-day expiry. The user account and associated data are deleted, but the hash prevents re-registration with the same username for 7 days.
+- **Offline fallback**: `offline-auth.js` stores last successful login in localStorage. When the server is unreachable, `login-handler.js` falls back to `offlineLogin()` which checks localStorage credentials. Registration is not available offline.
+- **Orphan files**: `public/reschedulefeat.js` (unfinished reschedule feature, no backend route), `database/familytrackerdb.sql` (old SQL Server schema, no longer used). Do NOT attempt to wire these up.

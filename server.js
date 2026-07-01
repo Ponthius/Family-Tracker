@@ -68,7 +68,7 @@ async function sendInviteEmail(recipientEmail, familyName, token) {
 }
 
 app.post('/register', async (req, res) => {
-    const { email, username, password, role } = req.body;
+    const { email, username, password, role, familyTitle } = req.body;
 
     if (!email || !username || !password || !role) {
         return res.status(400).json({ error: 'All fields required' });
@@ -99,9 +99,10 @@ app.post('/register', async (req, res) => {
 
         // If father, auto-create a family and assign family_id
         if (role === 'father') {
+            var fName = familyTitle || (username + '\'s Family');
             const familyResult = await pool.query(
                 `INSERT INTO families (name, admin_id) VALUES ($1, $2) RETURNING id`,
-                [username + '\'s Family', userId]
+                [fName, userId]
             );
             await pool.query(
                 `UPDATE users SET family_id = $1 WHERE id = $2`,
@@ -264,9 +265,15 @@ app.post('/login', async (req, res) => {
 
 app.get('/members', async (req, res) => {
     try {
-        const result = await pool.query(
-            `SELECT id, role, username, email FROM users WHERE is_super_admin = FALSE ORDER BY created_at DESC`
-        );
+        var familyId = req.query.familyId;
+        var query = `SELECT id, role, username, email, family_id FROM users WHERE is_super_admin = FALSE`;
+        var params = [];
+        if (familyId) {
+            query += ' AND family_id = $1';
+            params.push(familyId);
+        }
+        query += ' ORDER BY created_at DESC';
+        const result = await pool.query(query, params);
 
         res.json({ success: true, members: result.rows });
     } catch (err) {
@@ -282,7 +289,9 @@ app.get('/profile/:id', async (req, res) => {
 
     try {
         const result = await pool.query(
-            `SELECT id, email, username, role, fullname, profile_photo FROM users WHERE id = $1`,
+            `SELECT u.id, u.email, u.username, u.role, u.fullname, u.profile_photo,
+                    f.name AS family_name, f.language AS family_language
+             FROM users u LEFT JOIN families f ON f.id = u.family_id WHERE u.id = $1`,
             [id]
         );
 
@@ -299,9 +308,9 @@ app.get('/profile/:id', async (req, res) => {
 
 app.put('/profile/:id', async (req, res) => {
     const { id } = req.params;
-    const { username, fullname, email } = req.body;
+    const { username, fullname, email, familyTitle, language } = req.body;
 
-    if (!username && !fullname && !email) {
+    if (!username && !fullname && !email && !familyTitle && !language) {
         return res.status(400).json({ error: 'At least one field to update is required' });
     }
 
@@ -323,12 +332,39 @@ app.put('/profile/:id', async (req, res) => {
             values.push(email);
         }
 
-        values.push(id);
-        await pool.query(
-            `UPDATE users SET ${setClauses.join(', ')} WHERE id = $${idx}`,
-            values
-        );
+        if (setClauses.length > 0) {
+            values.push(id);
+            await pool.query(
+                `UPDATE users SET ${setClauses.join(', ')} WHERE id = $${idx}`,
+                values
+            );
+        }
 
+        // Update family title and language
+        if (familyTitle !== undefined || language !== undefined) {
+            var userR = await pool.query(`SELECT family_id FROM users WHERE id = $1`, [id]);
+            var fid = userR.rows[0]?.family_id;
+            if (fid) {
+                var fUpdates = [];
+                var fVals = [];
+                var fi = 1;
+                if (familyTitle !== undefined) {
+                    fUpdates.push('name = $' + fi++);
+                    fVals.push(familyTitle);
+                }
+                if (language !== undefined) {
+                    fUpdates.push('language = $' + fi++);
+                    fVals.push(language);
+                }
+                fVals.push(fid);
+                await pool.query(
+                    `UPDATE families SET ${fUpdates.join(', ')} WHERE id = $${fi}`,
+                    fVals
+                );
+            }
+        }
+
+        // Fetch and return updated user
         const updated = await pool.query(
             `SELECT id, email, username, role, fullname, profile_photo FROM users WHERE id = $1`,
             [id]
